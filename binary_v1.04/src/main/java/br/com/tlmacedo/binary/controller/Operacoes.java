@@ -104,8 +104,6 @@ public class Operacoes implements Initializable {
     /**
      * Robos
      */
-    static ObjectProperty<ROBOS> roboSelecionado = new SimpleObjectProperty<>();
-    static ObjectProperty<RoboEstrategia> roboEstrategia = new SimpleObjectProperty<>();
 
 
     /**
@@ -129,8 +127,8 @@ public class Operacoes implements Initializable {
     static BooleanProperty[] operadorNegociando = new BooleanProperty[5];
     static BooleanProperty[] tickSubindo = new BooleanProperty[5];
     static ObjectProperty<Tick>[] ultimoTick = new ObjectProperty[5];
-    static IntegerProperty[] digitoMaiorQuantidade = new IntegerProperty[5];
-    static IntegerProperty[] digitoMenorQuantidade = new IntegerProperty[5];
+    static IntegerProperty[] maiorQtdDigito = new IntegerProperty[5];
+    static IntegerProperty[] menorQtdDigito = new IntegerProperty[5];
     static StringProperty[] informacaoDetalhe01 = new StringProperty[5];
     static StringProperty[] informacaoValor01 = new StringProperty[5];
     static StringProperty[] informacaoDetalhe02 = new StringProperty[5];
@@ -417,8 +415,8 @@ public class Operacoes implements Initializable {
             getOperadorNegociando()[operadorId] = new SimpleBooleanProperty(false);
             getTickSubindo()[operadorId] = new SimpleBooleanProperty();
             getUltimoTick()[operadorId] = new SimpleObjectProperty<>();
-            getDigitoMaiorQuantidade()[operadorId] = new SimpleIntegerProperty();
-            getDigitoMenorQuantidade()[operadorId] = new SimpleIntegerProperty();
+            getMaiorQtdDigito()[operadorId] = new SimpleIntegerProperty();
+            getMenorQtdDigito()[operadorId] = new SimpleIntegerProperty();
             getInformacaoDetalhe01()[operadorId] = new SimpleStringProperty();
             getInformacaoValor01()[operadorId] = new SimpleStringProperty();
             getInformacaoValor01()[operadorId] = new SimpleStringProperty();
@@ -636,6 +634,7 @@ public class Operacoes implements Initializable {
      */
 
     private void graficoEmBarras(Integer operadorId) {
+
         getGraficoBarrasListValoresDigitos_R()[operadorId] = FXCollections.observableArrayList();
         getGraficoBarrasListQtdDigito_R()[operadorId] = FXCollections.observableArrayList();
         getGraficoBarrasVolatilidade_R()[operadorId] = new XYChart.Series<>();
@@ -707,9 +706,9 @@ public class Operacoes implements Initializable {
     private void atualizaCoresGrafico(Integer operadorId) {
 
         for (int digito = 0; digito < 10; digito++) {
-            if (getGraficoBarrasListQtdDigito_R()[operadorId].get(digito).getValue().intValue() >= getDigitoMaiorQuantidade()[operadorId].getValue())
+            if (getGraficoBarrasListQtdDigito_R()[operadorId].get(digito).getValue().intValue() >= getMaiorQtdDigito()[operadorId].getValue())
                 getGraficoBarrasListValoresDigitos_R()[operadorId].get(digito).getNode().setStyle(STYLE_GRAF_BARRAS_DIGITO_MAIOR);
-            else if (getGraficoBarrasListQtdDigito_R()[operadorId].get(digito).getValue().intValue() <= getDigitoMenorQuantidade()[operadorId].getValue())
+            else if (getGraficoBarrasListQtdDigito_R()[operadorId].get(digito).getValue().intValue() <= getMenorQtdDigito()[operadorId].getValue())
                 getGraficoBarrasListValoresDigitos_R()[operadorId].get(digito).getNode().setStyle(STYLE_GRAF_BARRAS_DIGITO_MENOR);
             else
                 getGraficoBarrasListValoresDigitos_R()[operadorId].get(digito).getNode().setStyle(STYLE_GRAF_BARRAS_DEFAULT);
@@ -751,26 +750,22 @@ public class Operacoes implements Initializable {
                             .map(HistoricoDeTicks::getUltimoDigito)
                             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-                    getDigitoMenorQuantidade()[finalOperadorId].setValue(Collections.min(vlrDigitos.values()));
-                    getDigitoMaiorQuantidade()[finalOperadorId].setValue(Collections.max(vlrDigitos.values()));
+                    System.out.printf("vlrDigitos[%s]: %s\n", finalOperadorId, vlrDigitos);
+
+                    getMenorQtdDigito()[finalOperadorId].setValue(Collections.min(vlrDigitos.values()));
+                    getMaiorQtdDigito()[finalOperadorId].setValue(Collections.max(vlrDigitos.values()));
 
                     for (int digito = 0; digito < 10; digito++) {
                         getGraficoBarrasListQtdDigito_R()[finalOperadorId].get(digito).setValue(
                                 vlrDigitos.containsKey(digito) ? vlrDigitos.get(digito) : 0L);
                         if (!vlrDigitos.containsKey(digito))
-                            getDigitoMenorQuantidade()[finalOperadorId].setValue(0);
+                            getMenorQtdDigito()[finalOperadorId].setValue(0);
                     }
-                    if (getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].stream()
-                            .filter(historicoDeTicks -> historicoDeTicks.getSymbol().equals(getOperador()[finalOperadorId].getValue()))
-                            .count() > 1)
+
+                    if (getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].size() > 1)
                         getTickSubindo()[finalOperadorId].setValue(
-                                getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].stream()
-                                        .filter(historicoDeTicks -> historicoDeTicks.getSymbol().equals(getOperador()[finalOperadorId].getValue()))
-                                        .findFirst().get().getPrice()
-                                        .compareTo(getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].stream()
-                                                .filter(historicoDeTicks -> historicoDeTicks.getSymbol().equals(getOperador()[finalOperadorId].getValue()))
-                                                .collect(Collectors.toList())
-                                                .get(1).getPrice()) >= 0);
+                                getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].get(0).getPrice()
+                                        .compareTo(getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].get(1).getPrice()) >= 0);
 
                     //Transacoes transacoesTemp;
                     //                    if (getTransacoesObservableList().size() > 0
@@ -1026,30 +1021,6 @@ public class Operacoes implements Initializable {
         Operacoes.graficoMACDListQtdDigito_R = graficoMACDListQtdDigito_R;
     }
 
-    public static ROBOS getRoboSelecionado() {
-        return roboSelecionado.get();
-    }
-
-    public static ObjectProperty<ROBOS> roboSelecionadoProperty() {
-        return roboSelecionado;
-    }
-
-    public static void setRoboSelecionado(ROBOS roboSelecionado) {
-        Operacoes.roboSelecionado.set(roboSelecionado);
-    }
-
-    public static RoboEstrategia getRoboEstrategia() {
-        return roboEstrategia.get();
-    }
-
-    public static ObjectProperty<RoboEstrategia> roboEstrategiaProperty() {
-        return roboEstrategia;
-    }
-
-    public static void setRoboEstrategia(RoboEstrategia roboEstrategia) {
-        Operacoes.roboEstrategia.set(roboEstrategia);
-    }
-
     public boolean isAppAutorizado() {
         return appAutorizado.get();
     }
@@ -1154,20 +1125,20 @@ public class Operacoes implements Initializable {
         Operacoes.ultimoTick = ultimoTick;
     }
 
-    public static IntegerProperty[] getDigitoMaiorQuantidade() {
-        return digitoMaiorQuantidade;
+    public static IntegerProperty[] getMaiorQtdDigito() {
+        return maiorQtdDigito;
     }
 
-    public static void setDigitoMaiorQuantidade(IntegerProperty[] digitoMaiorQuantidade) {
-        Operacoes.digitoMaiorQuantidade = digitoMaiorQuantidade;
+    public static void setMaiorQtdDigito(IntegerProperty[] maiorQtdDigito) {
+        Operacoes.maiorQtdDigito = maiorQtdDigito;
     }
 
-    public static IntegerProperty[] getDigitoMenorQuantidade() {
-        return digitoMenorQuantidade;
+    public static IntegerProperty[] getMenorQtdDigito() {
+        return menorQtdDigito;
     }
 
-    public static void setDigitoMenorQuantidade(IntegerProperty[] digitoMenorQuantidade) {
-        Operacoes.digitoMenorQuantidade = digitoMenorQuantidade;
+    public static void setMenorQtdDigito(IntegerProperty[] menorQtdDigito) {
+        Operacoes.menorQtdDigito = menorQtdDigito;
     }
 
     public static StringProperty[] getInformacaoDetalhe01() {
