@@ -1,0 +1,2260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="painelViewBinary" prefHeight="1565.0" prefWidth="900.0" stylesheets="@../style/css/binary.css"
+            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="br.com.tlmacedo.binary.controller.Operacao">
+    <children>
+        <TitledPane fx:id="tpn_DetalhesConta" animated="false" contentDisplay="RIGHT" graphicTextGap="1.0" layoutX="5.0"
+                    layoutY="5.0" minHeight="-Infinity" prefHeight="90.0" prefWidth="890.0" text="Detalhes: ">
+            <graphic>
+                <HBox>
+                    <children>
+                        <HBox>
+                            <children>
+                                <Label graphicTextGap="1.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                                       minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0" text="Conta:"
+                                       textAlignment="JUSTIFY" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <ComboBox fx:id="cboConta"
+                                          accessibleText="len::;type::;value::;seteditable::;binding::;"
+                                          maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                                          minWidth="-Infinity" prefHeight="23.0" prefWidth="180.0" styleClass="lbl">
+                                    <tooltip>
+                                        <Tooltip text="Selecione conta para negociação."/>
+                                    </tooltip>
+                                </ComboBox>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <Label fx:id="lblLegendaNExecucoes" alignment="CENTER" prefHeight="23.0"
+                                       text="Execuções" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblTotalExecucoes" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <styleClass>
+                                <String fx:value="lbl_informacao"/>
+                                <String fx:value="left"/>
+                            </styleClass>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Vitórias" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblTotalVitorias" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Derrotas" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblTotalDerrotas" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" text="Lucro total"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblTotalLucro" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="95.0"
+                                       styleClass="lbl_informacao" text="0.00"/>
+                                <Label fx:id="lblTotalLucroPorc" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="52.0" text="0.00%">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="53.0"/>
+                            </HBox.margin>
+                        </HBox>
+                    </children>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <padding>
+                        <Insets left="5.0"/>
+                    </padding>
+                </HBox>
+            </graphic>
+            <content>
+                <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="888.0">
+                    <children>
+                        <VBox alignment="CENTER_LEFT" layoutX="5.0" layoutY="5.0">
+                            <children>
+                                <Label prefHeight="22.0" prefWidth="315.0" text="Próprietario da conta"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblProprietarioConta" alignment="CENTER_LEFT" prefHeight="23.0"
+                                       prefWidth="315.0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="down"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="325.0" layoutY="5.0">
+                            <children>
+                                <Label prefHeight="22.0" prefWidth="80.0" text="Id Conta" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblIdConta" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="80.0"
+                                       text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="down"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="410.0" layoutY="5.0">
+                            <children>
+                                <Label prefHeight="22.0" prefWidth="100.0" text="Saldo conta" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblSaldoConta" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="65.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblMoedaSaldo" alignment="CENTER_RIGHT" layoutX="10.0"
+                                               layoutY="10.0" maxWidth="-Infinity" minHeight="-Infinity"
+                                               prefHeight="23.0" prefWidth="35.0" text="USD">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="515.0" layoutY="5.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="85.0" text="Saldo Inicial"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblSaldoInicial" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="85.0" text="0.00">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="down"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="605.0" layoutY="5.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="85.0"
+                                       text="Total investido" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblTotalInvestido" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="85.0" text="0.00">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="down"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="695.0" layoutY="5.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="85.0" text="Total prêmio"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblTotalPremiacao" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="85.0" text="0.00">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="down"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="785.0" layoutY="5.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="100.0" text="Saldo Final"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblSaldoFinal" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="100.0" text="0.00">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="down"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </content>
+        </TitledPane>
+        <TitledPane fx:id="tpn_negociacao" animated="false" collapsible="false" contentDisplay="RIGHT"
+                    graphicTextGap="1.0" layoutX="5.0" layoutY="100.0" minHeight="-Infinity" prefHeight="90.0"
+                    prefWidth="890.0" text="Negociação:">
+            <content>
+                <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="888.0">
+                    <children>
+                        <VBox alignment="CENTER_LEFT" layoutX="5.0" layoutY="5.0">
+                            <children>
+                                <Label prefHeight="22.0" prefWidth="195.0" text="Robos:" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <ComboBox fx:id="cboRobos"
+                                          accessibleText="len::;type::;value::;seteditable::;binding::;"
+                                          maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0"
+                                          prefWidth="195.0">
+                                    <tooltip>
+                                        <Tooltip text="Selecione o robô para operação."/>
+                                    </tooltip>
+                                </ComboBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="205.0" layoutY="5.0">
+                            <children>
+                                <Label fx:id="lblParametrosL1" prefHeight="22.0" prefWidth="545.0" text="Parametros: "
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblParametrosL2" alignment="CENTER_LEFT" maxHeight="-Infinity"
+                                       minHeight="-Infinity" prefHeight="23.0" prefWidth="545.0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="down"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnContratos" alignment="CENTER" disable="true" graphicTextGap="1.0"
+                                layoutX="760.0" layoutY="4.0" mnemonicParsing="false" text="Contratos"
+                                textAlignment="CENTER" wrapText="true"/>
+                        <Button fx:id="btnIniciar" alignment="CENTER" disable="true" graphicTextGap="1.0"
+                                layoutX="825.0" layoutY="4.0" mnemonicParsing="false" text="Iniciar"
+                                textAlignment="CENTER" wrapText="true"/>
+                        <Button fx:id="btnPausar" alignment="CENTER" disable="true" graphicTextGap="1.0" layoutX="825.0"
+                                layoutY="29.0" mnemonicParsing="false" text="Pausar" textAlignment="CENTER"
+                                wrapText="true"/>
+                        <Button fx:id="btnStop" alignment="CENTER" disable="true" graphicTextGap="1.0" layoutX="760.0"
+                                layoutY="29.0" mnemonicParsing="false" text="Stop" textAlignment="CENTER"
+                                wrapText="true"/>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <HBox minHeight="-Infinity">
+                    <children>
+                        <HBox layoutX="15.0" layoutY="10.0" prefWidth="90.0">
+                            <children>
+                                <Label graphicTextGap="1.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0"
+                                       text="(1s)" textAlignment="JUSTIFY" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <ComboBox fx:id="cboVelocidadeTicksGrafico" minHeight="-Infinity" minWidth="-Infinity"
+                                          prefHeight="23.0" prefWidth="60.0">
+                                    <tooltip>
+                                        <Tooltip text="velocidade volatilidade"/>
+                                    </tooltip>
+                                </ComboBox>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <Label graphicTextGap="1.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0"
+                                       text="Qtd analise:" textAlignment="JUSTIFY" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <ComboBox fx:id="cboQtdTicksGrafico" minHeight="-Infinity" minWidth="-Infinity"
+                                          prefHeight="23.0" prefWidth="60.0">
+                                    <tooltip>
+                                        <Tooltip text="Selecione a quantidade de ticks para o gráfico analisar."/>
+                                    </tooltip>
+                                </ComboBox>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <Label prefHeight="23.0" text="Dt Hora inicial:" textAlignment="JUSTIFY"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblRoboHoraInicial" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="115.0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="85.0"/>
+                            </HBox.margin>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <Label prefHeight="23.0" text="Dt Hora atual:" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblRoboHoraAtual" alignment="CENTER_RIGHT" prefHeight="25.0"
+                                       prefWidth="115.0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                        </HBox>
+                        <HBox>
+                            <children>
+                                <Label prefHeight="25.0" text="Temp uso:" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="lblRoboCronometro" alignment="CENTER_RIGHT" prefHeight="25.0"
+                                       prefWidth="55.0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                        </HBox>
+                    </children>
+                </HBox>
+            </graphic>
+        </TitledPane>
+        <!--            </content>-->
+        <!--        </TitledPane>-->
+        <TitledPane fx:id="tpn_R10" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="192.0"
+                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="890.0"
+                    text="Volatilidade_10">
+            <content>
+                <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="grafBar_R10" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_R10"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_R10" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <BarChart fx:id="grafBar_HZ10" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_HZ10"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_HZ10" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <LineChart fx:id="grafLine_R10" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_R10">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_R10" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <LineChart fx:id="grafLine_HZ10" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_HZ10">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_HZ10" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="5.0">
+                            <children>
+                                <Label fx:id="lblInf01_R10" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf01" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf01_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf01_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="55.0">
+                            <children>
+                                <Label fx:id="lblInf02_R10" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf02" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf02_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf02_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="500.0" layoutY="5.0" prefHeight="45.0" prefWidth="240.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblTickUltimo_R10" alignment="CENTER_RIGHT" prefHeight="50.0"
+                                               prefWidth="200.0" styleClass="tick-ultimo">
+                                        </Label>
+                                        <Label fx:id="lblLegendaTickUltimo_R10" prefHeight="50.0" prefWidth="40.0"
+                                               text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnContratos_R10" alignment="CENTER" disable="true" graphicTextGap="1.0"
+                                layoutX="760.0" layoutY="4.0" mnemonicParsing="false" text="Contratos"
+                                textAlignment="CENTER" wrapText="true"/>
+                        <Button fx:id="btnComprar_R10" alignment="CENTER" disable="true" layoutX="760.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Comprar" textAlignment="CENTER" wrapText="true">
+                        </Button>
+                        <Button fx:id="btnPausar_R10" alignment="CENTER" disable="true" layoutX="825.0" layoutY="4.0"
+                                mnemonicParsing="false" text="Iniciar" textAlignment="CENTER" wrapText="true">
+                            <tooltip>
+                                <Tooltip text="Estrategia volatilidade_V10"/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="btnStop_R10" alignment="CENTER" disable="true" layoutX="825.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Stop">
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="485.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Investido_V10"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblInvestido_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblInvestidoPorc_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="620.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Premiação_V10"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblPremiacao_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPremiacaoPorc_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="755.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Lucro_V10"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblLucro_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblLucroPorc_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <ScrollPane layoutX="365.0" layoutY="105.0" prefHeight="130.0" prefWidth="520.0">
+                            <content>
+                                <TableView fx:id="tbvTransacoes_R10" prefHeight="130.0" prefWidth="520.0">
+                                    <columns>
+                                        <TableColumn prefWidth="75.0" text="C1"/>
+                                        <TableColumn prefWidth="75.0" text="C2"/>
+                                    </columns>
+                                </TableView>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <HBox>
+                    <children>
+                        <CheckBox fx:id="chkAtivo_R10" mnemonicParsing="false" selected="true" text="Ativa">
+                            <HBox.margin>
+                                <Insets right="10.0"/>
+                            </HBox.margin>
+                        </CheckBox>
+                        <HBox>
+                            <children>
+                                <Label fx:id="tpnLblLegendaExecucoes_R10" alignment="CENTER" prefHeight="23.0"
+                                       text="Operações" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblExecucoes_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="242.0"/>
+                            </HBox.margin>
+                            <styleClass>
+                                <String fx:value="lbl_informacao"/>
+                                <String fx:value="left"/>
+                            </styleClass>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Vitórias" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblVitorias_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Derrotas" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblDerrotas_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="23.0" text="Lucro V10"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblLucro_R10" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="100.0" text="0.00">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                    </children>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <padding>
+                        <Insets left="5.0"/>
+                    </padding>
+                </HBox>
+            </graphic>
+        </TitledPane>
+        <TitledPane fx:id="tpn_R25" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="464.0"
+                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="890.0"
+                    text="Volatilidade_25">
+            <content>
+                <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="grafBar_R25" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_R25"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_R25" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <BarChart fx:id="grafBar_HZ25" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_HZ25"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_HZ25" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <LineChart fx:id="grafLine_R25" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_R25">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_R25" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <LineChart fx:id="grafLine_HZ25" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_HZ25">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_HZ25" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="5.0">
+                            <children>
+                                <Label fx:id="lblInf01_R25" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf01" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf01_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf01_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="55.0">
+                            <children>
+                                <Label fx:id="lblInf02_R25" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf02" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf02_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf02_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="500.0" layoutY="5.0" prefHeight="45.0" prefWidth="240.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblTickUltimo_R25" alignment="CENTER_RIGHT" prefHeight="50.0"
+                                               prefWidth="200.0" styleClass="tick-ultimo">
+                                        </Label>
+                                        <Label fx:id="lblLegendaTickUltimo_R25" prefHeight="50.0" prefWidth="40.0"
+                                               text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnContratos_R25" alignment="CENTER" disable="true" graphicTextGap="1.0"
+                                layoutX="760.0" layoutY="4.0" mnemonicParsing="false" text="Contratos"
+                                textAlignment="CENTER" wrapText="true"/>
+                        <Button fx:id="btnComprar_R25" alignment="CENTER" disable="true" layoutX="760.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Comprar" textAlignment="CENTER" wrapText="true">
+                        </Button>
+                        <Button fx:id="btnPausar_R25" alignment="CENTER" disable="true" layoutX="825.0" layoutY="4.0"
+                                mnemonicParsing="false" text="Iniciar" textAlignment="CENTER" wrapText="true">
+                            <tooltip>
+                                <Tooltip text="Estrategia volatilidade_V25"/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="btnStop_R25" alignment="CENTER" disable="true" layoutX="825.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Stop" textAlignment="CENTER" wrapText="true">
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="485.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Investido_V25"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblInvestido_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblInvestidoPorc_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="620.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Premiação_V25"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblPremiacao_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPremiacaoPorc_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="755.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Lucro_V25"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblLucro_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblLucroPorc_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <ScrollPane layoutX="365.0" layoutY="105.0" prefHeight="130.0" prefWidth="520.0">
+                            <content>
+                                <TableView fx:id="tbvTransacoes_R25" prefHeight="130.0" prefWidth="520.0">
+                                    <columns>
+                                        <TableColumn prefWidth="75.0" text="C1"/>
+                                        <TableColumn prefWidth="75.0" text="C2"/>
+                                    </columns>
+                                </TableView>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <HBox>
+                    <children>
+                        <CheckBox fx:id="chkAtivo_R25" mnemonicParsing="false" selected="true" text="Ativa">
+                            <HBox.margin>
+                                <Insets right="10.0"/>
+                            </HBox.margin>
+                        </CheckBox>
+                        <HBox>
+                            <children>
+                                <Label fx:id="tpnLblLegendaExecucoes_R25" alignment="CENTER" prefHeight="23.0"
+                                       text="Operações" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblExecucoes_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="242.0"/>
+                            </HBox.margin>
+                            <styleClass>
+                                <String fx:value="lbl_informacao"/>
+                                <String fx:value="left"/>
+                            </styleClass>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Vitórias" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblVitorias_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Derrotas" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblDerrotas_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="23.0" text="Lucro V10"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblLucro_R25" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="100.0" text="0.00">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                    </children>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <padding>
+                        <Insets left="5.0"/>
+                    </padding>
+                </HBox>
+            </graphic>
+        </TitledPane>
+        <TitledPane fx:id="tpn_R50" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="736.0"
+                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="890.0"
+                    text="Volatilidade_50">
+            <content>
+                <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="grafBar_R50" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_R50"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_R50" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <BarChart fx:id="grafBar_HZ50" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_HZ50"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_HZ50" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <LineChart fx:id="grafLine_R50" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_R50">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_R50" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <LineChart fx:id="grafLine_HZ50" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_HZ50">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_HZ50" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="5.0">
+                            <children>
+                                <Label fx:id="lblInf01_R50" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf01" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf01_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf01_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="55.0">
+                            <children>
+                                <Label fx:id="lblInf02_R50" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf02" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf02_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf02_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="500.0" layoutY="5.0" prefHeight="45.0" prefWidth="240.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblTickUltimo_R50" alignment="CENTER_RIGHT" prefHeight="50.0"
+                                               prefWidth="200.0" styleClass="tick-ultimo">
+                                        </Label>
+                                        <Label fx:id="lblLegendaTickUltimo_R50" prefHeight="50.0" prefWidth="40.0"
+                                               text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnContratos_R50" alignment="CENTER" disable="true" graphicTextGap="1.0"
+                                layoutX="760.0" layoutY="4.0" mnemonicParsing="false" text="Contratos"
+                                textAlignment="CENTER" wrapText="true"/>
+                        <Button fx:id="btnComprar_R50" alignment="CENTER" disable="true" layoutX="760.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Comprar" textAlignment="CENTER" wrapText="true">
+                        </Button>
+                        <Button fx:id="btnPausar_R50" alignment="CENTER" disable="true" layoutX="825.0" layoutY="4.0"
+                                mnemonicParsing="false" text="Iniciar" textAlignment="CENTER" wrapText="true">
+                            <tooltip>
+                                <Tooltip text="Estrategia volatilidade_V50"/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="btnStop_R50" alignment="CENTER" disable="true" layoutX="825.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Stop" textAlignment="CENTER" wrapText="true">
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="485.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Investido_V50"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblInvestido_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblInvestidoPorc_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="620.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Premiação_V50"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblPremiacao_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPremiacaoPorc_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="755.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Lucro_V50"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblLucro_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblLucroPorc_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <ScrollPane layoutX="365.0" layoutY="105.0" prefHeight="130.0" prefWidth="520.0">
+                            <content>
+                                <TableView fx:id="tbvTransacoes_R50" prefHeight="130.0" prefWidth="520.0">
+                                    <columns>
+                                        <TableColumn prefWidth="75.0" text="C1"/>
+                                        <TableColumn prefWidth="75.0" text="C2"/>
+                                    </columns>
+                                </TableView>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <HBox>
+                    <children>
+                        <CheckBox fx:id="chkAtivo_R50" mnemonicParsing="false" selected="true" text="Ativa">
+                            <HBox.margin>
+                                <Insets right="10.0"/>
+                            </HBox.margin>
+                        </CheckBox>
+                        <HBox>
+                            <children>
+                                <Label fx:id="tpnLblLegendaExecucoes_R50" alignment="CENTER" prefHeight="23.0"
+                                       text="Operações" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblExecucoes_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="242.0"/>
+                            </HBox.margin>
+                            <styleClass>
+                                <String fx:value="lbl_informacao"/>
+                                <String fx:value="left"/>
+                            </styleClass>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Vitórias" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblVitorias_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Derrotas" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblDerrotas_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="23.0" text="Lucro V10"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblLucro_R50" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="100.0" text="0.00">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                    </children>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <padding>
+                        <Insets left="5.0"/>
+                    </padding>
+                </HBox>
+            </graphic>
+        </TitledPane>
+        <TitledPane fx:id="tpn_R75" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="1008.0"
+                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="890.0"
+                    text="Volatilidade_75">
+            <content>
+                <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="grafBar_R75" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_R75"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_R75" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <BarChart fx:id="grafBar_HZ75" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_HZ75"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_HZ75" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <LineChart fx:id="grafLine_R75" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_R75">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_R75" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <LineChart fx:id="grafLine_HZ75" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_HZ75">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_HZ75" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="5.0">
+                            <children>
+                                <Label fx:id="lblInf01_R75" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf01" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf01_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf01_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="55.0">
+                            <children>
+                                <Label fx:id="lblInf02_R75" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf02" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf02_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf02_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="500.0" layoutY="5.0" prefHeight="45.0" prefWidth="240.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblTickUltimo_R75" alignment="CENTER_RIGHT" prefHeight="50.0"
+                                               prefWidth="200.0" styleClass="tick-ultimo">
+                                        </Label>
+                                        <Label fx:id="lblLegendaTickUltimo_R75" prefHeight="50.0" prefWidth="40.0"
+                                               text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnContratos_R75" alignment="CENTER" disable="true" graphicTextGap="1.0"
+                                layoutX="760.0" layoutY="4.0" mnemonicParsing="false" text="Contratos"
+                                textAlignment="CENTER" wrapText="true"/>
+                        <Button fx:id="btnComprar_R75" alignment="CENTER" disable="true" layoutX="760.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Comprar" textAlignment="CENTER" wrapText="true">
+                        </Button>
+                        <Button fx:id="btnPausar_R75" alignment="CENTER" disable="true" layoutX="825.0" layoutY="4.0"
+                                mnemonicParsing="false" text="Iniciar" textAlignment="CENTER" wrapText="true">
+                            <tooltip>
+                                <Tooltip text="Estrategia volatilidade_V75"/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="btnStop_R75" alignment="CENTER" disable="true" layoutX="825.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Stop" textAlignment="CENTER" wrapText="true">
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="485.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Investido_V75"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblInvestido_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblInvestidoPorc_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="620.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Premiação_V75"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblPremiacao_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPremiacaoPorc_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="755.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Lucro_V75"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblLucro_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblLucroPorc_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <ScrollPane layoutX="365.0" layoutY="105.0" prefHeight="130.0" prefWidth="520.0">
+                            <content>
+                                <TableView fx:id="tbvTransacoes_R75" prefHeight="130.0" prefWidth="520.0">
+                                    <columns>
+                                        <TableColumn prefWidth="75.0" text="C1"/>
+                                        <TableColumn prefWidth="75.0" text="C2"/>
+                                    </columns>
+                                </TableView>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <HBox>
+                    <children>
+                        <CheckBox fx:id="chkAtivo_R75" mnemonicParsing="false" selected="true" text="Ativa">
+                            <HBox.margin>
+                                <Insets right="10.0"/>
+                            </HBox.margin>
+                        </CheckBox>
+                        <HBox>
+                            <children>
+                                <Label fx:id="tpnLblLegendaExecucoes_R75" alignment="CENTER" prefHeight="23.0"
+                                       text="Operações" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblExecucoes_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="242.0"/>
+                            </HBox.margin>
+                            <styleClass>
+                                <String fx:value="lbl_informacao"/>
+                                <String fx:value="left"/>
+                            </styleClass>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Vitórias" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblVitorias_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Derrotas" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblDerrotas_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="23.0" text="Lucro V10"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblLucro_R75" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="100.0" text="0.00">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                    </children>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <padding>
+                        <Insets left="5.0"/>
+                    </padding>
+                </HBox>
+            </graphic>
+        </TitledPane>
+        <TitledPane fx:id="tpn_R100" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="1280.0"
+                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="890.0"
+                    text="Volatilidade_100">
+            <content>
+                <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="grafBar_R100" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_R100"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_R100" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <BarChart fx:id="grafBar_HZ100" animated="false" barGap="0.0" categoryGap="0.0"
+                                  legendVisible="false" prefHeight="240.0" prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" autoRanging="false" endMargin="2.0" side="BOTTOM"
+                                              startMargin="2.0" tickLabelGap="1.0" tickMarkVisible="false"
+                                              fx:id="xAxisBar_HZ100"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisBar_HZ100" animated="false" autoRanging="false"
+                                            upperBound="30.0"/>
+                            </yAxis>
+                        </BarChart>
+                        <LineChart fx:id="grafLine_R100" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_R100">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_R100" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <LineChart fx:id="grafLine_HZ100" animated="false" createSymbols="false" prefHeight="240.0"
+                                   prefWidth="360.0" visible="false">
+                            <xAxis>
+                                <CategoryAxis animated="false" endMargin="1.0" side="BOTTOM" startMargin="1.0"
+                                              tickLabelGap="1.0" tickLength="3.0" fx:id="xAxisLine_HZ100">
+                                    <tickLabelFont>
+                                        <Font size="7.0"/>
+                                    </tickLabelFont>
+                                </CategoryAxis>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisLine_HZ100" animated="false" forceZeroInRange="false"
+                                            minorTickCount="1000" minorTickLength="2.0" side="RIGHT" tickLength="3.0"
+                                            tickMarkVisible="false" tickUnit="100.0"/>
+                            </yAxis>
+                        </LineChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="5.0">
+                            <children>
+                                <Label fx:id="lblInf01_R100" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf01" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf01_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf01_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="365.0" layoutY="55.0">
+                            <children>
+                                <Label fx:id="lblInf02_R100" alignment="CENTER" prefHeight="22.0" prefWidth="105.0"
+                                       text="V10_Inf02" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblVlrInf02_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPorcInf02_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="50.0" text="0%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="500.0" layoutY="5.0" prefHeight="45.0" prefWidth="240.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblTickUltimo_R100" alignment="CENTER_RIGHT" prefHeight="50.0"
+                                               prefWidth="200.0" styleClass="tick-ultimo">
+                                        </Label>
+                                        <Label fx:id="lblLegendaTickUltimo_R100" prefHeight="50.0" prefWidth="40.0"
+                                               text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnContratos_R100" alignment="CENTER" disable="true" graphicTextGap="1.0"
+                                layoutX="760.0" layoutY="4.0" mnemonicParsing="false" text="Contratos"
+                                textAlignment="CENTER" wrapText="true"/>
+                        <Button fx:id="btnComprar_R100" alignment="CENTER" disable="true" layoutX="760.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Comprar" textAlignment="CENTER" wrapText="true">
+                        </Button>
+                        <Button fx:id="btnPausar_R100" alignment="CENTER" disable="true" layoutX="825.0" layoutY="4.0"
+                                mnemonicParsing="false" text="Iniciar" textAlignment="CENTER" wrapText="true">
+                            <tooltip>
+                                <Tooltip text="Estrategia volatilidade_V100"/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="btnStop_R100" alignment="CENTER" disable="true" layoutX="825.0" layoutY="29.0"
+                                mnemonicParsing="false" text="Stop" textAlignment="CENTER" wrapText="true">
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="485.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0"
+                                       text="Investido_V100" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblInvestido_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblInvestidoPorc_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="620.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0"
+                                       text="Premiação_V100" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblPremiacao_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblPremiacaoPorc_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="755.0" layoutY="55.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="130.0" text="Lucro_V100"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="top"/>
+                                    </styleClass>
+                                </Label>
+                                <HBox>
+                                    <children>
+                                        <Label fx:id="lblLucro_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="75.0" text="0.00">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-left"/>
+                                            </styleClass>
+                                        </Label>
+                                        <Label fx:id="lblLucroPorc_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                               prefWidth="55.0" text="0.00%">
+                                            <styleClass>
+                                                <String fx:value="lbl_informacao"/>
+                                                <String fx:value="down-right"/>
+                                            </styleClass>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <ScrollPane layoutX="365.0" layoutY="105.0" prefHeight="130.0" prefWidth="520.0">
+                            <content>
+                                <TableView fx:id="tbvTransacoes_R100" prefHeight="130.0" prefWidth="520.0">
+                                    <columns>
+                                        <TableColumn prefWidth="75.0" text="C1"/>
+                                        <TableColumn prefWidth="75.0" text="C2"/>
+                                    </columns>
+                                </TableView>
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <HBox>
+                    <children>
+                        <CheckBox fx:id="chkAtivo_R100" mnemonicParsing="false" selected="true" text="Ativa">
+                            <HBox.margin>
+                                <Insets right="10.0"/>
+                            </HBox.margin>
+                        </CheckBox>
+                        <HBox>
+                            <children>
+                                <Label fx:id="tpnLblLegendaExecucoes_R100" alignment="CENTER" prefHeight="23.0"
+                                       text="Operações" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblExecucoes_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <HBox.margin>
+                                <Insets left="242.0"/>
+                            </HBox.margin>
+                            <styleClass>
+                                <String fx:value="lbl_informacao"/>
+                                <String fx:value="left"/>
+                            </styleClass>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Vitórias" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblVitorias_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets left="5.0"/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Derrotas" textAlignment="CENTER"
+                                       wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblDerrotas_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox>
+                            <HBox.margin>
+                                <Insets/>
+                            </HBox.margin>
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="23.0" text="Lucro V10"
+                                       textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="left"/>
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblLucro_R100" alignment="CENTER_RIGHT" prefHeight="23.0"
+                                       prefWidth="100.0" text="0.00">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao"/>
+                                        <String fx:value="right"/>
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                    </children>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <padding>
+                        <Insets left="5.0"/>
+                    </padding>
+                </HBox>
+            </graphic>
+        </TitledPane>
+    </children>
+</AnchorPane>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Binary.iml" filepath="$PROJECT_DIR$/Binary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/binary_v1.02/binary_v1.02.iml" filepath="$PROJECT_DIR$/binary_v1.02/binary_v1.02.iml" />
+      <module fileurl="file://$PROJECT_DIR$/binary_v1.03/binary_v1.03.iml" filepath="$PROJECT_DIR$/binary_v1.03/binary_v1.03.iml" />
+      <module fileurl="file://$PROJECT_DIR$/binary_v1.04/binary_v1.04.iml" filepath="$PROJECT_DIR$/binary_v1.04/binary_v1.04.iml" />
+    </modules>
+  </component>
+</project>

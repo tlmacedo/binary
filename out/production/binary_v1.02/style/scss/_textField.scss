@@ -1,0 +1,10 @@
+.text-field {
+  -fx-font-size: $fontSizeh6;
+  -fx-font-family: $fontFamily;
+  -fx-text-fill: white;
+
+  &.graf {
+    -fx-text-inner-color: blue;
+    -fx-font-size: 10px;
+  }
+}

@@ -1,0 +1,1110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="painelViewBinary" prefHeight="1565.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.tlmacedo.binary.controller.Operacoes">
+    <children>
+        <TitledPane animated="false" collapsible="false" layoutX="5.0" layoutY="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="890.0" text="Definição de negociação">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="890.0">
+                    <children>
+                        <VBox alignment="CENTER_LEFT" layoutX="5.0" layoutY="5.0" prefHeight="50.0" prefWidth="125.0">
+                            <children>
+                                <Label maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 11px; -fx-font-family: Arial; -fx-font-style: italic; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Duração" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" prefWidth="125.0">
+                                    <children>
+                                        <TextField fx:id="txtDuracaoTicks" alignment="CENTER_RIGHT" editable="false" prefHeight="24.0" prefWidth="30.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="1">
+                                            <HBox.margin>
+                                                <Insets right="2.0" />
+                                            </HBox.margin>
+                                        </TextField>
+                                        <ComboBox fx:id="cboDuracaoTipo" accessibleText="len::;type::;value::;seteditable::;binding::;" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" prefWidth="92.0">
+                                            <tooltip>
+                                                <Tooltip text="Índices Sintéticos" />
+                                            </tooltip>
+                                        </ComboBox>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="135.0" layoutY="5.0" prefHeight="50.0" prefWidth="55.0">
+                            <children>
+                                <Label prefHeight="23.0" prefWidth="55.0" style="-fx-font-size: 11px; -fx-font-family: Arial; -fx-font-style: italic; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Stake" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <TextField fx:id="txtValorStake" alignment="CENTER_RIGHT" prefWidth="55.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.35">
+                                </TextField>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="195.0" layoutY="5.0" prefHeight="50.0" prefWidth="45.0">
+                            <children>
+                                <Label prefHeight="23.0" prefWidth="247.0" style="-fx-font-size: 11px; -fx-font-family: Arial; -fx-font-style: italic; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 3;" text="Vezes" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <TextField fx:id="txtQtdRepeticoes" alignment="CENTER_RIGHT" prefWidth="110.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="1">
+                                </TextField>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="245.0" layoutY="5.0" prefHeight="50.0" prefWidth="200.0">
+                            <children>
+                                <Label fx:id="lblEstrategia" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" prefWidth="247.0" style="-fx-font-size: 11px; -fx-font-family: Arial; -fx-font-style: italic; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Estratégia" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <ComboBox fx:id="cboEstrategia" accessibleText="len::;type::;value::;seteditable::;binding::;" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" prefWidth="200.0">
+                                    <tooltip>
+                                        <Tooltip text="Índices Sintéticos" />
+                                    </tooltip>
+                                </ComboBox>
+                            </children>
+                        </VBox>
+                        <CheckBox fx:id="chkAgressiva" layoutX="450.0" layoutY="32.0" mnemonicParsing="false" prefWidth="80.0" text="Agressiva" />
+                        <VBox alignment="CENTER_LEFT" layoutX="535.0" layoutY="5.0" prefHeight="50.0" prefWidth="80.0">
+                            <children>
+                                <Label minHeight="-Infinity" prefHeight="25.0" prefWidth="247.0" style="-fx-font-size: 11px; -fx-font-family: Arial; -fx-font-style: italic; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Qtd Ticks" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <ComboBox fx:id="cboQtdTicksAnalisar" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" prefWidth="110.0">
+                                    <tooltip>
+                                        <Tooltip text="quantidade de ticks para analisar no gráfico" />
+                                    </tooltip>
+                                </ComboBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnContratos" disable="true" layoutX="715.0" layoutY="3.0" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Contratos" />
+                        <Button fx:id="btnIniciar" disable="true" layoutX="715.0" layoutY="32.0" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Iniciar" />
+                        <Button fx:id="btnPausar" disable="true" layoutX="805.0" layoutY="3.0" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Pausar" />
+                        <Button fx:id="btnStop" disable="true" layoutX="805.0" layoutY="32.0" maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Stop" />
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <HBox prefHeight="27.0" prefWidth="257.0">
+                    <children>
+                        <Label prefHeight="27.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 0 0 8; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 4;" text="Conta:" textAlignment="CENTER" wrapText="true">
+                            <!--                            <padding>-->
+                            <!--                                <Insets left="5.0"/>-->
+                            <!--                            </padding>-->
+                        </Label>
+                        <ComboBox fx:id="cboConta" accessibleText="len::;type::;value::;seteditable::;binding::;" prefWidth="200.0">
+                            <tooltip>
+                                <Tooltip text="Conta em negociação" />
+                            </tooltip>
+                        </ComboBox>
+                    </children>
+                </HBox>
+            </graphic>
+        </TitledPane>
+<!--        <TitledPane fx:id="tpn_Informacoes" animated="false" collapsible="false" layoutX="5.0" layoutY="110.0"-->
+<!--                    maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"-->
+<!--                    prefHeight="210.0" prefWidth="890.0" text="Informações">-->
+<!--            <content>-->
+                <AnchorPane layoutX="5.0" layoutY="105.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="890.0">
+                    <children>
+                        <VBox alignment="CENTER_LEFT" layoutX="5.0" layoutY="5.0" prefHeight="60.0" prefWidth="350.0">
+                            <children>
+                                <Label prefHeight="25.0" prefWidth="350.0" style="-fx-font-size: 13px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Próprietario da conta" textAlignment="CENTER" wrapText="true">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblProprietarioConta" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" prefWidth="350.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0; -fx-border-radius: 0 0; -fx-padding: 0 4;">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblEmailConta" alignment="CENTER_LEFT" layoutX="10.0" layoutY="35.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" prefWidth="350.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 0 4;">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="360.0" layoutY="5.0" prefHeight="50.0" prefWidth="110.0">
+                            <children>
+                                <Label maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 11px; -fx-font-family: Arial; -fx-font-style: italic; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Saldo conta" textAlignment="CENTER" wrapText="true" />
+                                <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="24.0" prefWidth="110.0">
+                                    <children>
+                                        <Label fx:id="lblSaldoConta" alignment="CENTER_RIGHT" prefHeight="24.0" prefWidth="70.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.0">
+                                            <HBox.margin>
+                                                <Insets right="2.0" />
+                                            </HBox.margin>
+                                        </Label>
+                                        <Label fx:id="lblMoedaSaldo" alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="24.0" prefWidth="40.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="USD" />
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="475.0" layoutY="5.0" prefHeight="50.0" prefWidth="110.0">
+                            <children>
+                                <Label prefHeight="25.0" prefWidth="350.0" style="-fx-font-size: 13px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Id Conta" textAlignment="CENTER" wrapText="true">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblIdConta" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="350.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 0 4;" text="0">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="5.0" layoutY="70.0" prefHeight="50.0" prefWidth="120.0">
+                            <children>
+                                <Label maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" prefWidth="120.0" style="-fx-font-size: 11px; -fx-font-family: Arial; -fx-font-style: italic; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Lucro ideal: [5%]" textAlignment="CENTER" wrapText="true" />
+                                <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="120.0">
+                                    <children>
+                                        <Label fx:id="lblMaxLucroMoeda" alignment="CENTER_RIGHT" prefHeight="24.0" prefWidth="75.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.0">
+                                            <HBox.margin>
+                                                <Insets right="2.0" />
+                                            </HBox.margin>
+                                        </Label>
+                                        <Label fx:id="lblMaxLucroPorcentagem" alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="24.0" prefWidth="45.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="5" />
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="130.0" layoutY="70.0" prefHeight="50.0" prefWidth="120.0">
+                            <children>
+                                <Label maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" prefWidth="120.0" style="-fx-font-size: 11px; -fx-font-family: Arial; -fx-font-style: italic; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Prejuizo máx: [20%]" textAlignment="CENTER" wrapText="true" />
+                                <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="120.0">
+                                    <children>
+                                        <Label fx:id="lblMaxPrejuizoMoeda" alignment="CENTER_RIGHT" prefHeight="24.0" prefWidth="75.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.0">
+                                            <HBox.margin>
+                                                <Insets right="2.0" />
+                                            </HBox.margin>
+                                        </Label>
+                                        <Label fx:id="lblMaxPrejuizoPorcentagem" alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="24.0" prefWidth="45.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="20" />
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="5.0" layoutY="125.0" prefHeight="50.0" prefWidth="115.0">
+                            <children>
+                                <Label prefHeight="25.0" prefWidth="350.0" style="-fx-font-size: 13px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Hora inicio" textAlignment="CENTER" wrapText="true">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblHoraInicio" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="350.0" style="-fx-font-size: 9px; -fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 0 4;" text="00:00:00">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="125.0" layoutY="125.0" prefHeight="50.0" prefWidth="115.0">
+                            <children>
+                                <Label prefHeight="25.0" prefWidth="350.0" style="-fx-font-size: 13px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Hora atual" textAlignment="CENTER" wrapText="true">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblHoraAtual" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="350.0" style="-fx-font-size: 9px; -fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 0 4;" text="00:00:00">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="250.0" layoutY="125.0" prefHeight="50.0" prefWidth="105.0">
+                            <children>
+                                <Label prefHeight="25.0" prefWidth="350.0" style="-fx-font-size: 13px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 8;" text="Tempo uso" textAlignment="CENTER" wrapText="true">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="lblTempoUso" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="350.0" style="-fx-font-size: 9px; -fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 0 4;" text="00:00:00">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="560.0" layoutY="125.0" prefHeight="50.0" prefWidth="70.0">
+                            <children>
+                                <Label fx:id="lblLegendaNExecucoes" alignment="CENTER" prefHeight="25.0" prefWidth="70.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="N Execuções" textAlignment="CENTER" wrapText="true" />
+                                <Label fx:id="lblTotalExecucoes" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="70.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="635.0" layoutY="125.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Vitórias" textAlignment="CENTER" wrapText="true" />
+                                <Label fx:id="lblTotalVitorias" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0" />
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="690.0" layoutY="125.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Derrotas" textAlignment="CENTER" wrapText="true" />
+                                <Label fx:id="lblTotalDerrotas" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0" />
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="600.0" layoutY="15.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Saldo Inicial" wrapText="true" />
+                                <Label fx:id="lblSaldoInicial" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00" />
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="600.0" layoutY="70.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Saldo Final" wrapText="true" />
+                                <Label fx:id="lblSaldoFinal" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00" />
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="15.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Total apostado" wrapText="true" />
+                                <Label fx:id="lblTotalApostado" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00" />
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="70.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Total prêmio" wrapText="true" />
+                                <Label fx:id="lblTotalPremio" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00" />
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="125.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Lucro total" textAlignment="CENTER" wrapText="true" />
+                                <Label fx:id="lblTotalLucro" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00" />
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+<!--            </content>-->
+<!--        </TitledPane>-->
+        <TitledPane fx:id="tpn_R10" animated="false" collapsible="false" layoutX="5.0" layoutY="290.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="890.0" text="Volatilidade_10">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="graf_R10" barGap="0.0" categoryGap="0.0" layoutX="5.0" layoutY="-5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="130.0" prefWidth="400.0">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" fx:id="xAxis_R10" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxis_R10" animated="false" autoRanging="false" upperBound="30.0" />
+                                <!--                                <NumberAxis autoRanging="false" side="LEFT" tickLabelGap="1.0" upperBound="30.0" />-->
+                            </yAxis>
+                        </BarChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="505.0" layoutY="5.0" prefHeight="45.0" prefWidth="235.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblLastTick_R10" alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="190.0">
+                                            <font>
+                                                <Font name="Arial Bold" size="26.0" />
+                                            </font>
+                                            <opaqueInsets>
+                                                <Insets />
+                                            </opaqueInsets>
+                                            <padding>
+                                                <Insets right="10.0" />
+                                            </padding>
+                                        </Label>
+                                        <Label fx:id="lblLegendaTick_R10" prefHeight="50.0" prefWidth="50.0" style="-fx-font-size: 15px; -fx-background-color: #ff6600; -fx-background-radius: 0 8 8 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <!--                                            <padding>-->
+                                            <!--                                                <Insets left="5.0"/>-->
+                                            <!--                                            </padding>-->
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnComprar_R10" disable="true" layoutX="745.0" layoutY="15.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Comprar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnPausar_R10" disable="true" layoutX="820.0" layoutY="2.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Pausar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnStop_R10" disable="true" layoutX="820.0" layoutY="28.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Stop">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="560.0" layoutY="55.0" prefHeight="50.0" prefWidth="70.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="70.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="N Execuções" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNExecucoes_R10" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="70.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="635.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Vitórias" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNVitorias_R10" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="690.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Derrotas" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNDerrotas_R10" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <TableView fx:id="tbvTransacoes_R10" layoutX="5.0" layoutY="115.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="735.0">
+                            <columns>
+                                <TableColumn prefWidth="75.0" text="C1" />
+                                <TableColumn prefWidth="75.0" text="C2" />
+                            </columns>
+                        </TableView>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="55.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Aposta total V_10" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblApostaTotal_R10" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="110.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Prêmio total V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblPremioTotal_R10" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="165.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Lucro / Perda V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblLucro_R10" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <CheckBox fx:id="chkAtivo_R10" mnemonicParsing="false" selected="true" />
+            </graphic>
+        </TitledPane>
+        <TitledPane fx:id="tpn_R25" animated="false" collapsible="false" layoutX="5.0" layoutY="545.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="890.0" text="Volatilidade_25">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="graf_R25" barGap="0.0" categoryGap="0.0" layoutX="5.0" layoutY="-5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="130.0" prefWidth="400.0">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" fx:id="xAxis_R25" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxis_R25" animated="false" autoRanging="false" upperBound="30.0" />
+                                <!--                                <NumberAxis autoRanging="false" side="LEFT" tickLabelGap="1.0" upperBound="30.0" />-->
+                            </yAxis>
+                        </BarChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="505.0" layoutY="5.0" prefHeight="45.0" prefWidth="235.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblLastTick_R25" alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="190.0">
+                                            <font>
+                                                <Font name="Arial Bold" size="26.0" />
+                                            </font>
+                                            <opaqueInsets>
+                                                <Insets />
+                                            </opaqueInsets>
+                                            <padding>
+                                                <Insets right="10.0" />
+                                            </padding>
+                                        </Label>
+                                        <Label fx:id="lblLegendaTick_R25" prefHeight="50.0" prefWidth="50.0" style="-fx-font-size: 15px; -fx-background-color: #ff6600; -fx-background-radius: 0 8 8 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <!--                                            <padding>-->
+                                            <!--                                                <Insets left="5.0"/>-->
+                                            <!--                                            </padding>-->
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnComprar_R25" disable="true" layoutX="745.0" layoutY="15.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Comprar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnPausar_R25" disable="true" layoutX="820.0" layoutY="2.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Pausar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnStop_R25" disable="true" layoutX="820.0" layoutY="28.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Stop">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="560.0" layoutY="55.0" prefHeight="50.0" prefWidth="70.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="70.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="N Execuções" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNExecucoes_R25" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="70.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="635.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Vitórias" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNVitorias_R25" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="690.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Derrotas" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNDerrotas_R25" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <TableView fx:id="tbvTransacoes_R25" layoutX="5.0" layoutY="115.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="735.0">
+                            <columns>
+                                <TableColumn prefWidth="75.0" text="C1" />
+                                <TableColumn prefWidth="75.0" text="C2" />
+                            </columns>
+                        </TableView>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="55.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Aposta total V_10" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblApostaTotal_R25" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="110.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Prêmio total V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblPremioTotal_R25" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="165.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Lucro / Perda V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblLucro_R25" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <CheckBox fx:id="chkAtivo_R25" mnemonicParsing="false" selected="true" />
+            </graphic>
+        </TitledPane>
+        <TitledPane fx:id="tpn_R50" animated="false" collapsible="false" layoutX="5.0" layoutY="800.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="890.0" text="Volatilidade_50">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="graf_R50" barGap="0.0" categoryGap="0.0" layoutX="5.0" layoutY="-5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="130.0" prefWidth="400.0">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" fx:id="xAxis_R50" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxis_R50" animated="false" autoRanging="false" upperBound="30.0" />
+                                <!--                                <NumberAxis autoRanging="false" side="LEFT" tickLabelGap="1.0" upperBound="30.0" />-->
+                            </yAxis>
+                        </BarChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="505.0" layoutY="5.0" prefHeight="45.0" prefWidth="235.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblLastTick_R50" alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="190.0">
+                                            <font>
+                                                <Font name="Arial Bold" size="26.0" />
+                                            </font>
+                                            <opaqueInsets>
+                                                <Insets />
+                                            </opaqueInsets>
+                                            <padding>
+                                                <Insets right="10.0" />
+                                            </padding>
+                                        </Label>
+                                        <Label fx:id="lblLegendaTick_R50" prefHeight="50.0" prefWidth="50.0" style="-fx-font-size: 15px; -fx-background-color: #ff6600; -fx-background-radius: 0 8 8 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <!--                                            <padding>-->
+                                            <!--                                                <Insets left="5.0"/>-->
+                                            <!--                                            </padding>-->
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnComprar_R50" disable="true" layoutX="745.0" layoutY="15.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Comprar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnPausar_R50" disable="true" layoutX="820.0" layoutY="2.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Pausar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnStop_R50" disable="true" layoutX="820.0" layoutY="28.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Stop">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="560.0" layoutY="55.0" prefHeight="50.0" prefWidth="70.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="70.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="N Execuções" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNExecucoes_R50" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="70.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="635.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Vitórias" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNVitorias_R50" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="690.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Derrotas" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNDerrotas_R50" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <TableView fx:id="tbvTransacoes_R50" layoutX="5.0" layoutY="115.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="735.0">
+                            <columns>
+                                <TableColumn prefWidth="75.0" text="C1" />
+                                <TableColumn prefWidth="75.0" text="C2" />
+                            </columns>
+                        </TableView>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="55.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Aposta total V_10" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblApostaTotal_R50" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="110.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Prêmio total V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblPremioTotal_R50" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="165.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Lucro / Perda V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblLucro_R50" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <CheckBox fx:id="chkAtivo_R50" mnemonicParsing="false" selected="true" />
+            </graphic>
+        </TitledPane>
+        <TitledPane fx:id="tpn_R75" animated="false" collapsible="false" layoutX="5.0" layoutY="1055.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="890.0" text="Volatilidade_75">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="graf_R75" barGap="0.0" categoryGap="0.0" layoutX="5.0" layoutY="-5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="130.0" prefWidth="400.0">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" fx:id="xAxis_R75" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxis_R75" animated="false" autoRanging="false" upperBound="30.0" />
+                                <!--                                <NumberAxis autoRanging="false" side="LEFT" tickLabelGap="1.0" upperBound="30.0" />-->
+                            </yAxis>
+                        </BarChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="505.0" layoutY="5.0" prefHeight="45.0" prefWidth="235.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblLastTick_R75" alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="190.0">
+                                            <font>
+                                                <Font name="Arial Bold" size="26.0" />
+                                            </font>
+                                            <opaqueInsets>
+                                                <Insets />
+                                            </opaqueInsets>
+                                            <padding>
+                                                <Insets right="10.0" />
+                                            </padding>
+                                        </Label>
+                                        <Label fx:id="lblLegendaTick_R75" prefHeight="50.0" prefWidth="50.0" style="-fx-font-size: 15px; -fx-background-color: #ff6600; -fx-background-radius: 0 8 8 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <!--                                            <padding>-->
+                                            <!--                                                <Insets left="5.0"/>-->
+                                            <!--                                            </padding>-->
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnComprar_R75" disable="true" layoutX="745.0" layoutY="15.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Comprar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnPausar_R75" disable="true" layoutX="820.0" layoutY="2.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Pausar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnStop_R75" disable="true" layoutX="820.0" layoutY="28.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Stop">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="560.0" layoutY="55.0" prefHeight="50.0" prefWidth="70.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="70.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="N Execuções" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNExecucoes_R75" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="70.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="635.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Vitórias" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNVitorias_R75" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="690.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Derrotas" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNDerrotas_R75" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <TableView fx:id="tbvTransacoes_R75" layoutX="5.0" layoutY="115.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="735.0">
+                            <columns>
+                                <TableColumn prefWidth="75.0" text="C1" />
+                                <TableColumn prefWidth="75.0" text="C2" />
+                            </columns>
+                        </TableView>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="55.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Aposta total V_10" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblApostaTotal_R75" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="110.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Prêmio total V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblPremioTotal_R75" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="165.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Lucro / Perda V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblLucro_R75" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <CheckBox fx:id="chkAtivo_R75" mnemonicParsing="false" selected="true" />
+            </graphic>
+        </TitledPane>
+        <TitledPane fx:id="tpn_R100" animated="false" collapsible="false" layoutX="5.0" layoutY="1310.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="890.0" text="Volatilidade_100">
+            <content>
+                <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0" prefWidth="890.0">
+                    <children>
+                        <BarChart fx:id="graf_R100" barGap="0.0" categoryGap="0.0" layoutX="5.0" layoutY="-5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="130.0" prefWidth="400.0">
+                            <xAxis>
+                                <CategoryAxis side="BOTTOM" fx:id="xAxis_R100" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxis_R100" animated="false" autoRanging="false" upperBound="30.0" />
+                                <!--                                <NumberAxis autoRanging="false" side="LEFT" tickLabelGap="1.0" upperBound="30.0" />-->
+                            </yAxis>
+                        </BarChart>
+                        <VBox alignment="CENTER_LEFT" layoutX="505.0" layoutY="5.0" prefHeight="45.0" prefWidth="235.0">
+                            <children>
+                                <HBox prefHeight="50.0" prefWidth="235.0">
+                                    <children>
+                                        <Label fx:id="lblLastTick_R100" alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="190.0">
+                                            <font>
+                                                <Font name="Arial Bold" size="26.0" />
+                                            </font>
+                                            <opaqueInsets>
+                                                <Insets />
+                                            </opaqueInsets>
+                                            <padding>
+                                                <Insets right="10.0" />
+                                            </padding>
+                                        </Label>
+                                        <Label fx:id="lblLegendaTick_R100" prefHeight="50.0" prefWidth="50.0" style="-fx-font-size: 15px; -fx-background-color: #ff6600; -fx-background-radius: 0 8 8 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                            <!--                                            <padding>-->
+                                            <!--                                                <Insets left="5.0"/>-->
+                                            <!--                                            </padding>-->
+                                        </Label>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                        <Button fx:id="btnComprar_R100" disable="true" layoutX="745.0" layoutY="15.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Comprar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnPausar_R100" disable="true" layoutX="820.0" layoutY="2.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Pausar" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="btnStop_R100" disable="true" layoutX="820.0" layoutY="28.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="65.0" text="Stop">
+                            <font>
+                                <Font size="12.0" />
+                            </font>
+                        </Button>
+                        <VBox alignment="CENTER_LEFT" layoutX="560.0" layoutY="55.0" prefHeight="50.0" prefWidth="70.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="70.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="N Execuções" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNExecucoes_R100" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="70.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <font>
+                                        <Font size="12.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="635.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Vitórias" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNVitorias_R100" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="690.0" layoutY="55.0" prefHeight="50.0" prefWidth="50.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="25.0" prefWidth="50.0" style="-fx-font-size: 10px; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff;" text="Derrotas" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font name="Arial Bold" size="10.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                                <Label fx:id="lblNDerrotas_R100" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" style="-fx-border-base: black; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <TableView fx:id="tbvTransacoes_R100" layoutX="5.0" layoutY="115.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="735.0">
+                            <columns>
+                                <TableColumn prefWidth="75.0" text="C1" />
+                                <TableColumn prefWidth="75.0" text="C2" />
+                            </columns>
+                        </TableView>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="55.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Aposta total V_10" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblApostaTotal_R100" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px; -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="110.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Prêmio total V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblPremioTotal_R100" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" layoutX="745.0" layoutY="165.0" prefHeight="50.0" prefWidth="140.0">
+                            <children>
+                                <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-font-size: 12px; -fx-font-family: 'Arial Black'; -fx-background-color: #ff6600; -fx-background-radius: 8 8 0 0; -fx-background-insets: 0 0 0 0; -fx-text-fill: #ffffff; -fx-padding: 0 5 0 0;" text="Lucro / Perda V_10" textAlignment="CENTER" wrapText="true">
+                                    <!--                                    <padding>-->
+                                    <!--                                        <Insets left="5.0"/>-->
+                                    <!--                                    </padding>-->
+                                </Label>
+                                <Label fx:id="lblLucro_R100" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="150.0" style="-fx-border-base: black; -fx-font-family: 'Arial Black'; -fx-font-size: 13px;  -fx-border-shadow: #323232; -fx-light-border: derive(-fx-border-base, 25%); -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border; -fx-border-insets: 0 1 1 0; -fx-background-color: -fx-border-shadow, -fx-background; -fx-background-insets: 1 0 0 1, 2; -fx-background-radius: 0 0 4 4; -fx-border-radius: 0 0 4 4; -fx-padding: 2;" text="0.00">
+                                    <!--                                    <font>-->
+                                    <!--                                        <Font size="15.0"/>-->
+                                    <!--                                    </font>-->
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </content>
+            <graphic>
+                <CheckBox fx:id="chkAtivo_R100" mnemonicParsing="false" selected="true" />
+            </graphic>
+        </TitledPane>
+    </children>
+</AnchorPane>
