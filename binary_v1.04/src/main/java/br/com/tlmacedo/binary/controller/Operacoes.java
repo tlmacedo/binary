@@ -136,9 +136,9 @@ public class Operacoes implements Initializable {
     static StringProperty[] informacaoDetalhe02 = new StringProperty[5];
     static StringProperty[] informacaoValor02 = new StringProperty[5];
     //** Listas **
-    static ObservableList<HistoricoDeTicks> historicoDeTicksObservableList = FXCollections.observableArrayList();
-    static ObservableList<HistoricoDeTicks> HistoricoDeTicksAnaliseObservableList = FXCollections.observableArrayList();
-    static ObservableList<Transaction> transactionObservableList = FXCollections.observableArrayList();
+    static ObservableList<HistoricoDeTicks>[] historicoDeTicksObservableList = new ObservableList[5];
+    static ObservableList<HistoricoDeTicks>[] HistoricoDeTicksAnaliseObservableList = new ObservableList[5];
+    static ObservableList<Transaction>[] transactionObservableList = new ObservableList[5];
     static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
 
     /**
@@ -424,9 +424,9 @@ public class Operacoes implements Initializable {
             getInformacaoValor01()[operadorId] = new SimpleStringProperty();
             getInformacaoValor02()[operadorId] = new SimpleStringProperty();
 
-//            getHistoricoDeTicksObservableList()[operadorId] = FXCollections.observableArrayList();
-//            getHistoricoDeTicksAnaliseObservableList()[operadorId] = FXCollections.observableArrayList();
-//            getTransactionObservableList()[operadorId] = FXCollections.observableArrayList();
+            getHistoricoDeTicksObservableList()[operadorId] = FXCollections.observableArrayList();
+            getHistoricoDeTicksAnaliseObservableList()[operadorId] = FXCollections.observableArrayList();
+            getTransactionObservableList()[operadorId] = FXCollections.observableArrayList();
 
             graficoEmBarras(operadorId);
         }
@@ -745,7 +745,7 @@ public class Operacoes implements Initializable {
             int finalOperadorId = operadorId;
             getUltimoTick()[operadorId].addListener((ov, o, n) -> {
                 Platform.runLater(() -> {
-                    Map<Integer, Long> vlrDigitos = getHistoricoDeTicksObservableList().stream()
+                    Map<Integer, Long> vlrDigitos = getHistoricoDeTicksObservableList()[finalOperadorId].stream()
                             .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getSymbol()
                                     .equals(getOperador()[finalOperadorId].getValue().getSymbol()))
                             .map(HistoricoDeTicks::getUltimoDigito)
@@ -760,14 +760,14 @@ public class Operacoes implements Initializable {
                         if (!vlrDigitos.containsKey(digito))
                             getDigitoMenorQuantidade()[finalOperadorId].setValue(0);
                     }
-                    if (getHistoricoDeTicksAnaliseObservableList().stream()
+                    if (getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].stream()
                             .filter(historicoDeTicks -> historicoDeTicks.getSymbol().equals(getOperador()[finalOperadorId].getValue()))
                             .count() > 1)
                         getTickSubindo()[finalOperadorId].setValue(
-                                getHistoricoDeTicksAnaliseObservableList().stream()
+                                getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].stream()
                                         .filter(historicoDeTicks -> historicoDeTicks.getSymbol().equals(getOperador()[finalOperadorId].getValue()))
                                         .findFirst().get().getPrice()
-                                        .compareTo(getHistoricoDeTicksAnaliseObservableList().stream()
+                                        .compareTo(getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].stream()
                                                 .filter(historicoDeTicks -> historicoDeTicks.getSymbol().equals(getOperador()[finalOperadorId].getValue()))
                                                 .collect(Collectors.toList())
                                                 .get(1).getPrice()) >= 0);
@@ -1202,27 +1202,27 @@ public class Operacoes implements Initializable {
         Operacoes.informacaoValor02 = informacaoValor02;
     }
 
-    public static ObservableList<HistoricoDeTicks> getHistoricoDeTicksObservableList() {
+    public static ObservableList<HistoricoDeTicks>[] getHistoricoDeTicksObservableList() {
         return historicoDeTicksObservableList;
     }
 
-    public static void setHistoricoDeTicksObservableList(ObservableList<HistoricoDeTicks> historicoDeTicksObservableList) {
+    public static void setHistoricoDeTicksObservableList(ObservableList<HistoricoDeTicks>[] historicoDeTicksObservableList) {
         Operacoes.historicoDeTicksObservableList = historicoDeTicksObservableList;
     }
 
-    public static ObservableList<HistoricoDeTicks> getHistoricoDeTicksAnaliseObservableList() {
+    public static ObservableList<HistoricoDeTicks>[] getHistoricoDeTicksAnaliseObservableList() {
         return HistoricoDeTicksAnaliseObservableList;
     }
 
-    public static void setHistoricoDeTicksAnaliseObservableList(ObservableList<HistoricoDeTicks> historicoDeTicksAnaliseObservableList) {
+    public static void setHistoricoDeTicksAnaliseObservableList(ObservableList<HistoricoDeTicks>[] historicoDeTicksAnaliseObservableList) {
         HistoricoDeTicksAnaliseObservableList = historicoDeTicksAnaliseObservableList;
     }
 
-    public static ObservableList<Transaction> getTransactionObservableList() {
+    public static ObservableList<Transaction>[] getTransactionObservableList() {
         return transactionObservableList;
     }
 
-    public static void setTransactionObservableList(ObservableList<Transaction> transactionObservableList) {
+    public static void setTransactionObservableList(ObservableList<Transaction>[] transactionObservableList) {
         Operacoes.transactionObservableList = transactionObservableList;
     }
 
