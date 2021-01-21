@@ -460,7 +460,6 @@ public class Operacoes implements Initializable {
             int finalOperadorId = operadorId;
             getOperador()[operadorId].addListener((ov, o, n) -> {
                 if (n == null) return;
-                System.out.printf("operador[%s]: %s\n", finalOperadorId, n);
                 solicitarTicks(n);
             });
         }
@@ -651,38 +650,36 @@ public class Operacoes implements Initializable {
             getGraficoBarrasListQtdDigito_R()[operadorId].get(digito).addListener((ov, o, n) -> {
                 if (n == null) return;
                 Double porcento = n.intValue() != 0
-                        ? (n.intValue() / getGraficoQtdTicks() / 100.) : 0.;
+                        ? (n.intValue() / (getGraficoQtdTicks() / 100.)) : 0.;
                 getGraficoBarrasListValoresDigitos_R()[operadorId].get(finalDigito).setYValue(porcento.intValue());
                 getGraficoTxtLegendaDigito_R()[operadorId][finalDigito].setText(String.format("%s%%", porcento.intValue()));
             });
         }
-        System.out.printf("operadorId: [%s]\n", operadorId);
-        switch (operadorId) {
-            case 0 -> {
-                getyAxisBarras_Op01().setUpperBound(25);
-                getGraficoBarras_Op01().getData().add(getGraficoBarrasVolatilidade_R()[0]);
-                getGraficoBarras_Op01().setVisible(true);
-            }
-            case 1 -> {
-                getyAxisBarras_Op02().setUpperBound(25);
-                getGraficoBarras_Op02().getData().add(getGraficoBarrasVolatilidade_R()[1]);
-                getGraficoBarras_Op02().setVisible(true);
-            }
-            case 2 -> {
-                getyAxisBarras_Op03().setUpperBound(25);
-                getGraficoBarras_Op03().getData().add(getGraficoBarrasVolatilidade_R()[2]);
-                getGraficoBarras_Op03().setVisible(true);
-            }
-            case 3 -> {
-                getyAxisBarras_Op04().setUpperBound(25);
-                getGraficoBarras_Op04().getData().add(getGraficoBarrasVolatilidade_R()[3]);
-                getGraficoBarras_Op04().setVisible(true);
-            }
-            case 4 -> {
-                getyAxisBarras_Op05().setUpperBound(25);
-                getGraficoBarras_Op05().getData().add(getGraficoBarrasVolatilidade_R()[4]);
-                getGraficoBarras_Op05().setVisible(true);
-            }
+
+        if (operadorId == 0) {
+            getyAxisBarras_Op01().setUpperBound(25);
+            getGraficoBarras_Op01().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
+            getGraficoBarras_Op01().setVisible(true);
+        }
+        if (operadorId == 1) {
+            getyAxisBarras_Op02().setUpperBound(25);
+            getGraficoBarras_Op02().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
+            getGraficoBarras_Op02().setVisible(true);
+        }
+        if (operadorId == 2) {
+            getyAxisBarras_Op03().setUpperBound(25);
+            getGraficoBarras_Op03().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
+            getGraficoBarras_Op03().setVisible(true);
+        }
+        if (operadorId == 3) {
+            getyAxisBarras_Op04().setUpperBound(25);
+            getGraficoBarras_Op04().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
+            getGraficoBarras_Op04().setVisible(true);
+        }
+        if (operadorId == 4) {
+            getyAxisBarras_Op05().setUpperBound(25);
+            getGraficoBarras_Op05().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
+            getGraficoBarras_Op05().setVisible(true);
         }
 
     }
@@ -745,12 +742,8 @@ public class Operacoes implements Initializable {
             getUltimoTick()[operadorId].addListener((ov, o, n) -> {
                 Platform.runLater(() -> {
                     Map<Integer, Long> vlrDigitos = getHistoricoDeTicksObservableList()[finalOperadorId].stream()
-                            .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getSymbol()
-                                    .equals(getOperador()[finalOperadorId].getValue().getSymbol()))
                             .map(HistoricoDeTicks::getUltimoDigito)
                             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-                    System.out.printf("vlrDigitos[%s]: %s\n", finalOperadorId, vlrDigitos);
 
                     getMenorQtdDigito()[finalOperadorId].setValue(Collections.min(vlrDigitos.values()));
                     getMaiorQtdDigito()[finalOperadorId].setValue(Collections.max(vlrDigitos.values()));

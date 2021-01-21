@@ -215,7 +215,6 @@ public class WSClient extends WebSocketListener {
     private void refreshHistoryTick(Passthrough passthrough, History history) {
 
         Platform.runLater(() -> {
-
             for (int operadorId = 0; operadorId < 5; operadorId++) {
                 if (Operacoes.getOperador()[operadorId].getValue() != null
                         && Operacoes.getOperador()[operadorId].getValue().getSymbol().equals(passthrough.getSymbol().getSymbol())) {
