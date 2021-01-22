@@ -134,8 +134,10 @@ public class Operacoes implements Initializable {
     static StringProperty[] informacaoDetalhe02 = new StringProperty[5];
     static StringProperty[] informacaoValor02 = new StringProperty[5];
     //** Listas **
+    static ObservableList<HistoricoDeTicks>[] historicoDeTicks_TempObservableList = new ObservableList[getSymbolObservableList().size()];
+    static ObservableList<HistoricoDeTicks>[] historicoDeTicksAnalise_TempObservableList = new ObservableList[getSymbolObservableList().size()];
     static ObservableList<HistoricoDeTicks>[] historicoDeTicksObservableList = new ObservableList[5];
-    static ObservableList<HistoricoDeTicks>[] HistoricoDeTicksAnaliseObservableList = new ObservableList[5];
+    static ObservableList<HistoricoDeTicks>[] historicoDeTicksAnaliseObservableList = new ObservableList[5];
     static ObservableList<Transaction>[] transactionObservableList = new ObservableList[5];
     static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
 
@@ -407,6 +409,11 @@ public class Operacoes implements Initializable {
      */
 
     private void carregarVariaveisObjetos() {
+
+        for (int symbol_id = 0; symbol_id < getSymbolObservableList().size(); symbol_id++) {
+            getHistoricoDeTicks_TempObservableList()[symbol_id] = FXCollections.observableArrayList();
+            getHistoricoDeTicksAnalise_TempObservableList()[symbol_id] = FXCollections.observableArrayList();
+        }
 
         for (int operadorId = 0; operadorId < 5; operadorId++) {
             getOperador()[operadorId] = new SimpleObjectProperty<>();
@@ -1166,6 +1173,22 @@ public class Operacoes implements Initializable {
         Operacoes.informacaoValor02 = informacaoValor02;
     }
 
+    public static ObservableList<HistoricoDeTicks>[] getHistoricoDeTicks_TempObservableList() {
+        return historicoDeTicks_TempObservableList;
+    }
+
+    public static void setHistoricoDeTicks_TempObservableList(ObservableList<HistoricoDeTicks>[] historicoDeTicks_TempObservableList) {
+        Operacoes.historicoDeTicks_TempObservableList = historicoDeTicks_TempObservableList;
+    }
+
+    public static ObservableList<HistoricoDeTicks>[] getHistoricoDeTicksAnalise_TempObservableList() {
+        return historicoDeTicksAnalise_TempObservableList;
+    }
+
+    public static void setHistoricoDeTicksAnalise_TempObservableList(ObservableList<HistoricoDeTicks>[] historicoDeTicksAnalise_TempObservableList) {
+        Operacoes.historicoDeTicksAnalise_TempObservableList = historicoDeTicksAnalise_TempObservableList;
+    }
+
     public static ObservableList<HistoricoDeTicks>[] getHistoricoDeTicksObservableList() {
         return historicoDeTicksObservableList;
     }
@@ -1175,11 +1198,11 @@ public class Operacoes implements Initializable {
     }
 
     public static ObservableList<HistoricoDeTicks>[] getHistoricoDeTicksAnaliseObservableList() {
-        return HistoricoDeTicksAnaliseObservableList;
+        return historicoDeTicksAnaliseObservableList;
     }
 
     public static void setHistoricoDeTicksAnaliseObservableList(ObservableList<HistoricoDeTicks>[] historicoDeTicksAnaliseObservableList) {
-        HistoricoDeTicksAnaliseObservableList = historicoDeTicksAnaliseObservableList;
+        Operacoes.historicoDeTicksAnaliseObservableList = historicoDeTicksAnaliseObservableList;
     }
 
     public static ObservableList<Transaction>[] getTransactionObservableList() {

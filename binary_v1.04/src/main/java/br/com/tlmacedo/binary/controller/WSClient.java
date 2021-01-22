@@ -160,27 +160,37 @@ public class WSClient extends WebSocketListener {
     private void refreshTick(Passthrough passthrough, Tick tick) {
 
         Platform.runLater(() -> {
+
+            int symbol_id = passthrough.getSymbol().getId().intValue();
             HistoricoDeTicks hTick = new HistoricoDeTicks(passthrough.getSymbol(),
                     tick.getQuote(), tick.getEpoch());
+
+            while (Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].size()
+                    >= Operacoes.getGraficoQtdTicks())
+                Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id]
+                        .remove(Operacoes.getGraficoQtdTicks() - 1);
+
+            while (Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].size()
+                    >= Operacoes.getGraficoQtdTicksAnalise())
+                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id]
+                        .remove(Operacoes.getGraficoQtdTicksAnalise() - 1);
+
+            if (Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].stream()
+                    .noneMatch(historicoDeTicks -> historicoDeTicks.getTime() == hTick.getTime())) {
+                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].add(0, hTick);
+                Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].add(0, hTick);
+            }
+
+
             for (int operadorId = 0; operadorId < 5; operadorId++) {
                 if (Operacoes.getOperador()[operadorId].getValue() != null
                         && Operacoes.getOperador()[operadorId].getValue().getSymbol().equals(passthrough.getSymbol().getSymbol())) {
 
-                    while (Operacoes.getHistoricoDeTicksObservableList()[operadorId].size()
-                            >= Operacoes.getGraficoQtdTicks())
-                        Operacoes.getHistoricoDeTicksObservableList()[operadorId]
-                                .remove(Operacoes.getGraficoQtdTicks() - 1);
+                    Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId]
+                            = Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id];
+                    Operacoes.getHistoricoDeTicksObservableList()[operadorId]
+                            = Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id];
 
-                    while (Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId].size()
-                            >= Operacoes.getGraficoQtdTicksAnalise())
-                        Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId]
-                                .remove(Operacoes.getGraficoQtdTicksAnalise() - 1);
-
-                    if (Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId].stream()
-                            .noneMatch(historicoDeTicks -> historicoDeTicks.getTime() == hTick.getTime())) {
-                        Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId].add(0, hTick);
-                        Operacoes.getHistoricoDeTicksObservableList()[operadorId].add(0, hTick);
-                    }
                     Operacoes.getUltimoTick()[operadorId].setValue(tick);
                     break;
 
@@ -215,36 +225,35 @@ public class WSClient extends WebSocketListener {
     private void refreshHistoryTick(Passthrough passthrough, History history) {
 
         Platform.runLater(() -> {
-            for (int operadorId = 0; operadorId < 5; operadorId++) {
+
+            for (int operadorId = 0; operadorId < 5; operadorId++)
                 if (Operacoes.getOperador()[operadorId].getValue() != null
                         && Operacoes.getOperador()[operadorId].getValue().getSymbol().equals(passthrough.getSymbol().getSymbol())) {
-
-                    for (int digito = 0; digito < 10; digito++) {
+                    for (int digito = 0; digito < 10; digito++)
                         Operacoes.getGraficoBarrasListQtdDigito_R()[operadorId].get(digito).setValue(0);
-                    }
-
-                    Operacoes.getHistoricoDeTicksObservableList()[operadorId].clear();
-                    Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId].clear();
-//
-                    HistoricoDeTicks ticks;
-                    for (int i = 0; i < getHistory().getTimes().size(); i++) {
-                        int finalI = i;
-                        if (Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId].stream()
-                                .anyMatch(historicoDeTicks -> historicoDeTicks.getTime() == getHistory().getTimes().get(finalI)))
-                            continue;
-                        ticks = new HistoricoDeTicks(passthrough.getSymbol(),
-                                getHistory().getPrices().get(i), getHistory().getTimes().get(i));
-                        Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId].add(0, ticks);
-                        Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId]
-                                .sort(Comparator.comparing(HistoricoDeTicks::getTime).reversed());
-                    }
-                    for (HistoricoDeTicks tick : Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId].stream()
-                            .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getSymbol().equals(passthrough.getSymbol().getSymbol()))
-                            .collect(Collectors.toList()))
-                        if (Operacoes.getHistoricoDeTicksObservableList()[operadorId].size() < Operacoes.getGraficoQtdTicks())
-                            Operacoes.getHistoricoDeTicksObservableList()[operadorId].add(tick);
+                    break;
                 }
+
+            int symbol_id = passthrough.getSymbol().getId().intValue();
+            Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].clear();
+            Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].clear();
+
+            HistoricoDeTicks ticks;
+            for (int i = 0; i < history.getTimes().size(); i++) {
+                int finalI = i;
+                if (Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].stream()
+                        .anyMatch(historicoDeTicks -> historicoDeTicks.getTime() == getHistory().getTimes().get(finalI)))
+                    continue;
+                ticks = new HistoricoDeTicks(passthrough.getSymbol(),
+                        getHistory().getPrices().get(i), getHistory().getTimes().get(i));
+                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].add(0, ticks);
+                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id]
+                        .sort(Comparator.comparing(HistoricoDeTicks::getTime).reversed());
             }
+            for (HistoricoDeTicks tick : Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id])
+                if (Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].size() < Operacoes.getGraficoQtdTicks())
+                    Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].add(tick);
+
         });
 
     }
