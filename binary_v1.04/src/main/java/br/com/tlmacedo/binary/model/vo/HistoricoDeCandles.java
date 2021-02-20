@@ -1,6 +1,7 @@
 package br.com.tlmacedo.binary.model.vo;
 
 
+import br.com.tlmacedo.binary.services.Service_Mascara;
 import javafx.beans.property.*;
 
 import java.io.Serializable;
@@ -21,8 +22,7 @@ public class HistoricoDeCandles implements Serializable {
     public HistoricoDeCandles() {
     }
 
-    public HistoricoDeCandles(Long id, Symbol symbol, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, Integer pip_size, Integer time) {
-        this.id = new SimpleLongProperty(id);
+    public HistoricoDeCandles(Symbol symbol, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, Integer pip_size, Integer time) {
         this.symbol = new SimpleObjectProperty<>(symbol);
         this.open = new SimpleObjectProperty<>(open);
         this.high = new SimpleObjectProperty<>(high);
@@ -128,17 +128,30 @@ public class HistoricoDeCandles implements Serializable {
         this.time.set(time);
     }
 
+    public String getQuoteCompleto() {
+        return Service_Mascara.getValorFormatado(getPip_size(), getClose());
+    }
+
     @Override
     public String toString() {
-        return "HistoricoDeCandles{" +
-                "id=" + id +
-                ", symbol=" + symbol +
-                ", open=" + open +
-                ", high=" + high +
-                ", low=" + low +
-                ", close=" + close +
-                ", pip_size=" + pip_size +
-                ", time=" + time +
-                '}';
+        if (getQuoteCompleto() != null)
+            return getQuoteCompleto();
+        return "";
     }
+
+//    @Override
+//    public String toString() {
+//        return "HistoricoDeCandles{" +
+//                "id=" + id +
+//                ", symbol=" + symbol +
+//                ", open=" + open +
+//                ", high=" + high +
+//                ", low=" + low +
+//                ", close=" + close +
+//                ", pip_size=" + pip_size +
+//                ", time=" + time +
+//                '}';
+//    }
+
+
 }

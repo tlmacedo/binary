@@ -106,4 +106,5 @@ public class Tick implements Serializable {
             return getQuoteCompleto();
         return "";
     }
+
 }

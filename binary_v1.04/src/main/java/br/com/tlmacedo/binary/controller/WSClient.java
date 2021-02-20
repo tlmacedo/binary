@@ -28,6 +28,7 @@ public class WSClient extends WebSocketListener {
     private Error error;
     private History history;
     private Tick tick;
+    private Ohlc ohlc;
     private Candle candle;
     private Passthrough passthrough;
     private Proposal proposal;
@@ -77,6 +78,10 @@ public class WSClient extends WebSocketListener {
                     setPassthrough((Passthrough) Util_Json.getObject_from_String(text, Passthrough.class));
                     setTick((Tick) Util_Json.getObject_from_String(text, Tick.class));
                     refreshTick(getPassthrough(), getTick());
+                }
+                case OHLC -> {
+                    setOhlc((Ohlc) Util_Json.getObject_from_String(text, Ohlc.class));
+                    refreshOhlc(getOhlc());
                 }
                 case HISTORY -> {
                     setPassthrough((Passthrough) Util_Json.getObject_from_String(text, Passthrough.class));
@@ -159,40 +164,57 @@ public class WSClient extends WebSocketListener {
 
     private void refreshTick(Passthrough passthrough, Tick tick) {
 
+    }
+
+    private void refreshOhlc(Ohlc ohlc) {
+
         Platform.runLater(() -> {
 
-            int symbol_id = passthrough.getSymbol().getId().intValue();
-            HistoricoDeTicks hTick = new HistoricoDeTicks(passthrough.getSymbol(),
-                    tick.getQuote(), tick.getEpoch());
+            Symbol symbol = Operacoes.getSymbolObservableList().stream()
+                    .filter(symbol1 -> symbol1.getSymbol().equals(ohlc.getSymbol()))
+                    .findFirst().orElse(null);
+            int operador_id = symbol.getId().intValue() - 1;
 
-            while (Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].size()
-                    >= Operacoes.getGraficoQtdTicks())
-                Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id]
-                        .remove(Operacoes.getGraficoQtdTicks() - 1);
+            HistoricoDeCandles hCandle = new HistoricoDeCandles(
+                    symbol, ohlc.getOpen(), ohlc.getHigh(), ohlc.getLow(), ohlc.getClose(),
+                    ohlc.getPip_size(), ohlc.getEpoch()
+            );
 
-            while (Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].size()
-                    >= Operacoes.getGraficoQtdTicksAnalise())
-                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id]
-                        .remove(Operacoes.getGraficoQtdTicksAnalise() - 1);
+            Operacoes.getUltimoCandle()[operador_id].setValue(ohlc);
+            Operacoes.getHistoricoDeCandlesObservableList()[operador_id].add(0, hCandle);
 
-            if (Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].stream()
-                    .noneMatch(historicoDeTicks -> historicoDeTicks.getTime() == hTick.getTime())) {
-                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].add(0, hTick);
-                Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].add(0, hTick);
-            }
-
-
-            for (int operadorId = 0; operadorId < 5; operadorId++) {
-                if (Operacoes.getOperador()[operadorId].getValue() != null
-                        && Operacoes.getOperador()[operadorId].getValue().getSymbol().equals(passthrough.getSymbol().getSymbol())) {
-
-                    Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId]
-                            = Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id];
-                    Operacoes.getHistoricoDeTicksObservableList()[operadorId]
-                            = Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id];
-
-                    Operacoes.getUltimoTick()[operadorId].setValue(tick);
-                    break;
+//            int symbol_id = passthrough.getSymbol().getId().intValue();
+//            HistoricoDeTicks hTick = new HistoricoDeTicks(passthrough.getSymbol(),
+//                    tick.getQuote(), tick.getEpoch());
+//
+//            while (Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].size()
+//                    >= Operacoes.getGraficoQtdTicks())
+//                Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id]
+//                        .remove(Operacoes.getGraficoQtdTicks() - 1);
+//
+//            while (Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].size()
+//                    >= Operacoes.getGraficoQtdTicksAnalise())
+//                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id]
+//                        .remove(Operacoes.getGraficoQtdTicksAnalise() - 1);
+//
+//            if (Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].stream()
+//                    .noneMatch(historicoDeTicks -> historicoDeTicks.getTime() == hTick.getTime())) {
+//                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].add(0, hTick);
+//                Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].add(0, hTick);
+//            }
+//
+//
+//            for (int operadorId = 0; operadorId < 5; operadorId++) {
+//                if (Operacoes.getOperador()[operadorId].getValue() != null
+//                        && Operacoes.getOperador()[operadorId].getValue().getSymbol().equals(passthrough.getSymbol().getSymbol())) {
+//
+//                    Operacoes.getHistoricoDeTicksAnaliseObservableList()[operadorId]
+//                            = Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id];
+//                    Operacoes.getHistoricoDeTicksObservableList()[operadorId]
+//                            = Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id];
+//
+//                    Operacoes.getUltimoTick()[operadorId].setValue(tick);
+//                    break;
 
 //            for (int operadorId = 0; operadorId < 5; operadorId++) {
 //                if (Operacoes.getOperador()[operadorId].getValue() != null
@@ -202,8 +224,8 @@ public class WSClient extends WebSocketListener {
 //                    Operacoes.getUltimoTick()[operadorId].setValue(tick);
 //                    break;
 //                }
-                }
-            }
+//                }
+//            }
         });
 
     }
@@ -226,34 +248,34 @@ public class WSClient extends WebSocketListener {
 
         Platform.runLater(() -> {
 
-            for (int operadorId = 0; operadorId < 5; operadorId++)
-                if (Operacoes.getOperador()[operadorId].getValue() != null
-                        && Operacoes.getOperador()[operadorId].getValue().getSymbol().equals(passthrough.getSymbol().getSymbol())) {
-                    for (int digito = 0; digito < 10; digito++)
-                        Operacoes.getGraficoBarrasListQtdDigito_R()[operadorId].get(digito).setValue(0);
-                    break;
-                }
-
-            int symbol_id = passthrough.getSymbol().getId().intValue();
-            Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].clear();
-            Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].clear();
-
-            HistoricoDeTicks ticks;
-            for (int i = 0; i < history.getTimes().size(); i++) {
-                int finalI = i;
-                if (Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].stream()
-                        .anyMatch(historicoDeTicks -> historicoDeTicks.getTime() == getHistory().getTimes().get(finalI)))
-                    continue;
-                ticks = new HistoricoDeTicks(passthrough.getSymbol(),
-                        getHistory().getPrices().get(i), getHistory().getTimes().get(i));
-                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].add(0, ticks);
-                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id]
-                        .sort(Comparator.comparing(HistoricoDeTicks::getTime).reversed());
-            }
-            for (HistoricoDeTicks tick : Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id])
-                if (Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].size() < Operacoes.getGraficoQtdTicks())
-                    Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].add(tick);
-
+//            for (int operadorId = 0; operadorId < 5; operadorId++)
+//                if (Operacoes.getOperador()[operadorId].getValue() != null
+//                        && Operacoes.getOperador()[operadorId].getValue().getSymbol().equals(passthrough.getSymbol().getSymbol())) {
+//                    for (int digito = 0; digito < 10; digito++)
+//                        Operacoes.getGraficoBarrasListQtdDigito_R()[operadorId].get(digito).setValue(0);
+//                    break;
+//                }
+//
+//            int symbol_id = passthrough.getSymbol().getId().intValue();
+//            Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].clear();
+//            Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].clear();
+//
+//            HistoricoDeTicks ticks;
+//            for (int i = 0; i < history.getTimes().size(); i++) {
+//                int finalI = i;
+//                if (Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].stream()
+//                        .anyMatch(historicoDeTicks -> historicoDeTicks.getTime() == getHistory().getTimes().get(finalI)))
+//                    continue;
+//                ticks = new HistoricoDeTicks(passthrough.getSymbol(),
+//                        getHistory().getPrices().get(i), getHistory().getTimes().get(i));
+//                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id].add(0, ticks);
+//                Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id]
+//                        .sort(Comparator.comparing(HistoricoDeTicks::getTime).reversed());
+//            }
+//            for (HistoricoDeTicks tick : Operacoes.getHistoricoDeTicksAnalise_TempObservableList()[symbol_id])
+//                if (Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].size() < Operacoes.getGraficoQtdTicks())
+//                    Operacoes.getHistoricoDeTicks_TempObservableList()[symbol_id].add(tick);
+//
         });
 
     }
@@ -385,5 +407,13 @@ public class WSClient extends WebSocketListener {
 
     public void setPassthrough(Passthrough passthrough) {
         this.passthrough = passthrough;
+    }
+
+    public Ohlc getOhlc() {
+        return ohlc;
+    }
+
+    public void setOhlc(Ohlc ohlc) {
+        this.ohlc = ohlc;
     }
 }

@@ -1,5 +1,7 @@
 package br.com.tlmacedo.binary.model.vo;
 
+import br.com.tlmacedo.binary.services.Service_Mascara;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -100,19 +102,31 @@ public class Ohlc implements Serializable {
         this.symbol = symbol;
     }
 
+    public String getQuoteCompleto() {
+        return Service_Mascara.getValorFormatado(getPip_size(), getClose());
+    }
+
     @Override
     public String toString() {
-        return "Ohlc{" +
-                "close=" + close +
-                ", epoch=" + epoch +
-                ", granularity=" + granularity +
-                ", high=" + high +
-                ", id='" + id + '\'' +
-                ", low=" + low +
-                ", open=" + open +
-                ", open_time=" + open_time +
-                ", pip_size=" + pip_size +
-                ", symbol='" + symbol + '\'' +
-                '}';
+        if (getQuoteCompleto() != null)
+            return getQuoteCompleto();
+        return "";
     }
+//    @Override
+//    public String toString() {
+//        return "Ohlc{" +
+//                "close=" + close +
+//                ", epoch=" + epoch +
+//                ", granularity=" + granularity +
+//                ", high=" + high +
+//                ", id='" + id + '\'' +
+//                ", low=" + low +
+//                ", open=" + open +
+//                ", open_time=" + open_time +
+//                ", pip_size=" + pip_size +
+//                ", symbol='" + symbol + '\'' +
+//                '}';
+//    }
+
+
 }
