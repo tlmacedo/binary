@@ -6,6 +6,7 @@ import br.com.tlmacedo.binary.model.dao.TransacoesDAO;
 import br.com.tlmacedo.binary.model.dao.TransactionDAO;
 import br.com.tlmacedo.binary.model.enums.ROBOS;
 import br.com.tlmacedo.binary.model.enums.TICK_STYLE;
+import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Util_Json;
@@ -25,15 +26,21 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.math.BigDecimal;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,7 +71,7 @@ public class Operacoes implements Initializable {
     /**
      * Contas corretora
      */
-    static final ObservableList<ContaToken> TOKEN_OBSERVABLE_LIST =
+    static final ObservableList<ContaToken> CONTA_TOKEN_OBSERVABLE_LIST =
             FXCollections.observableArrayList(
                     getContaTokenDAO().getAll(ContaToken.class, null, null)
             );
@@ -102,9 +109,10 @@ public class Operacoes implements Initializable {
     //    static BooleanProperty[] operadorAtivo = new BooleanProperty[5];
 //    static BooleanProperty[] operadorCompraAutorizada = new BooleanProperty[5];
 //    static BooleanProperty[] operadorNegociando = new BooleanProperty[5];
-    static BooleanProperty[] tickSubindo = new BooleanProperty[getSymbolObservableList().size()];
-    static ObjectProperty<Tick>[] ultimoTick = new ObjectProperty[getSymbolObservableList().size()];
-    static ObjectProperty<Ohlc>[] ultimoCandle = new ObjectProperty[getSymbolObservableList().size()];
+    static ObjectProperty<BigDecimal>[][] qtdCallPut = new ObjectProperty[getSymbolObservableList().size()][TICK_TIME.values().length];
+    static BooleanProperty[][] tickSubindo = new BooleanProperty[getSymbolObservableList().size()][TICK_TIME.values().length];
+    static ObjectProperty<Tick>[][] ultimoTick = new ObjectProperty[getSymbolObservableList().size()][TICK_TIME.values().length];
+    static ObjectProperty<Ohlc>[][] ultimoOhlc = new ObjectProperty[getSymbolObservableList().size()][TICK_TIME.values().length];
     //    static IntegerProperty[] maiorQtdDigito = new IntegerProperty[5];
 //    static IntegerProperty[] menorQtdDigito = new IntegerProperty[5];
 //    static StringProperty[] informacaoDetalhe01 = new StringProperty[5];
@@ -114,8 +122,8 @@ public class Operacoes implements Initializable {
     //** Listas **
 //    static ObservableList<HistoricoDeTicks>[] historicoDeTicks_TempObservableList = new ObservableList[getSymbolObservableList().size()];
 //    static ObservableList<HistoricoDeTicks>[] historicoDeTicksAnalise_TempObservableList = new ObservableList[getSymbolObservableList().size()];
-    static ObservableList<HistoricoDeTicks>[] historicoDeTicksObservableList = new ObservableList[getSymbolObservableList().size()];
-    static ObservableList<HistoricoDeCandles>[] historicoDeCandlesObservableList = new ObservableList[getSymbolObservableList().size()];
+    static ObservableList<HistoricoDeTicks>[][] historicoDeTicksObservableList = new ObservableList[getSymbolObservableList().size()][TICK_TIME.values().length];
+    static ObservableList<HistoricoDeOhlc>[][] historicoDeOhlcObservableList = new ObservableList[getSymbolObservableList().size()][TICK_TIME.values().length];
 //    static ObservableList<HistoricoDeTicks>[] historicoDeTicksAnaliseObservableList = new ObservableList[5];
 //    static ObservableList<Transaction>[] transactionObservableList = new ObservableList[5];
 //    static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
@@ -166,27 +174,49 @@ public class Operacoes implements Initializable {
     public Label lblRoboCronometro;
 
 
-    // Operações 01
+    // Symbol_01 *-*-*
     public TitledPane tpn_Op01;
-    public Label lblInf01_Op01;
-    public Label lblVlrInf01_Op01;
-    public Label lblPorcInf01_Op01;
-    public Label lblInf02_Op01;
-    public Label lblVlrInf02_Op01;
-    public Label lblPorcInf02_Op01;
-    public Label lblTickUltimo_Op01;
-    public Label lblLegendaTickUltimo_Op01;
-    public Button btnContrato_Op01;
-    public Button btnPausar_Op01;
-    public Button btnStop_Op01;
-    public Label lblInvestido_Op01;
-    public Label lblPremiacao_Op01;
-    public Label lblLucro_Op01;
-    public TableView<Transacoes> tbvTransacoes_Op01;
-    public Label tpnLblLegendaExecucoes_Op01;
-    public Label tpnLblExecucoes_Op01;
-    public Label tpnLblVitorias_Op01;
-    public Label tpnLblDerrotas_Op01;
+    public Label tpnLblQtdOperacoes_T01;
+    public Label tpnLblQtdVitorias_T01;
+    public Label tpnLblQtdDerrotas_T01;
+    public Label tpnLblVlrIn_T01;
+    public Label tpnLblVlrOut_T01;
+    public Label tpnLblVlrDiff_T01;
+    public Label tpnLlUltTick_Op01;
+    public Label tpnLlUltTickLegenda_Op01;
+    // Symbol_01 *-*-* Time_01
+    public Label lblTime_Op01_T01;
+    public Label lblQtdCallPut_Op01_T01;
+    public ImageView imgCallPut_Op01_T01;
+    public Label lblQtdOperaçoes_Op01_T01;
+    public Label lblQtdVitorias_Op01_T01;
+    public Label lblQtdDerrotas_Op01_T01;
+    public Label lblVlrIn_Op01_T01;
+    public Label lblVlrOut_Op01_T01;
+    public Label lblVlrDiff_Op01_T01;
+    public TableView tbvTransacoes_Op01_T01;
+    // Symbol_01 *-*-* Time_02
+    public Label lblTime_Op01_T02;
+    public Label lblQtdCallPut_Op01_T02;
+    public ImageView imgCallPut_Op01_T02;
+    public Label lblQtdOperaçoes_Op01_T02;
+    public Label lblQtdVitorias_Op01_T02;
+    public Label lblQtdDerrotas_Op01_T02;
+    public Label lblVlrIn_Op01_T02;
+    public Label lblVlrOut_Op01_T02;
+    public Label lblVlrDiff_Op01_T02;
+    public TableView tbvTransacoes_Op01_T02;
+    // Symbol_01 *-*-* Time_03
+    public Label lblTime_Op01_T03;
+    public Label lblQtdCallPut_Op01_T03;
+    public ImageView imgCallPut_Op01_T03;
+    public Label lblQtdOperaçoes_Op01_T03;
+    public Label lblQtdVitorias_Op01_T03;
+    public Label lblQtdDerrotas_Op01_T03;
+    public Label lblVlrIn_Op01_T03;
+    public Label lblVlrOut_Op01_T03;
+    public Label lblVlrDiff_Op01_T03;
+    public TableView tbvTransacoes_Op01_T03;
 
 
     /**
@@ -249,38 +279,14 @@ public class Operacoes implements Initializable {
         getCboQtdTicksGrafico().getItems().setAll(100, 75, 50, 25, 0);
         getCboQtdTicksGrafico().getSelectionModel().select(0);
 
-        for (int i = 0; i < getSymbolObservableList().size(); i++) {
-            getHistoricoDeTicksObservableList()[i] = FXCollections.observableArrayList();
-            getHistoricoDeCandlesObservableList()[i] = FXCollections.observableArrayList();
-            getUltimoTick()[i] = new SimpleObjectProperty<>();
-            getUltimoCandle()[i] = new SimpleObjectProperty<>();
+        for (int symbol_id = 0; symbol_id < getSymbolObservableList().size(); symbol_id++) {
+            for (int time_id = 0; time_id < TICK_TIME.values().length; time_id++) {
+                getHistoricoDeOhlcObservableList()[symbol_id][time_id] = FXCollections.observableArrayList();
+                getUltimoOhlc()[symbol_id][time_id] = new SimpleObjectProperty<>();
+                getQtdCallPut()[symbol_id][time_id] = new SimpleObjectProperty<>(BigDecimal.ZERO);
+            }
         }
 
-//        for (int symbol_id = 0; symbol_id < getSymbolObservableList().size(); symbol_id++) {
-//            getHistoricoDeTicks_TempObservableList()[symbol_id] = FXCollections.observableArrayList();
-//            getHistoricoDeTicksAnalise_TempObservableList()[symbol_id] = FXCollections.observableArrayList();
-//        }
-//
-//        for (int operadorId = 0; operadorId < 5; operadorId++) {
-//            getOperador()[operadorId] = new SimpleObjectProperty<>();
-//            getOperadorAtivo()[operadorId] = new SimpleBooleanProperty(false);
-//            getOperadorCompraAutorizada()[operadorId] = new SimpleBooleanProperty(false);
-//            getOperadorNegociando()[operadorId] = new SimpleBooleanProperty(false);
-//            getTickSubindo()[operadorId] = new SimpleBooleanProperty();
-//            getUltimoTick()[operadorId] = new SimpleObjectProperty<>();
-//            getMaiorQtdDigito()[operadorId] = new SimpleIntegerProperty();
-//            getMenorQtdDigito()[operadorId] = new SimpleIntegerProperty();
-//            getInformacaoDetalhe01()[operadorId] = new SimpleStringProperty();
-//            getInformacaoValor01()[operadorId] = new SimpleStringProperty();
-//            getInformacaoValor01()[operadorId] = new SimpleStringProperty();
-//            getInformacaoValor02()[operadorId] = new SimpleStringProperty();
-//
-//            getHistoricoDeTicksObservableList()[operadorId] = FXCollections.observableArrayList();
-//            getHistoricoDeTicksAnaliseObservableList()[operadorId] = FXCollections.observableArrayList();
-//            getTransactionObservableList()[operadorId] = FXCollections.observableArrayList();
-//
-//            graficoEmBarras(operadorId);
-//        }
         Thread threadInicial = new Thread(getTaskWsBinary());
         threadInicial.setDaemon(true);
         threadInicial.start();
@@ -303,7 +309,6 @@ public class Operacoes implements Initializable {
 
     private void carregarAcoesObjetos() {
 
-
 //        getOperador()[0].bind(getCboSymbol01().valueProperty());
 //        getOperador()[1].bind(getCboSymbol02().valueProperty());
 //        getOperador()[2].bind(getCboSymbol03().valueProperty());
@@ -318,127 +323,110 @@ public class Operacoes implements Initializable {
 //            });
 //        }
 
-        for (Symbol symbol : getSymbolObservableList()) {
-//            solicitarTicks(symbol);
-        }
-
     }
 
     private void conectarObjetosEmVariaveis() {
 
-        getLblTickUltimo_Op01().textProperty().unbind();
-//        System.out.printf("tickStyle: %s\n", getTickStyle());
-        if (getTickStyle().equals(TICK_STYLE.TICKS))
-            getLblTickUltimo_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getUltimoTick()[0].getValue() == null)
-                    return "";
-                return getUltimoTick()[0].getValue().toString();
-            }, getUltimoTick()[0]));
-        else if (getTickStyle().equals(TICK_STYLE.CANDLES))
-            getLblTickUltimo_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getUltimoCandle()[0].getValue() == null)
-                    return "";
-                return getUltimoCandle()[0].getValue().toString();
-            }, getUltimoCandle()[0]));
+        getTpn_Op01().setText(getSymbolObservableList().get(0).getSymbol());
+        getUltimoOhlc()[0][0].addListener((ov, o, n) -> {
+            if (n == null)
+                getTpnLlUltTick_Op01().setText("");
+            if (n == null || o == null)
+                return;
+            getTpnLlUltTick_Op01().setText(n.toString());
+            if (getLblRoboHoraInicial().getText().equals(""))
+                getLblRoboHoraInicial().setText(
+                        LocalDateTime.ofInstant(Instant.ofEpochSecond(n.getOpen_time()),
+                                TimeZone.getDefault().toZoneId()).format(DTF_TMODEL_DATA_TRANSACTION)
+                );
+            if (n.getClose().compareTo(o.getClose()) >= 0)
+                getTpnLlUltTick_Op01().setStyle(STYLE_TICK_SUBINDO);
+            else
+                getTpnLlUltTick_Op01().setStyle(STYLE_TICK_DESCENDO);
+            Integer time_close = (n.getGranularity() - (n.getEpoch() - n.getOpen_time()));
+            getLblTime_Op01_T01().setText(String.format("%s M [t -%ss]",
+                    n.getGranularity() / 60,
+                    time_close));
+            if (time_close <= 2 && time_close > 0) {
+                if (n.getClose().compareTo(n.getOpen()) > 0) {
+                    if (getQtdCallPut()[0][0].getValue().compareTo(BigDecimal.ZERO) > 0)
+                        getQtdCallPut()[0][0].setValue(getQtdCallPut()[0][0].getValue().add(BigDecimal.ONE));
+                    else
+                        getQtdCallPut()[0][0].setValue(BigDecimal.ONE);
+                    getLblQtdCallPut_Op01_T01().setText(getQtdCallPut()[0][0].getValue().toString());
+                    getImgCallPut_Op01_T01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                } else if (n.getClose().compareTo(n.getOpen()) < 0) {
+                    if (getQtdCallPut()[0][0].getValue().compareTo(BigDecimal.ZERO) < 0)
+                        getQtdCallPut()[0][0].setValue(getQtdCallPut()[0][0].getValue().subtract(BigDecimal.ONE));
+                    else
+                        getQtdCallPut()[0][0].setValue(BigDecimal.ONE.negate());
+                    getLblQtdCallPut_Op01_T01().setText(getQtdCallPut()[0][0].getValue().negate().toString());
+                    getImgCallPut_Op01_T01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                } else {
+                    getLblQtdCallPut_Op01_T01().setText("0");
+                    getLblQtdCallPut_Op01_T01().setGraphic(null);
+                }
+                getLblQtdCallPut_Op01_T01().setText(getQtdCallPut()[0][0].getValue().toString().replace("-", ""));
+            }
+        });
+
+        getUltimoOhlc()[0][1].addListener((ov, o, n) -> {
+            Integer time_close = (n.getGranularity() - (n.getEpoch() - n.getOpen_time()));
+            getLblTime_Op01_T02().setText(String.format("%s M [t -%ss]",
+                    n.getGranularity() / 60,
+                    time_close));
+            if (time_close <= 2 && time_close > 0) {
+                if (n.getClose().compareTo(n.getOpen()) > 0) {
+                    if (getQtdCallPut()[0][1].getValue().compareTo(BigDecimal.ZERO) > 0)
+                        getQtdCallPut()[0][1].setValue(getQtdCallPut()[0][1].getValue().add(BigDecimal.ONE));
+                    else
+                        getQtdCallPut()[0][1].setValue(BigDecimal.ONE);
+                    getLblQtdCallPut_Op01_T02().setText(getQtdCallPut()[0][1].getValue().toString());
+                    getImgCallPut_Op01_T02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                } else if (n.getClose().compareTo(n.getOpen()) < 0) {
+                    if (getQtdCallPut()[0][1].getValue().compareTo(BigDecimal.ZERO) < 0)
+                        getQtdCallPut()[0][1].setValue(getQtdCallPut()[0][1].getValue().subtract(BigDecimal.ONE));
+                    else
+                        getQtdCallPut()[0][1].setValue(BigDecimal.ONE.negate());
+                    getLblQtdCallPut_Op01_T02().setText(getQtdCallPut()[0][1].getValue().negate().toString());
+                    getImgCallPut_Op01_T02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                } else {
+                    getLblQtdCallPut_Op01_T02().setText("0");
+                    getLblQtdCallPut_Op01_T02().setGraphic(null);
+                }
+                getLblQtdCallPut_Op01_T02().setText(getQtdCallPut()[0][1].getValue().toString().replace("-", ""));
+            }
+        });
 
 
-//        getLblTickUltimo_Op01().textProperty().unbind();
-//        getLblTickUltimo_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getUltimoTick()[0].getValue() == null)
-//                return "";
-//            return getUltimoTick()[0].getValue().toString();
-//        }, getUltimoTick()[0]));
-//        getLblTickUltimo_Op01().styleProperty().unbind();
-//        getLblTickUltimo_Op01().styleProperty().bind(Bindings.createStringBinding(() -> {
-////            if (getTickSubindo()[0].getValue() == null)
-////                return STYLE_TICK_NEUTRO;
-//            return getTickSubindo()[0].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO;
-//        }, getTickSubindo()[0]));
-//        getLblLegendaTickUltimo_Op01().styleProperty().unbind();
-//        getLblLegendaTickUltimo_Op01().styleProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getOperadorNegociando()[0].getValue() == null)
-//                return null;
-//            return getOperadorNegociando()[0].getValue() ? STYLE_TICK_NEGOCIANDO : STYLE_TICK_NEGOCIANDO_FALSE;
-//        }, getOperadorNegociando()[0]));
-//
-//        getLblTickUltimo_Op02().textProperty().unbind();
-//        getLblTickUltimo_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getUltimoTick()[1].getValue() == null)
-//                return "";
-//            return getUltimoTick()[1].getValue().toString();
-//        }, getUltimoTick()[1]));
-//        getLblTickUltimo_Op02().styleProperty().unbind();
-//        getLblTickUltimo_Op02().styleProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getTickSubindo()[1].getValue() == null)
-//                return null;
-//            return getTickSubindo()[1].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO;
-//        }, getTickSubindo()[1]));
-//        getLblLegendaTickUltimo_Op02().styleProperty().unbind();
-//        getLblLegendaTickUltimo_Op02().styleProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getOperadorNegociando()[1].getValue() == null)
-//                return null;
-//            return getOperadorNegociando()[1].getValue() ? STYLE_TICK_NEGOCIANDO : STYLE_TICK_NEGOCIANDO_FALSE;
-//        }, getOperadorNegociando()[1]));
-//
-//
-//        getLblTickUltimo_Op03().textProperty().unbind();
-//        getLblTickUltimo_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getUltimoTick()[2].getValue() == null)
-//                return "";
-//            return getUltimoTick()[2].getValue().toString();
-//        }, getUltimoTick()[2]));
-//        getLblTickUltimo_Op03().styleProperty().unbind();
-//        getLblTickUltimo_Op03().styleProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getTickSubindo()[2].getValue() == null)
-//                return null;
-//            return getTickSubindo()[2].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO;
-//        }, getTickSubindo()[2]));
-//        getLblLegendaTickUltimo_Op03().styleProperty().unbind();
-//        getLblLegendaTickUltimo_Op03().styleProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getOperadorNegociando()[2].getValue() == null)
-//                return null;
-//            return getOperadorNegociando()[2].getValue() ? STYLE_TICK_NEGOCIANDO : STYLE_TICK_NEGOCIANDO_FALSE;
-//        }, getOperadorNegociando()[2]));
-//
-//
-//        getLblTickUltimo_Op04().textProperty().unbind();
-//        getLblTickUltimo_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getUltimoTick()[3].getValue() == null)
-//                return "";
-//            return getUltimoTick()[3].getValue().toString();
-//        }, getUltimoTick()[3]));
-//        getLblTickUltimo_Op04().styleProperty().unbind();
-//        getLblTickUltimo_Op04().styleProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getTickSubindo()[3].getValue() == null)
-//                return null;
-//            return getTickSubindo()[3].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO;
-//        }, getTickSubindo()[3]));
-//        getLblLegendaTickUltimo_Op04().styleProperty().unbind();
-//        getLblLegendaTickUltimo_Op04().styleProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getOperadorNegociando()[3].getValue() == null)
-//                return null;
-//            return getOperadorNegociando()[3].getValue() ? STYLE_TICK_NEGOCIANDO : STYLE_TICK_NEGOCIANDO_FALSE;
-//        }, getOperadorNegociando()[3]));
-//
-//
-//        getLblTickUltimo_Op05().textProperty().unbind();
-//        getLblTickUltimo_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getUltimoTick()[4].getValue() == null)
-//                return "";
-//            return getUltimoTick()[4].getValue().toString();
-//        }, getUltimoTick()[4]));
-//        getLblTickUltimo_Op05().styleProperty().unbind();
-//        getLblTickUltimo_Op05().styleProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getTickSubindo()[4].getValue() == null)
-//                return null;
-//            return getTickSubindo()[4].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO;
-//        }, getTickSubindo()[4]));
-//        getLblLegendaTickUltimo_Op05().styleProperty().unbind();
-//        getLblLegendaTickUltimo_Op05().styleProperty().bind(Bindings.createStringBinding(() -> {
-//            if (getOperadorNegociando()[4].getValue() == null)
-//                return null;
-//            return getOperadorNegociando()[4].getValue() ? STYLE_TICK_NEGOCIANDO : STYLE_TICK_NEGOCIANDO_FALSE;
-//        }, getOperadorNegociando()[4]));
+        getUltimoOhlc()[0][2].addListener((ov, o, n) -> {
+            Integer time_close = (n.getGranularity() - (n.getEpoch() - n.getOpen_time()));
+            getLblTime_Op01_T03().setText(String.format("%s M [t -%ss]",
+                    n.getGranularity() / 60,
+                    time_close));
+            if (time_close <= 2 && time_close > 0) {
+                if (n.getClose().compareTo(n.getOpen()) > 0) {
+                    if (getQtdCallPut()[0][2].getValue().compareTo(BigDecimal.ZERO) > 0)
+                        getQtdCallPut()[0][2].setValue(getQtdCallPut()[0][2].getValue().add(BigDecimal.ONE));
+                    else
+                        getQtdCallPut()[0][2].setValue(BigDecimal.ONE);
+                    getLblQtdCallPut_Op01_T03().setText(getQtdCallPut()[0][2].getValue().toString());
+                    getImgCallPut_Op01_T03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                } else if (n.getClose().compareTo(n.getOpen()) < 0) {
+                    if (getQtdCallPut()[0][2].getValue().compareTo(BigDecimal.ZERO) < 0)
+                        getQtdCallPut()[0][2].setValue(getQtdCallPut()[0][2].getValue().subtract(BigDecimal.ONE));
+                    else
+                        getQtdCallPut()[0][2].setValue(BigDecimal.ONE.negate());
+                    getLblQtdCallPut_Op01_T03().setText(getQtdCallPut()[0][2].getValue().negate().toString());
+                    getImgCallPut_Op01_T03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                } else {
+                    getLblQtdCallPut_Op01_T03().setText("0");
+                    getLblQtdCallPut_Op01_T03().setGraphic(null);
+                }
+                getLblQtdCallPut_Op01_T03().setText(getQtdCallPut()[0][2].getValue().toString().replace("-", ""));
+            }
+        });
+
 
     }
 
@@ -452,28 +440,24 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-    private void solicitarActiveSymbols() {
-
-        String jsonActiveSymbols = Util_Json.getJson_from_Object(new ActiveSymbols());
-        getWsClientObjectProperty().getMyWebSocket().send(jsonActiveSymbols);
-
-    }
-
     private void solicitarTicks() {
 
-//        for (Symbol symbol : getSymbolObservableList()) {
         Symbol symbol;
-        for (int z = 0; z < 1; z++) {
+        Passthrough passthrough = new Passthrough();
+        for (int z = 0; z < getSymbolObservableList().size(); z++) {
             symbol = getSymbolObservableList().get(z);
-
-            Integer tempoVela = null;
-            for (int i = 1; i <= 1; i++) {
-                tempoVela = i * 60;
+            passthrough.setTickStyle(getTickStyle());
+            passthrough.setSymbol(symbol);
+            Integer tempoVela;
+            for (TICK_TIME tickTime : TICK_TIME.values()) {
+                tempoVela = Integer.parseInt(tickTime.getDescricao().replaceAll("\\D", "")) * 60;
+                passthrough.setTickTime(tickTime);
                 String jsonHistory = Util_Json.getJson_from_Object(new TicksHistory(symbol.getSymbol(),
-                        getCboQtdTicksGrafico().getValue(), getTickStyle(), tempoVela, null));
+                        getCboQtdTicksGrafico().getValue(), getTickStyle(), tempoVela, passthrough));
                 if (tempoVela == null) jsonHistory = jsonHistory.replace(",\"granularity\":null", "");
-                jsonHistory = jsonHistory.replace(",\"passthrough\":null", "");
-                System.out.printf("jsonHistory: %s\n", jsonHistory);
+                if (passthrough == null) jsonHistory = jsonHistory.replace(",\"passthrough\":null", "");
+//                if (tickTime.getCod() > 0) jsonHistory = jsonHistory.replace(",\"subscribe\":1", "");
+//                System.out.printf("jsonHistory: %s\n", jsonHistory);
                 getWsClientObjectProperty().getMyWebSocket().send(jsonHistory);
             }
         }
@@ -497,81 +481,6 @@ public class Operacoes implements Initializable {
 //        return null;
 //    }
 
-    /**
-     * Atualizações carregamentos e manipulações com graficos.
-     * <p>
-     * <p>
-     * <p>
-     * <p>
-     */
-
-//    private void graficoEmBarras(Integer operadorId) {
-//
-//        getGraficoBarrasListValoresDigitos_R()[operadorId] = FXCollections.observableArrayList();
-//        getGraficoBarrasListQtdDigito_R()[operadorId] = FXCollections.observableArrayList();
-//        getGraficoBarrasVolatilidade_R()[operadorId] = new XYChart.Series<>();
-//
-//        for (int digito = 0; digito < 10; digito++) {
-//            getGraficoTxtLegendaDigito_R()[operadorId][digito] = new Text();
-//            getGraficoTxtLegendaDigito_R()[operadorId][digito].setFont(Font.font("Arial", 10));
-//            getGraficoTxtLegendaDigito_R()[operadorId][digito].setStyle("-fx-text-fill: #fff;");
-//
-//            getGraficoBarrasListQtdDigito_R()[operadorId].add(digito, new SimpleLongProperty(0));
-//            getGraficoBarrasListValoresDigitos_R()[operadorId].add(new Data<>(String.valueOf(digito), 0));
-//
-//            int finalDigito = digito;
-//            getGraficoBarrasListQtdDigito_R()[operadorId].get(digito).addListener((ov, o, n) -> {
-//                if (n == null) return;
-//                Double porcento = n.intValue() != 0
-//                        ? (n.intValue() / (getGraficoQtdTicks() / 100.)) : 0.;
-//                getGraficoBarrasListValoresDigitos_R()[operadorId].get(finalDigito).setYValue(porcento.intValue());
-//                getGraficoTxtLegendaDigito_R()[operadorId][finalDigito].setText(String.format("%s%%", porcento.intValue()));
-//            });
-//        }
-//
-////        if (operadorId == 0) {
-////            getyAxisBarras_Op01().setUpperBound(25);
-////            getGraficoBarras_Op01().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
-////            getGraficoBarras_Op01().setVisible(true);
-////        }
-////        if (operadorId == 1) {
-////            getyAxisBarras_Op02().setUpperBound(25);
-////            getGraficoBarras_Op02().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
-////            getGraficoBarras_Op02().setVisible(true);
-////        }
-////        if (operadorId == 2) {
-////            getyAxisBarras_Op03().setUpperBound(25);
-////            getGraficoBarras_Op03().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
-////            getGraficoBarras_Op03().setVisible(true);
-////        }
-////        if (operadorId == 3) {
-////            getyAxisBarras_Op04().setUpperBound(25);
-////            getGraficoBarras_Op04().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
-////            getGraficoBarras_Op04().setVisible(true);
-////        }
-////        if (operadorId == 4) {
-////            getyAxisBarras_Op05().setUpperBound(25);
-////            getGraficoBarras_Op05().getData().add(getGraficoBarrasVolatilidade_R()[operadorId]);
-////            getGraficoBarras_Op05().setVisible(true);
-////        }
-//
-//    }
-//    private void displayLabelForData(XYChart.Data<String, Number> data, Text text) {
-//
-//        Platform.runLater(() -> {
-//            if (data == null || text == null) return;
-//            final Node node = data.getNode();
-//            if (node == null) return;
-//            ((Group) node.getParent()).getChildren().add(text);
-//            node.boundsInParentProperty().addListener((ov, oldBounds, bounds) -> {
-//                text.setLayoutX(Math.round(bounds.getMinX() + bounds.getWidth() / 2 - 6.));
-//                text.setLayoutY(Math.round(bounds.getMinY() - 12. * 0.5));
-//                text.setFill(Color.WHITE);
-//            });
-//        });
-//
-//    }
-
 
     /**
      * Monitorar retornos do WebService
@@ -585,80 +494,6 @@ public class Operacoes implements Initializable {
 
     private void monitorarTicks() {
 
-//        getHistoricoDeTicksObservableList().addListener((ListChangeListener<? super HistoricoDeTicks>) c -> {
-//            Platform.runLater(() -> {
-//                while (c.next()) {
-//                    for (HistoricoDeTicks historicoDeTicks : c.getAddedSubList()) {
-//                        if (getCboSymbol01().getValue() != null
-//                                && getCboSymbol01().getValue().equals(historicoDeTicks.getSymbol()))
-//                            getUltimoTick()[0].setValue();
-//                    }
-//                }
-//            });
-//        });
-
-
-//        for (int operadorId = 0; operadorId < 5; operadorId++) {
-//            int finalOperadorId = operadorId;
-//            getUltimoTick()[operadorId].addListener((ov, o, n) -> {
-//                Platform.runLater(() -> {
-//                    Map<Integer, Long> vlrDigitos = getHistoricoDeTicksObservableList()[finalOperadorId].stream()
-//                            .map(HistoricoDeTicks::getUltimoDigito)
-//                            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-//
-//                    getMenorQtdDigito()[finalOperadorId].setValue(Collections.min(vlrDigitos.values()));
-//                    getMaiorQtdDigito()[finalOperadorId].setValue(Collections.max(vlrDigitos.values()));
-//
-//                    for (int digito = 0; digito < 10; digito++) {
-//                        getGraficoBarrasListQtdDigito_R()[finalOperadorId].get(digito).setValue(
-//                                vlrDigitos.containsKey(digito) ? vlrDigitos.get(digito) : 0L);
-//                        if (!vlrDigitos.containsKey(digito))
-//                            getMenorQtdDigito()[finalOperadorId].setValue(0);
-//                    }
-//
-//                    if (getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].size() > 1)
-//                        getTickSubindo()[finalOperadorId].setValue(
-//                                getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].get(0).getPrice()
-//                                        .compareTo(getHistoricoDeTicksAnaliseObservableList()[finalOperadorId].get(1).getPrice()) >= 0);
-//
-//                    //Transacoes transacoesTemp;
-//                    //                    if (getTransacoesObservableList().size() > 0
-//                    //                            && (transacoesTemp = getTransacoesObservableList().stream()
-//                    //                            .filter(transacoes -> transacoes.getSymbol().getId() == symbolId + 1
-//                    //                                    && (transacoes.getTickCompra() == null
-//                    //                                    || transacoes.getTickVenda() == null))
-//                    //                            .findFirst().orElse(null)) != null) {
-//                    //                        int index = getTransacoesObservableList().indexOf(transacoesTemp);
-//                    //                        try {
-//                    //                            if (transacoesTemp.getTickCompra() == null) {
-//                    //                                transacoesTemp.setTickCompra(getHistoricoDeTicksGraficoObservableList()[symbolId].stream()
-//                    //                                        .filter(historicoDeTicks -> historicoDeTicks.getTime() >= transacoesTemp.getDataHoraCompra())
-//                    //                                        .findFirst().get().getPrice());
-//                    //                            } else {
-//                    //                                String contrato = transacoesTemp.getContract_type().toLowerCase();
-//                    //                                transacoesTemp.setTickVenda(getHistoricoDeTicksGraficoObservableList()[symbolId].stream()
-//                    //                                        .filter(historicoDeTicks -> {
-//                    //                                            if (contrato.contains("call") || contrato.contains("put"))
-//                    //                                                return historicoDeTicks.getTime() > transacoesTemp.getDataHoraExpiry();
-//                    //                                            return historicoDeTicks.getTime() >= transacoesTemp.getDataHoraExpiry();
-//                    //                                        }).sorted(Comparator.comparing(HistoricoDeTicks::getTime))
-//                    //                                        .findFirst().get().getPrice());
-//                    //                                if (transacoesTemp.getTickCompra() != null && transacoesTemp.getTickVenda() != null) {
-//                    //                                    getTransacoesDAO().merger(transacoesTemp);
-//                    //                                }
-//                    //                            }
-//                    //                        } catch (Exception ex) {
-//                    //                            if (!(ex instanceof NullPointerException) && !(ex instanceof NoSuchElementException))
-//                    //                                ex.printStackTrace();
-//                    //                        } finally {
-//                    //                            getTransacoesObservableList().set(index, transacoesTemp);
-//                    //                        }
-//                    //                    }
-//
-//                    atualizaCoresGrafico(finalOperadorId);
-//                });
-//            });
-//        }
 
     }
 
@@ -709,8 +544,8 @@ public class Operacoes implements Initializable {
         return SYMBOL_OBSERVABLE_LIST;
     }
 
-    public static ObservableList<ContaToken> getTokenObservableList() {
-        return TOKEN_OBSERVABLE_LIST;
+    public static ObservableList<ContaToken> getContaTokenObservableList() {
+        return CONTA_TOKEN_OBSERVABLE_LIST;
     }
 
     public static Authorize getAuthorize() {
@@ -747,6 +582,10 @@ public class Operacoes implements Initializable {
 
     public static void setWsConectado(boolean wsConectado) {
         Operacoes.wsConectado.set(wsConectado);
+    }
+
+    public static br.com.tlmacedo.binary.model.enums.TICK_STYLE getTickStyle() {
+        return TICK_STYLE;
     }
 
     public boolean isAppAutorizado() {
@@ -803,6 +642,54 @@ public class Operacoes implements Initializable {
 
     public void setRoboCronometroAtivado(boolean roboCronometroAtivado) {
         this.roboCronometroAtivado.set(roboCronometroAtivado);
+    }
+
+    public static ObjectProperty<BigDecimal>[][] getQtdCallPut() {
+        return qtdCallPut;
+    }
+
+    public static void setQtdCallPut(ObjectProperty<BigDecimal>[][] qtdCallPut) {
+        Operacoes.qtdCallPut = qtdCallPut;
+    }
+
+    public static BooleanProperty[][] getTickSubindo() {
+        return tickSubindo;
+    }
+
+    public static void setTickSubindo(BooleanProperty[][] tickSubindo) {
+        Operacoes.tickSubindo = tickSubindo;
+    }
+
+    public static ObjectProperty<Tick>[][] getUltimoTick() {
+        return ultimoTick;
+    }
+
+    public static void setUltimoTick(ObjectProperty<Tick>[][] ultimoTick) {
+        Operacoes.ultimoTick = ultimoTick;
+    }
+
+    public static ObjectProperty<Ohlc>[][] getUltimoOhlc() {
+        return ultimoOhlc;
+    }
+
+    public static void setUltimoOhlc(ObjectProperty<Ohlc>[][] ultimoOhlc) {
+        Operacoes.ultimoOhlc = ultimoOhlc;
+    }
+
+    public static ObservableList<HistoricoDeTicks>[][] getHistoricoDeTicksObservableList() {
+        return historicoDeTicksObservableList;
+    }
+
+    public static void setHistoricoDeTicksObservableList(ObservableList<HistoricoDeTicks>[][] historicoDeTicksObservableList) {
+        Operacoes.historicoDeTicksObservableList = historicoDeTicksObservableList;
+    }
+
+    public static ObservableList<HistoricoDeOhlc>[][] getHistoricoDeOhlcObservableList() {
+        return historicoDeOhlcObservableList;
+    }
+
+    public static void setHistoricoDeOhlcObservableList(ObservableList<HistoricoDeOhlc>[][] historicoDeOhlcObservableList) {
+        Operacoes.historicoDeOhlcObservableList = historicoDeOhlcObservableList;
     }
 
     public AnchorPane getPainelViewBinary() {
@@ -1029,199 +916,307 @@ public class Operacoes implements Initializable {
         this.tpn_Op01 = tpn_Op01;
     }
 
-    public Label getLblInf01_Op01() {
-        return lblInf01_Op01;
+    public Label getTpnLblQtdOperacoes_T01() {
+        return tpnLblQtdOperacoes_T01;
     }
 
-    public void setLblInf01_Op01(Label lblInf01_Op01) {
-        this.lblInf01_Op01 = lblInf01_Op01;
+    public void setTpnLblQtdOperacoes_T01(Label tpnLblQtdOperacoes_T01) {
+        this.tpnLblQtdOperacoes_T01 = tpnLblQtdOperacoes_T01;
     }
 
-    public Label getLblVlrInf01_Op01() {
-        return lblVlrInf01_Op01;
+    public Label getTpnLblQtdVitorias_T01() {
+        return tpnLblQtdVitorias_T01;
     }
 
-    public void setLblVlrInf01_Op01(Label lblVlrInf01_Op01) {
-        this.lblVlrInf01_Op01 = lblVlrInf01_Op01;
+    public void setTpnLblQtdVitorias_T01(Label tpnLblQtdVitorias_T01) {
+        this.tpnLblQtdVitorias_T01 = tpnLblQtdVitorias_T01;
     }
 
-    public Label getLblPorcInf01_Op01() {
-        return lblPorcInf01_Op01;
+    public Label getTpnLblQtdDerrotas_T01() {
+        return tpnLblQtdDerrotas_T01;
     }
 
-    public void setLblPorcInf01_Op01(Label lblPorcInf01_Op01) {
-        this.lblPorcInf01_Op01 = lblPorcInf01_Op01;
+    public void setTpnLblQtdDerrotas_T01(Label tpnLblQtdDerrotas_T01) {
+        this.tpnLblQtdDerrotas_T01 = tpnLblQtdDerrotas_T01;
     }
 
-    public Label getLblInf02_Op01() {
-        return lblInf02_Op01;
+    public Label getTpnLblVlrIn_T01() {
+        return tpnLblVlrIn_T01;
     }
 
-    public void setLblInf02_Op01(Label lblInf02_Op01) {
-        this.lblInf02_Op01 = lblInf02_Op01;
+    public void setTpnLblVlrIn_T01(Label tpnLblVlrIn_T01) {
+        this.tpnLblVlrIn_T01 = tpnLblVlrIn_T01;
     }
 
-    public Label getLblVlrInf02_Op01() {
-        return lblVlrInf02_Op01;
+    public Label getTpnLblVlrOut_T01() {
+        return tpnLblVlrOut_T01;
     }
 
-    public void setLblVlrInf02_Op01(Label lblVlrInf02_Op01) {
-        this.lblVlrInf02_Op01 = lblVlrInf02_Op01;
+    public void setTpnLblVlrOut_T01(Label tpnLblVlrOut_T01) {
+        this.tpnLblVlrOut_T01 = tpnLblVlrOut_T01;
     }
 
-    public Label getLblPorcInf02_Op01() {
-        return lblPorcInf02_Op01;
+    public Label getTpnLblVlrDiff_T01() {
+        return tpnLblVlrDiff_T01;
     }
 
-    public void setLblPorcInf02_Op01(Label lblPorcInf02_Op01) {
-        this.lblPorcInf02_Op01 = lblPorcInf02_Op01;
+    public void setTpnLblVlrDiff_T01(Label tpnLblVlrDiff_T01) {
+        this.tpnLblVlrDiff_T01 = tpnLblVlrDiff_T01;
     }
 
-    public Label getLblTickUltimo_Op01() {
-        return lblTickUltimo_Op01;
+    public Label getTpnLlUltTick_Op01() {
+        return tpnLlUltTick_Op01;
     }
 
-    public void setLblTickUltimo_Op01(Label lblTickUltimo_Op01) {
-        this.lblTickUltimo_Op01 = lblTickUltimo_Op01;
+    public void setTpnLlUltTick_Op01(Label tpnLlUltTick_Op01) {
+        this.tpnLlUltTick_Op01 = tpnLlUltTick_Op01;
     }
 
-    public Label getLblLegendaTickUltimo_Op01() {
-        return lblLegendaTickUltimo_Op01;
+    public Label getTpnLlUltTickLegenda_Op01() {
+        return tpnLlUltTickLegenda_Op01;
     }
 
-    public void setLblLegendaTickUltimo_Op01(Label lblLegendaTickUltimo_Op01) {
-        this.lblLegendaTickUltimo_Op01 = lblLegendaTickUltimo_Op01;
+    public void setTpnLlUltTickLegenda_Op01(Label tpnLlUltTickLegenda_Op01) {
+        this.tpnLlUltTickLegenda_Op01 = tpnLlUltTickLegenda_Op01;
     }
 
-    public Button getBtnContrato_Op01() {
-        return btnContrato_Op01;
+    public Label getLblTime_Op01_T01() {
+        return lblTime_Op01_T01;
     }
 
-    public void setBtnContrato_Op01(Button btnContrato_Op01) {
-        this.btnContrato_Op01 = btnContrato_Op01;
+    public void setLblTime_Op01_T01(Label lblTime_Op01_T01) {
+        this.lblTime_Op01_T01 = lblTime_Op01_T01;
     }
 
-    public Button getBtnPausar_Op01() {
-        return btnPausar_Op01;
+    public Label getLblQtdCallPut_Op01_T01() {
+        return lblQtdCallPut_Op01_T01;
     }
 
-    public void setBtnPausar_Op01(Button btnPausar_Op01) {
-        this.btnPausar_Op01 = btnPausar_Op01;
+    public void setLblQtdCallPut_Op01_T01(Label lblQtdCallPut_Op01_T01) {
+        this.lblQtdCallPut_Op01_T01 = lblQtdCallPut_Op01_T01;
     }
 
-    public Button getBtnStop_Op01() {
-        return btnStop_Op01;
+    public ImageView getImgCallPut_Op01_T01() {
+        return imgCallPut_Op01_T01;
     }
 
-    public void setBtnStop_Op01(Button btnStop_Op01) {
-        this.btnStop_Op01 = btnStop_Op01;
+    public void setImgCallPut_Op01_T01(ImageView imgCallPut_Op01_T01) {
+        this.imgCallPut_Op01_T01 = imgCallPut_Op01_T01;
     }
 
-    public Label getLblInvestido_Op01() {
-        return lblInvestido_Op01;
+    public Label getLblQtdOperaçoes_Op01_T01() {
+        return lblQtdOperaçoes_Op01_T01;
     }
 
-    public void setLblInvestido_Op01(Label lblInvestido_Op01) {
-        this.lblInvestido_Op01 = lblInvestido_Op01;
+    public void setLblQtdOperaçoes_Op01_T01(Label lblQtdOperaçoes_Op01_T01) {
+        this.lblQtdOperaçoes_Op01_T01 = lblQtdOperaçoes_Op01_T01;
     }
 
-    public Label getLblPremiacao_Op01() {
-        return lblPremiacao_Op01;
+    public Label getLblQtdVitorias_Op01_T01() {
+        return lblQtdVitorias_Op01_T01;
     }
 
-    public void setLblPremiacao_Op01(Label lblPremiacao_Op01) {
-        this.lblPremiacao_Op01 = lblPremiacao_Op01;
+    public void setLblQtdVitorias_Op01_T01(Label lblQtdVitorias_Op01_T01) {
+        this.lblQtdVitorias_Op01_T01 = lblQtdVitorias_Op01_T01;
     }
 
-    public Label getLblLucro_Op01() {
-        return lblLucro_Op01;
+    public Label getLblQtdDerrotas_Op01_T01() {
+        return lblQtdDerrotas_Op01_T01;
     }
 
-    public void setLblLucro_Op01(Label lblLucro_Op01) {
-        this.lblLucro_Op01 = lblLucro_Op01;
+    public void setLblQtdDerrotas_Op01_T01(Label lblQtdDerrotas_Op01_T01) {
+        this.lblQtdDerrotas_Op01_T01 = lblQtdDerrotas_Op01_T01;
     }
 
-    public TableView<Transacoes> getTbvTransacoes_Op01() {
-        return tbvTransacoes_Op01;
+    public Label getLblVlrIn_Op01_T01() {
+        return lblVlrIn_Op01_T01;
     }
 
-    public void setTbvTransacoes_Op01(TableView<Transacoes> tbvTransacoes_Op01) {
-        this.tbvTransacoes_Op01 = tbvTransacoes_Op01;
+    public void setLblVlrIn_Op01_T01(Label lblVlrIn_Op01_T01) {
+        this.lblVlrIn_Op01_T01 = lblVlrIn_Op01_T01;
     }
 
-    public Label getTpnLblLegendaExecucoes_Op01() {
-        return tpnLblLegendaExecucoes_Op01;
+    public Label getLblVlrOut_Op01_T01() {
+        return lblVlrOut_Op01_T01;
     }
 
-    public void setTpnLblLegendaExecucoes_Op01(Label tpnLblLegendaExecucoes_Op01) {
-        this.tpnLblLegendaExecucoes_Op01 = tpnLblLegendaExecucoes_Op01;
+    public void setLblVlrOut_Op01_T01(Label lblVlrOut_Op01_T01) {
+        this.lblVlrOut_Op01_T01 = lblVlrOut_Op01_T01;
     }
 
-    public Label getTpnLblExecucoes_Op01() {
-        return tpnLblExecucoes_Op01;
+    public Label getLblVlrDiff_Op01_T01() {
+        return lblVlrDiff_Op01_T01;
     }
 
-    public void setTpnLblExecucoes_Op01(Label tpnLblExecucoes_Op01) {
-        this.tpnLblExecucoes_Op01 = tpnLblExecucoes_Op01;
+    public void setLblVlrDiff_Op01_T01(Label lblVlrDiff_Op01_T01) {
+        this.lblVlrDiff_Op01_T01 = lblVlrDiff_Op01_T01;
     }
 
-    public Label getTpnLblVitorias_Op01() {
-        return tpnLblVitorias_Op01;
+    public TableView getTbvTransacoes_Op01_T01() {
+        return tbvTransacoes_Op01_T01;
     }
 
-    public void setTpnLblVitorias_Op01(Label tpnLblVitorias_Op01) {
-        this.tpnLblVitorias_Op01 = tpnLblVitorias_Op01;
+    public void setTbvTransacoes_Op01_T01(TableView tbvTransacoes_Op01_T01) {
+        this.tbvTransacoes_Op01_T01 = tbvTransacoes_Op01_T01;
     }
 
-    public Label getTpnLblDerrotas_Op01() {
-        return tpnLblDerrotas_Op01;
+    public Label getLblTime_Op01_T02() {
+        return lblTime_Op01_T02;
     }
 
-    public void setTpnLblDerrotas_Op01(Label tpnLblDerrotas_Op01) {
-        this.tpnLblDerrotas_Op01 = tpnLblDerrotas_Op01;
+    public void setLblTime_Op01_T02(Label lblTime_Op01_T02) {
+        this.lblTime_Op01_T02 = lblTime_Op01_T02;
     }
 
-    public static TICK_STYLE getTickStyle() {
-        return TICK_STYLE;
+    public Label getLblQtdCallPut_Op01_T02() {
+        return lblQtdCallPut_Op01_T02;
     }
 
-    public static ObservableList<HistoricoDeTicks>[] getHistoricoDeTicksObservableList() {
-        return historicoDeTicksObservableList;
+    public void setLblQtdCallPut_Op01_T02(Label lblQtdCallPut_Op01_T02) {
+        this.lblQtdCallPut_Op01_T02 = lblQtdCallPut_Op01_T02;
     }
 
-    public static void setHistoricoDeTicksObservableList(ObservableList<HistoricoDeTicks>[] historicoDeTicksObservableList) {
-        Operacoes.historicoDeTicksObservableList = historicoDeTicksObservableList;
+    public ImageView getImgCallPut_Op01_T02() {
+        return imgCallPut_Op01_T02;
     }
 
-    public static BooleanProperty[] getTickSubindo() {
-        return tickSubindo;
+    public void setImgCallPut_Op01_T02(ImageView imgCallPut_Op01_T02) {
+        this.imgCallPut_Op01_T02 = imgCallPut_Op01_T02;
     }
 
-    public static void setTickSubindo(BooleanProperty[] tickSubindo) {
-        Operacoes.tickSubindo = tickSubindo;
+    public Label getLblQtdOperaçoes_Op01_T02() {
+        return lblQtdOperaçoes_Op01_T02;
     }
 
-    public static ObjectProperty<Tick>[] getUltimoTick() {
-        return ultimoTick;
+    public void setLblQtdOperaçoes_Op01_T02(Label lblQtdOperaçoes_Op01_T02) {
+        this.lblQtdOperaçoes_Op01_T02 = lblQtdOperaçoes_Op01_T02;
     }
 
-    public static void setUltimoTick(ObjectProperty<Tick>[] ultimoTick) {
-        Operacoes.ultimoTick = ultimoTick;
+    public Label getLblQtdVitorias_Op01_T02() {
+        return lblQtdVitorias_Op01_T02;
     }
 
-    public static ObservableList<HistoricoDeCandles>[] getHistoricoDeCandlesObservableList() {
-        return historicoDeCandlesObservableList;
+    public void setLblQtdVitorias_Op01_T02(Label lblQtdVitorias_Op01_T02) {
+        this.lblQtdVitorias_Op01_T02 = lblQtdVitorias_Op01_T02;
     }
 
-    public static void setHistoricoDeCandlesObservableList(ObservableList<HistoricoDeCandles>[] historicoDeCandlesObservableList) {
-        Operacoes.historicoDeCandlesObservableList = historicoDeCandlesObservableList;
+    public Label getLblQtdDerrotas_Op01_T02() {
+        return lblQtdDerrotas_Op01_T02;
     }
 
-    public static ObjectProperty<Ohlc>[] getUltimoCandle() {
-        return ultimoCandle;
+    public void setLblQtdDerrotas_Op01_T02(Label lblQtdDerrotas_Op01_T02) {
+        this.lblQtdDerrotas_Op01_T02 = lblQtdDerrotas_Op01_T02;
     }
 
-    public static void setUltimoCandle(ObjectProperty<Ohlc>[] ultimoCandle) {
-        Operacoes.ultimoCandle = ultimoCandle;
+    public Label getLblVlrIn_Op01_T02() {
+        return lblVlrIn_Op01_T02;
+    }
+
+    public void setLblVlrIn_Op01_T02(Label lblVlrIn_Op01_T02) {
+        this.lblVlrIn_Op01_T02 = lblVlrIn_Op01_T02;
+    }
+
+    public Label getLblVlrOut_Op01_T02() {
+        return lblVlrOut_Op01_T02;
+    }
+
+    public void setLblVlrOut_Op01_T02(Label lblVlrOut_Op01_T02) {
+        this.lblVlrOut_Op01_T02 = lblVlrOut_Op01_T02;
+    }
+
+    public Label getLblVlrDiff_Op01_T02() {
+        return lblVlrDiff_Op01_T02;
+    }
+
+    public void setLblVlrDiff_Op01_T02(Label lblVlrDiff_Op01_T02) {
+        this.lblVlrDiff_Op01_T02 = lblVlrDiff_Op01_T02;
+    }
+
+    public TableView getTbvTransacoes_Op01_T02() {
+        return tbvTransacoes_Op01_T02;
+    }
+
+    public void setTbvTransacoes_Op01_T02(TableView tbvTransacoes_Op01_T02) {
+        this.tbvTransacoes_Op01_T02 = tbvTransacoes_Op01_T02;
+    }
+
+    public Label getLblTime_Op01_T03() {
+        return lblTime_Op01_T03;
+    }
+
+    public void setLblTime_Op01_T03(Label lblTime_Op01_T03) {
+        this.lblTime_Op01_T03 = lblTime_Op01_T03;
+    }
+
+    public Label getLblQtdCallPut_Op01_T03() {
+        return lblQtdCallPut_Op01_T03;
+    }
+
+    public void setLblQtdCallPut_Op01_T03(Label lblQtdCallPut_Op01_T03) {
+        this.lblQtdCallPut_Op01_T03 = lblQtdCallPut_Op01_T03;
+    }
+
+    public ImageView getImgCallPut_Op01_T03() {
+        return imgCallPut_Op01_T03;
+    }
+
+    public void setImgCallPut_Op01_T03(ImageView imgCallPut_Op01_T03) {
+        this.imgCallPut_Op01_T03 = imgCallPut_Op01_T03;
+    }
+
+    public Label getLblQtdOperaçoes_Op01_T03() {
+        return lblQtdOperaçoes_Op01_T03;
+    }
+
+    public void setLblQtdOperaçoes_Op01_T03(Label lblQtdOperaçoes_Op01_T03) {
+        this.lblQtdOperaçoes_Op01_T03 = lblQtdOperaçoes_Op01_T03;
+    }
+
+    public Label getLblQtdVitorias_Op01_T03() {
+        return lblQtdVitorias_Op01_T03;
+    }
+
+    public void setLblQtdVitorias_Op01_T03(Label lblQtdVitorias_Op01_T03) {
+        this.lblQtdVitorias_Op01_T03 = lblQtdVitorias_Op01_T03;
+    }
+
+    public Label getLblQtdDerrotas_Op01_T03() {
+        return lblQtdDerrotas_Op01_T03;
+    }
+
+    public void setLblQtdDerrotas_Op01_T03(Label lblQtdDerrotas_Op01_T03) {
+        this.lblQtdDerrotas_Op01_T03 = lblQtdDerrotas_Op01_T03;
+    }
+
+    public Label getLblVlrIn_Op01_T03() {
+        return lblVlrIn_Op01_T03;
+    }
+
+    public void setLblVlrIn_Op01_T03(Label lblVlrIn_Op01_T03) {
+        this.lblVlrIn_Op01_T03 = lblVlrIn_Op01_T03;
+    }
+
+    public Label getLblVlrOut_Op01_T03() {
+        return lblVlrOut_Op01_T03;
+    }
+
+    public void setLblVlrOut_Op01_T03(Label lblVlrOut_Op01_T03) {
+        this.lblVlrOut_Op01_T03 = lblVlrOut_Op01_T03;
+    }
+
+    public Label getLblVlrDiff_Op01_T03() {
+        return lblVlrDiff_Op01_T03;
+    }
+
+    public void setLblVlrDiff_Op01_T03(Label lblVlrDiff_Op01_T03) {
+        this.lblVlrDiff_Op01_T03 = lblVlrDiff_Op01_T03;
+    }
+
+    public TableView getTbvTransacoes_Op01_T03() {
+        return tbvTransacoes_Op01_T03;
+    }
+
+    public void setTbvTransacoes_Op01_T03(TableView tbvTransacoes_Op01_T03) {
+        this.tbvTransacoes_Op01_T03 = tbvTransacoes_Op01_T03;
     }
 }

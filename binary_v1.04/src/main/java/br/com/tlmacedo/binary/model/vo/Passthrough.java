@@ -1,6 +1,7 @@
 package br.com.tlmacedo.binary.model.vo;
 
 import br.com.tlmacedo.binary.model.enums.TICK_STYLE;
+import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 
 import java.io.Serializable;
 
@@ -8,7 +9,8 @@ public class Passthrough implements Serializable {
     public static final long serialVersionUID = 1L;
 
     Symbol symbol;
-    TICK_STYLE tick_style;
+    TICK_TIME tickTime;
+    TICK_STYLE tickStyle;
     String mensagem;
 
     public Passthrough() {
@@ -22,12 +24,20 @@ public class Passthrough implements Serializable {
         this.symbol = symbol;
     }
 
-    public TICK_STYLE getTick_style() {
-        return tick_style;
+    public TICK_TIME getTickTime() {
+        return tickTime;
     }
 
-    public void setTick_style(TICK_STYLE tick_style) {
-        this.tick_style = tick_style;
+    public void setTickTime(TICK_TIME tickTime) {
+        this.tickTime = tickTime;
+    }
+
+    public TICK_STYLE getTickStyle() {
+        return tickStyle;
+    }
+
+    public void setTickStyle(TICK_STYLE tickStyle) {
+        this.tickStyle = tickStyle;
     }
 
     public String getMensagem() {
@@ -42,7 +52,8 @@ public class Passthrough implements Serializable {
     public String toString() {
         return "Passthrough{" +
                 "symbol=" + symbol +
-                ", tick_style=" + tick_style +
+                ", tickTime=" + tickTime +
+                ", tickStyle=" + tickStyle +
                 ", mensagem='" + mensagem + '\'' +
                 '}';
     }

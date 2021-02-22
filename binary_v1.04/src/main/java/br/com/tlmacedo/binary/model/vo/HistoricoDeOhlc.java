@@ -7,7 +7,7 @@ import javafx.beans.property.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class HistoricoDeCandles implements Serializable {
+public class HistoricoDeOhlc implements Serializable {
     public static final long serialVersionUID = 1L;
 
     LongProperty id = new SimpleLongProperty();
@@ -19,10 +19,10 @@ public class HistoricoDeCandles implements Serializable {
     IntegerProperty pip_size = new SimpleIntegerProperty();
     IntegerProperty time = new SimpleIntegerProperty();
 
-    public HistoricoDeCandles() {
+    public HistoricoDeOhlc() {
     }
 
-    public HistoricoDeCandles(Symbol symbol, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, Integer pip_size, Integer time) {
+    public HistoricoDeOhlc(Symbol symbol, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, Integer pip_size, Integer time) {
         this.symbol = new SimpleObjectProperty<>(symbol);
         this.open = new SimpleObjectProperty<>(open);
         this.high = new SimpleObjectProperty<>(high);

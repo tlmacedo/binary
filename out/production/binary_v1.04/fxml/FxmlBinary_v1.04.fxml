@@ -2,6 +2,7 @@
 
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -10,8 +11,10 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane fx:id="painelViewBinary" prefHeight="1565.0" prefWidth="900.0" stylesheets="@../style/css/binary.css" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.tlmacedo.binary.controller.Operacoes">
@@ -380,158 +383,424 @@
         </TitledPane>
         <!--            </content>-->
         <!--        </TitledPane>-->
-        <TitledPane fx:id="tpn_Op01" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="192.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="443.0" text="01 - ">
+        <TitledPane fx:id="tpn_Op01" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="192.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="766.0" prefWidth="890.0" text="Symbol 01 - ">
             <content>
                 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="240.0" prefWidth="443.0">
                     <children>
-                        <VBox alignment="CENTER_LEFT" layoutX="5.0" layoutY="5.0">
+                        <Group layoutX="2.0" layoutY="2.0">
                             <children>
-                                <Label fx:id="lblInf01_Op01" alignment="CENTER" prefHeight="22.0" prefWidth="80.0" text="Inf01" textAlignment="CENTER" wrapText="true">
-                                    <styleClass>
-                                        <String fx:value="lbl_informacao" />
-                                        <String fx:value="top" />
-                                    </styleClass>
-                                </Label>
-                                <HBox>
+                                <Pane>
                                     <children>
-                                        <Label fx:id="lblVlrInf01_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="40.0" text="0">
-                                            <styleClass>
-                                                <String fx:value="lbl_informacao" />
-                                                <String fx:value="down-left" />
-                                            </styleClass>
-                                        </Label>
-                                        <Label fx:id="lblPorcInf01_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="40.0" text="0%">
-                                            <styleClass>
-                                                <String fx:value="lbl_informacao" />
-                                                <String fx:value="down-right" />
-                                            </styleClass>
-                                        </Label>
-                                    </children>
-                                </HBox>
-                            </children>
-                        </VBox>
-                        <VBox alignment="CENTER_LEFT" layoutX="5.0" layoutY="55.0">
-                            <children>
-                                <Label fx:id="lblInf02_Op01" alignment="CENTER" prefHeight="22.0" prefWidth="80.0" text="Inf02" textAlignment="CENTER" wrapText="true">
-                                    <styleClass>
-                                        <String fx:value="lbl_informacao" />
-                                        <String fx:value="top" />
-                                    </styleClass>
-                                </Label>
-                                <HBox>
-                                    <children>
-                                        <Label fx:id="lblVlrInf02_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="40.0" text="0">
-                                            <styleClass>
-                                                <String fx:value="lbl_informacao" />
-                                                <String fx:value="down-left" />
-                                            </styleClass>
-                                        </Label>
-                                        <Label fx:id="lblPorcInf02_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="40.0" text="0%">
-                                            <styleClass>
-                                                <String fx:value="lbl_informacao" />
-                                                <String fx:value="down-right" />
-                                            </styleClass>
-                                        </Label>
-                                    </children>
-                                </HBox>
-                            </children>
-                        </VBox>
-                          <HBox layoutX="90.0" layoutY="5.0">
-                              <children>
-                                  <Label fx:id="lblTickUltimo_Op01" alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="210.0" styleClass="tick-ultimo">
-                                        </Label>
-                                  <Label fx:id="lblLegendaTickUltimo_Op01" prefHeight="45.0" prefWidth="40.0" text="Último Tick" textAlignment="CENTER" wrapText="true">
-                                      <styleClass>
+                                        <VBox alignment="CENTER_LEFT" layoutY="2.0">
+                                            <children>
+                                                <Label fx:id="lblTime_Op01_T01" prefHeight="22.0" prefWidth="70.0" text="rise / fall" wrapText="true">
+                                                    <styleClass>
+                                                        <String fx:value="lbl_informacao" />
+                                                        <String fx:value="top" />
+                                                    </styleClass>
+                                                </Label>
+                                                  <Label fx:id="lblQtdCallPut_Op01_T01" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="23.0" prefWidth="70.0" text="0">
+                                                      <styleClass>
+                                                          <String fx:value="lbl_informacao" />
+                                                          <String fx:value="down-left" />
+                                                      </styleClass>
+                                                      <graphic>
+                                                          <ImageView fx:id="imgCallPut_Op01_T01" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" smooth="false" />
+                                                      </graphic>
+                                                  </Label>
+                                            </children>
+                                        </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="112.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Qtd" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
                                           <String fx:value="lbl_informacao" />
-                                          <String fx:value="right" />
-                                      </styleClass>
-                                  </Label>
-                              </children>
-                          </HBox>
-                  <VBox alignment="CENTER" layoutX="345.0" layoutY="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="95.0" prefWidth="95.0" spacing="10.0">
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdOperaçoes_Op01_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="167.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Vitórias" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdVitorias_Op01_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="222.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Derrotas" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdDerrotas_Op01_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                                        <VBox alignment="CENTER_LEFT" layoutX="277.0" layoutY="2.0">
+                                            <children>
+                                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="In" textAlignment="CENTER" wrapText="true">
+                                                    <styleClass>
+                                                        <String fx:value="lbl_informacao" />
+                                                        <String fx:value="top" />
+                                                    </styleClass>
+                                                </Label>
+                                                <Label fx:id="lblVlrIn_Op01_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0.00">
+                                                    <styleClass>
+                                                        <String fx:value="lbl_informacao" />
+                                                        <String fx:value="down-left" />
+                                                    </styleClass>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                        <VBox alignment="CENTER_LEFT" layoutX="332.0" layoutY="2.0">
+                                            <children>
+                                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Out" textAlignment="CENTER" wrapText="true">
+                                                    <styleClass>
+                                                        <String fx:value="lbl_informacao" />
+                                                        <String fx:value="top" />
+                                                    </styleClass>
+                                                </Label>
+                                                <Label fx:id="lblVlrOut_Op01_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0.00">
+                                                    <styleClass>
+                                                        <String fx:value="lbl_informacao" />
+                                                        <String fx:value="down-left" />
+                                                    </styleClass>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                        <VBox alignment="CENTER_LEFT" layoutX="387.0" layoutY="2.0">
+                                            <children>
+                                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Diff" textAlignment="CENTER" wrapText="true">
+                                                    <styleClass>
+                                                        <String fx:value="lbl_informacao" />
+                                                        <String fx:value="top" />
+                                                    </styleClass>
+                                                </Label>
+                                                <Label fx:id="lblVlrDiff_Op01_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0.00">
+                                                    <styleClass>
+                                                        <String fx:value="lbl_informacao" />
+                                                        <String fx:value="down-left" />
+                                                    </styleClass>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                        <ScrollPane layoutY="50.0" prefHeight="130.0" prefWidth="440.0">
+                                            <content>
+                                                <TableView fx:id="tbvTransacoes_Op01_T01" prefHeight="130.0" prefWidth="435.0">
+                                                    <columns>
+                                                        <TableColumn prefWidth="75.0" text="C1" />
+                                                        <TableColumn prefWidth="75.0" text="C2" />
+                                                    </columns>
+                                                </TableView>
+                                            </content>
+                                        </ScrollPane>
+                                    </children>
+                                </Pane>
+                            </children>
+                        </Group>
+                  <Group layoutX="446.0" layoutY="2.0">
                      <children>
-                        <Button fx:id="btnContrato_Op01" disable="true" mnemonicParsing="false" prefHeight="23.0" prefWidth="95.0" text="Contrato" />
-                              <Button fx:id="btnPausar_Op01" alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="23.0" prefWidth="95.0" text="Pausar" textAlignment="CENTER" wrapText="true" />
-                              <Button fx:id="btnStop_Op01" alignment="CENTER" disable="true" mnemonicParsing="false" prefHeight="23.0" prefWidth="95.0" text="Stop">
-                        </Button>
+                        <Pane>
+                           <children>
+                              <VBox alignment="CENTER_LEFT" layoutY="2.0">
+                                 <children>
+                                    <Label fx:id="lblTime_Op01_T02" prefHeight="22.0" prefWidth="70.0" text="rise / fall" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdCallPut_Op01_T02" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="23.0" prefWidth="70.0" text="0">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                       <graphic>
+                                          <ImageView fx:id="imgCallPut_Op01_T02" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" smooth="false" />
+                                       </graphic>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="112.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Qtd" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdOperaçoes_Op01_T02" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="167.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Vitórias" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdVitorias_Op01_T02" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="222.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Derrotas" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdDerrotas_Op01_T02" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="277.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="In" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblVlrIn_Op01_T02" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0.00">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="332.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Out" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblVlrOut_Op01_T02" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0.00">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="387.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Diff" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblVlrDiff_Op01_T02" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0.00">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <ScrollPane layoutY="50.0" prefHeight="130.0" prefWidth="440.0">
+                                 <content>
+                                    <TableView fx:id="tbvTransacoes_Op01_T02" prefHeight="130.0" prefWidth="435.0">
+                                       <columns>
+                                          <TableColumn prefWidth="75.0" text="C1" />
+                                          <TableColumn prefWidth="75.0" text="C2" />
+                                       </columns>
+                                    </TableView>
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                        </Pane>
                      </children>
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                  </VBox>
-                        <VBox alignment="CENTER_LEFT" layoutX="90.0" layoutY="55.0">
-                            <children>
-                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="80.0" text="Investido" textAlignment="CENTER" wrapText="true">
-                                    <styleClass>
-                                        <String fx:value="lbl_informacao" />
-                                        <String fx:value="top" />
-                                    </styleClass>
-                                </Label>
-                                  <Label fx:id="lblInvestido_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="80.0" text="0.00">
-                                      <styleClass>
+                  </Group>
+                  <Group layoutX="2.0" layoutY="185.0">
+                     <children>
+                        <Pane>
+                           <children>
+                              <VBox alignment="CENTER_LEFT" layoutY="2.0">
+                                 <children>
+                                    <Label fx:id="lblTime_Op01_T03" prefHeight="22.0" prefWidth="70.0" text="rise / fall" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdCallPut_Op01_T03" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="23.0" prefWidth="70.0" text="0">
+                                       <styleClass>
                                           <String fx:value="lbl_informacao" />
                                           <String fx:value="down-left" />
-                                      </styleClass>
-                                  </Label>
-                            </children>
-                        </VBox>
-                        <VBox alignment="CENTER_LEFT" layoutX="175.0" layoutY="55.0">
-                            <children>
-                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="80.0" text="Premiação" textAlignment="CENTER" wrapText="true">
-                                    <styleClass>
-                                        <String fx:value="lbl_informacao" />
-                                        <String fx:value="top" />
-                                    </styleClass>
-                                </Label>
-                                  <Label fx:id="lblPremiacao_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="80.0" text="0.00">
-                                      <styleClass>
+                                       </styleClass>
+                                       <graphic>
+                                          <ImageView fx:id="imgCallPut_Op01_T03" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" smooth="false" />
+                                       </graphic>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="112.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Qtd" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdOperaçoes_Op01_T03" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                       <styleClass>
                                           <String fx:value="lbl_informacao" />
                                           <String fx:value="down-left" />
-                                      </styleClass>
-                                  </Label>
-                            </children>
-                        </VBox>
-                        <VBox alignment="CENTER_LEFT" layoutX="260.0" layoutY="55.0">
-                            <children>
-                                <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="80.0" text="Lucro" textAlignment="CENTER" wrapText="true">
-                                    <styleClass>
-                                        <String fx:value="lbl_informacao" />
-                                        <String fx:value="top" />
-                                    </styleClass>
-                                </Label>
-                                  <Label fx:id="lblLucro_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="80.0" text="0.00">
-                                      <styleClass>
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="167.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Vitórias" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdVitorias_Op01_T03" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                       <styleClass>
                                           <String fx:value="lbl_informacao" />
                                           <String fx:value="down-left" />
-                                      </styleClass>
-                                  </Label>
-                            </children>
-                        </VBox>
-                        <ScrollPane layoutX="5.0" layoutY="105.0" prefHeight="130.0" prefWidth="435.0">
-                            <content>
-                                <TableView fx:id="tbvTransacoes_Op01" prefHeight="130.0" prefWidth="435.0">
-                                    <columns>
-                                        <TableColumn prefWidth="75.0" text="C1" />
-                                        <TableColumn prefWidth="75.0" text="C2" />
-                                    </columns>
-                                </TableView>
-                            </content>
-                        </ScrollPane>
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="222.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Derrotas" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblQtdDerrotas_Op01_T03" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="277.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="In" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblVlrIn_Op01_T03" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0.00">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="332.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Out" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblVlrOut_Op01_T03" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0.00">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER_LEFT" layoutX="387.0" layoutY="2.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" prefHeight="22.0" prefWidth="50.0" text="Diff" textAlignment="CENTER" wrapText="true">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="top" />
+                                       </styleClass>
+                                    </Label>
+                                    <Label fx:id="lblVlrDiff_Op01_T03" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0.00">
+                                       <styleClass>
+                                          <String fx:value="lbl_informacao" />
+                                          <String fx:value="down-left" />
+                                       </styleClass>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                              <ScrollPane layoutY="50.0" prefHeight="130.0" prefWidth="440.0">
+                                 <content>
+                                    <TableView fx:id="tbvTransacoes_Op01_T03" prefHeight="130.0" prefWidth="435.0">
+                                       <columns>
+                                          <TableColumn prefWidth="75.0" text="C1" />
+                                          <TableColumn prefWidth="75.0" text="C2" />
+                                       </columns>
+                                    </TableView>
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                        </Pane>
+                     </children>
+                  </Group>
                     </children>
                 </AnchorPane>
             </content>
             <graphic>
                 <HBox>
                     <children>
-                        <HBox>
+                        <HBox alignment="CENTER_LEFT">
                             <children>
-                                <Label fx:id="tpnLblLegendaExecucoes_Op01" alignment="CENTER" prefHeight="23.0" text="Operações" textAlignment="CENTER" wrapText="true">
+                                <Label alignment="CENTER" prefHeight="23.0" text="Operações" textAlignment="CENTER" wrapText="true">
                                     <styleClass>
                                         <String fx:value="lbl_informacao" />
                                         <String fx:value="left" />
                                     </styleClass>
                                 </Label>
-                                <Label fx:id="tpnLblExecucoes_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                <Label fx:id="tpnLblQtdOperacoes_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
                                     <styleClass>
                                         <String fx:value="lbl_informacao" />
                                         <String fx:value="right" />
@@ -546,7 +815,7 @@
                                 <String fx:value="left" />
                             </styleClass>
                         </HBox>
-                        <HBox>
+                        <HBox alignment="CENTER_LEFT">
                             <HBox.margin>
                                 <Insets left="5.0" />
                             </HBox.margin>
@@ -557,7 +826,7 @@
                                         <String fx:value="left" />
                                     </styleClass>
                                 </Label>
-                                <Label fx:id="tpnLblVitorias_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                <Label fx:id="tpnLblQtdVitorias_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
                                     <styleClass>
                                         <String fx:value="lbl_informacao" />
                                         <String fx:value="right" />
@@ -565,7 +834,7 @@
                                 </Label>
                             </children>
                         </HBox>
-                        <HBox>
+                        <HBox alignment="CENTER_LEFT">
                             <HBox.margin>
                                 <Insets left="5.0" />
                             </HBox.margin>
@@ -576,7 +845,7 @@
                                         <String fx:value="left" />
                                     </styleClass>
                                 </Label>
-                                <Label fx:id="tpnLblDerrotas_Op01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                <Label fx:id="tpnLblQtdDerrotas_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
                                     <styleClass>
                                         <String fx:value="lbl_informacao" />
                                         <String fx:value="right" />
@@ -584,6 +853,76 @@
                                 </Label>
                             </children>
                         </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="25.0" layoutY="10.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="In" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao" />
+                                        <String fx:value="left" />
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblVlrIn_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao" />
+                                        <String fx:value="right" />
+                                    </styleClass>
+                                </Label>
+                            </children>
+                            <styleClass>
+                                <String fx:value="lbl_informacao" />
+                                <String fx:value="left" />
+                            </styleClass>
+                            <HBox.margin>
+                                <Insets left="20.0" />
+                            </HBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="138.0" layoutY="10.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Out" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao" />
+                                        <String fx:value="left" />
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblVlrOut_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao" />
+                                        <String fx:value="right" />
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="236.0" layoutY="10.0">
+                            <children>
+                                <Label alignment="CENTER" prefHeight="23.0" text="Diff" textAlignment="CENTER" wrapText="true">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao" />
+                                        <String fx:value="left" />
+                                    </styleClass>
+                                </Label>
+                                <Label fx:id="tpnLblVlrDiff_T01" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="50.0" text="0">
+                                    <styleClass>
+                                        <String fx:value="lbl_informacao" />
+                                        <String fx:value="right" />
+                                    </styleClass>
+                                </Label>
+                            </children>
+                        </HBox>
+                            <HBox>
+                                <children>
+                                    <Label fx:id="tpnLlUltTick_Op01" alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="158.0" styleClass="tick-ultimo">
+                                                </Label>
+                                    <Label fx:id="tpnLlUltTickLegenda_Op01" prefHeight="45.0" prefWidth="40.0" text="Último Tick" textAlignment="CENTER" wrapText="true">
+                                        <styleClass>
+                                            <String fx:value="lbl_informacao" />
+                                            <String fx:value="right" />
+                                        </styleClass>
+                                    </Label>
+                                </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                            </HBox>
                     </children>
                     <opaqueInsets>
                         <Insets />

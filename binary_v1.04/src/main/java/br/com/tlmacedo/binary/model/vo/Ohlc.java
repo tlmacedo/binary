@@ -112,21 +112,20 @@ public class Ohlc implements Serializable {
             return getQuoteCompleto();
         return "";
     }
-//    @Override
-//    public String toString() {
-//        return "Ohlc{" +
-//                "close=" + close +
-//                ", epoch=" + epoch +
-//                ", granularity=" + granularity +
-//                ", high=" + high +
-//                ", id='" + id + '\'' +
-//                ", low=" + low +
-//                ", open=" + open +
-//                ", open_time=" + open_time +
-//                ", pip_size=" + pip_size +
-//                ", symbol='" + symbol + '\'' +
-//                '}';
-//    }
 
 
+    public String toString_Geral() {
+        return "Ohlc{" +
+                "close=" + close +
+                ", epoch=" + epoch +
+                ", granularity=" + granularity +
+                ", high=" + high +
+                ", id='" + id + '\'' +
+                ", low=" + low +
+                ", open=" + open +
+                ", open_time=" + open_time +
+                ", pip_size=" + pip_size +
+                ", symbol='" + symbol + '\'' +
+                '}';
+    }
 }
