@@ -65,7 +65,7 @@ public class WSClient extends WebSocketListener {
     public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
 
         setMsgType((Msg_type) Util_Json.getMsg_Type(text));
-        imprime(text, getMsgType().getMsgType());
+//        imprime(text, getMsgType().getMsgType());
 
         if (getMsgType().getMsgType() != null) {
             setPassthrough((Passthrough) Util_Json.getObject_from_String(text, Passthrough.class));
@@ -175,9 +175,19 @@ public class WSClient extends WebSocketListener {
                     ohlc.getPip_size(), ohlc.getEpoch()
             );
 
-            Operacoes.getUltimoOhlc()[operador_id][time_id].setValue(ohlc);
-            Operacoes.getHistoricoDeOhlcObservableList()[operador_id][time_id].add(0, hOhlc);
+            Operacoes.getUltimoOhlc()[time_id][operador_id].setValue(ohlc);
+            Operacoes.getHistoricoDeOhlcObservableList()[time_id][operador_id].add(0, hOhlc);
 
+            if (time_id == 0) {
+                Operacoes.getUltimoOhlcStr()[operador_id].setValue(ohlc.getQuoteCompleto());
+                if (Operacoes.getHistoricoDeOhlcObservableList()[time_id][operador_id].size() > 1)
+                    Operacoes.getTickSubindo()[operador_id].setValue(
+                            Operacoes.getHistoricoDeOhlcObservableList()[0][operador_id].get(0).getClose()
+                                    .compareTo(Operacoes.getHistoricoDeOhlcObservableList()[0][operador_id].get(1).getClose()) > 0);
+                if (Operacoes.getTimeCandleStart()[time_id].getValue().compareTo(0) == 0)
+                    Operacoes.getTimeCandleStart()[time_id].setValue(ohlc.getOpen_time());
+                Operacoes.getTimeCandleToClose()[time_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
+            }
         });
 
     }

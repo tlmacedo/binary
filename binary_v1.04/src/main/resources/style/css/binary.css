@@ -62,203 +62,36 @@
     -fx-font-style: normal;
 }
 
-.down {
-    -fx-background-radius: 0 0 4 4;
-    -fx-border-radius: 0 0 4 4;
-}
-
-.down-left {
-    -fx-background-radius: 0 0 0 4;
-    -fx-border-radius: 0 0 0 4;
-}
-
-.down-right {
-    -fx-background-radius: 0 0 4 0;
-    -fx-border-radius: 0 0 4 0;
-}
-
-.label {
+Label {
     -fx-font-size: 10px;
     -fx-font-family: "Segoe UI Semibold";
     -fx-text-fill: white;
     -fx-padding: 0 4;
 }
 
-.label.float {
-    -fx-font-size: 12px;
-    -fx-background-color: #ff6600;
-    -fx-background-radius: 8 8 0 0;
-    -fx-background-insets: 0 0 0 0;
+Label.tick-ultimo {
     -fx-text-fill: #ffffff;
-}
-
-.label.tick-ultimo {
+    -fx-background-radius: 6;
+    -fx-background-insets: 0;
     -fx-font-family: "Arial";
     -fx-font-weight: bold;
-    -fx-font-size: 30px;
+    -fx-font-size: 21px;
 }
 
-.label.lbl_informacao {
-    -fx-border-base: #373535;
-    -fx-border-shadow: -fx-base;
-    -fx-light-border: derive(-fx-border-base, 25%);
-    -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border;
-    -fx-border-insets: 0 1 1 0;
-    -fx-background-color: -fx-border-shadow, -fx-background;
-    -fx-background-insets: 1 0 0 1, 2;
-}
-
-.label.lbl_informacao.left {
-    -fx-background-radius: 4 0 0 4;
-    -fx-border-radius: 4 0 0 4;
-}
-
-.label.lbl_informacao.right {
-    -fx-background-radius: 0 4 4 0;
-    -fx-border-radius: 0 4 4 0;
-}
-
-.label.lbl_informacao.top {
-    -fx-background-radius: 4 4 0 0;
-    -fx-border-radius: 4 4 0 0;
-}
-
-.label.lbl_informacao.positivo {
-    -fx-text-fill: green;
-}
-
-.label.lbl_informacao.negativo {
-    -fx-text-fill: red;
-}
-
-.label.label-total-valor, .label.label-total-valor-recebimento-pendente, .label.label-total-valor-recebimento-vencido, .label.label-total-valor-recebimento-pago, .label.label-total-valor-recebimento-cancelado, .label.label-total-valor-recebimento-retirada, .label.label-total-valor-recebimento-total, .label.label-total-valor-lucro {
-    -fx-border-base: black;
-    -fx-border-shadow: -fx-base;
-    -fx-light-border: derive(-fx-border-base, 25%);
-    -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border;
-    -fx-border-insets: 0 1 1 0;
-    -fx-background-color: -fx-border-shadow, -fx-background;
-    -fx-background-insets: 1 0 0 1, 2;
-    -fx-background-radius: 4;
-    -fx-padding: 2;
-    -fx-text-fill: white;
-    -fx-alignment: center-right;
-    -fx-font-weight: bold;
-    -fx-font-size: 22px;
-}
-
-.label.label-total-valor-lucro, .label.label-total-valor-recebimento-pendente-lucro, .label.label-total-valor-recebimento-vencido-lucro, .label.label-total-valor-recebimento-pago-lucro, .label.label-total-valor-recebimento-cancelado-lucro, .label.label-total-valor-recebimento-retirada-lucro, .label.label-total-valor-recebimento-total-lucro, .label.label-total-valor-lucro-lucro {
-    -fx-text-fill: #ffffff;
-}
-
-.label.label-total-valor-recebimento-total, .label.label-total-valor-recebimento-pendente-recebimento-total, .label.label-total-valor-recebimento-vencido-recebimento-total, .label.label-total-valor-recebimento-pago-recebimento-total, .label.label-total-valor-recebimento-cancelado-recebimento-total, .label.label-total-valor-recebimento-retirada-recebimento-total, .label.label-total-valor-recebimento-total-recebimento-total, .label.label-total-valor-lucro-recebimento-total {
-    -fx-text-fill: #FF6600;
-}
-
-.label.label-total-valor-recebimento-pendente, .label.label-total-valor-recebimento-pendente-recebimento-pendente, .label.label-total-valor-recebimento-vencido-recebimento-pendente, .label.label-total-valor-recebimento-pago-recebimento-pendente, .label.label-total-valor-recebimento-cancelado-recebimento-pendente, .label.label-total-valor-recebimento-retirada-recebimento-pendente, .label.label-total-valor-recebimento-total-recebimento-pendente, .label.label-total-valor-lucro-recebimento-pendente {
-    -fx-text-fill: rgba(255, 219, 0, 0.8);
-}
-
-.label.label-total-valor-recebimento-vencido, .label.label-total-valor-recebimento-pendente-recebimento-vencido, .label.label-total-valor-recebimento-vencido-recebimento-vencido, .label.label-total-valor-recebimento-pago-recebimento-vencido, .label.label-total-valor-recebimento-cancelado-recebimento-vencido, .label.label-total-valor-recebimento-retirada-recebimento-vencido, .label.label-total-valor-recebimento-total-recebimento-vencido, .label.label-total-valor-lucro-recebimento-vencido {
-    -fx-text-fill: rgba(255, 0, 0, 0.8);
-}
-
-.label.label-total-valor-recebimento-pago, .label.label-total-valor-recebimento-pendente-recebimento-pago, .label.label-total-valor-recebimento-vencido-recebimento-pago, .label.label-total-valor-recebimento-pago-recebimento-pago, .label.label-total-valor-recebimento-cancelado-recebimento-pago, .label.label-total-valor-recebimento-retirada-recebimento-pago, .label.label-total-valor-recebimento-total-recebimento-pago, .label.label-total-valor-lucro-recebimento-pago {
-    -fx-text-fill: rgba(91, 255, 0, 0.8);
-}
-
-.label.label-total-valor-recebimento-cancelado, .label.label-total-valor-recebimento-pendente-recebimento-cancelado, .label.label-total-valor-recebimento-vencido-recebimento-cancelado, .label.label-total-valor-recebimento-pago-recebimento-cancelado, .label.label-total-valor-recebimento-cancelado-recebimento-cancelado, .label.label-total-valor-recebimento-retirada-recebimento-cancelado, .label.label-total-valor-recebimento-total-recebimento-cancelado, .label.label-total-valor-lucro-recebimento-cancelado {
-    -fx-text-fill: rgba(0, 0, 0, 0.8);
-}
-
-.label.label-total-valor-recebimento-retirada, .label.label-total-valor-recebimento-pendente-recebimento-retirada, .label.label-total-valor-recebimento-vencido-recebimento-retirada, .label.label-total-valor-recebimento-pago-recebimento-retirada, .label.label-total-valor-recebimento-cancelado-recebimento-retirada, .label.label-total-valor-recebimento-retirada-recebimento-retirada, .label.label-total-valor-recebimento-total-recebimento-retirada, .label.label-total-valor-lucro-recebimento-retirada {
-    -fx-text-fill: rgba(148, 0, 255, 0.8);
-}
-
-.label.lbl_titulo {
+Label.lbl_titulo {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-alignment: center;
 }
 
-.label.img_background_principal {
+Label.img_background_principal {
     -fx-background-color: transparent;
     -fx-background-size: cover;
     -fx-background-image: url("../../image/painel/principal.png") no-repeat center;
 }
 
-.label.copyright {
+Label.copyright {
     -fx-text-fill: #ff6600;
-    -fx-font-size: 12px;
-}
-
-.label.lucro {
-    -fx-pref-height: 15px;
-    -fx-padding: 0 4;
-    -fx-background-radius: 8 8 0 0;
-    -fx-background-insets: 0 0 0 0;
-    -fx-background-color: #ffffff;
-    -fx-text-fill: #000000;
-    -fx-font-size: 12px;
-}
-
-.label.recebimento-recebimento {
-    -fx-pref-height: 15px;
-    -fx-padding: 0 4;
-    -fx-background-radius: 8 8 0 0;
-    -fx-background-insets: 0 0 0 0;
-    -fx-background-color: rgba(255, 111, 0, 0.7);
-    -fx-text-fill: #e9e9e9;
-    -fx-font-size: 12px;
-}
-
-.label.recebimento-pendente {
-    -fx-pref-height: 15px;
-    -fx-padding: 0 4;
-    -fx-background-radius: 8 8 0 0;
-    -fx-background-insets: 0 0 0 0;
-    -fx-background-color: rgba(255, 219, 0, 0.8);
-    -fx-text-fill: #000000;
-    -fx-font-size: 12px;
-}
-
-.label.recebimento-vencido {
-    -fx-pref-height: 15px;
-    -fx-padding: 0 4;
-    -fx-background-radius: 8 8 0 0;
-    -fx-background-insets: 0 0 0 0;
-    -fx-background-color: rgba(255, 0, 0, 0.8);
-    -fx-text-fill: #ffe821;
-    -fx-font-size: 12px;
-}
-
-.label.recebimento-pago {
-    -fx-pref-height: 15px;
-    -fx-padding: 0 4;
-    -fx-background-radius: 8 8 0 0;
-    -fx-background-insets: 0 0 0 0;
-    -fx-background-color: rgba(91, 255, 0, 0.8);
-    -fx-text-fill: #000000;
-    -fx-font-size: 12px;
-}
-
-.label.recebimento-cancelado {
-    -fx-pref-height: 15px;
-    -fx-padding: 0 4;
-    -fx-background-radius: 8 8 0 0;
-    -fx-background-insets: 0 0 0 0;
-    -fx-background-color: rgba(0, 0, 0, 0.8);
-    -fx-text-fill: #e9e9e9;
-    -fx-font-size: 12px;
-}
-
-.label.recebimento-retirada {
-    -fx-pref-height: 15px;
-    -fx-padding: 0 4;
-    -fx-background-radius: 8 8 0 0;
-    -fx-background-insets: 0 0 0 0;
-    -fx-background-color: rgba(148, 0, 255, 0.8);
-    -fx-text-fill: #e9e9e9;
     -fx-font-size: 12px;
 }
 
@@ -599,6 +432,18 @@
 .tab:selected .tab-label {
     -fx-alignment: CENTER;
     -fx-text-fill: white;
+}
+
+VBox.informacoes, HBox.informacoes {
+    -fx-border-base: #474141;
+    -fx-border-shadow: -fx-base;
+    -fx-light-border: derive(-fx-border-base, 25%);
+    -fx-border-color: -fx-light-border -fx-border-base -fx-border-base -fx-light-border;
+    -fx-border-insets: 0 1 1 0;
+    -fx-background-color: -fx-border-shadow, -fx-background;
+    -fx-background-insets: 1 0 0 1, 2;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
 }
 
 .jfx-tool-bar, .tool-bar {

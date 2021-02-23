@@ -260,6 +260,7 @@ public class Operacoes implements Initializable {
     public static final Integer VOL_100 = 4;
     public static final String[] VOL_NAME = symbolObservableList.stream().map(Symbol::getName).collect(Collectors.toList()).toArray(String[]::new);
 
+
     private TokenDAO tokenDAO = new TokenDAO();
     private static TransactionDAO transactionDAO = new TransactionDAO();
     private static TransacoesDAO transacoesDAO = new TransacoesDAO();

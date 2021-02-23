@@ -21,9 +21,9 @@ public interface Constants {
     /**
      * Style Geral
      */
-    String STYLE_TICK_NEUTRO = "-fx-background-color: transparent; -fx-text-fill: #ffffff; -fx-background-radius: 8 0 0 8; -fx-background-insets: 0;";
-    String STYLE_TICK_SUBINDO = "-fx-background-color: #4BB4B3; -fx-text-fill: #ffffff; -fx-background-radius: 8 0 0 8; -fx-background-insets: 0;";
-    String STYLE_TICK_DESCENDO = "-fx-background-color: #EC3F3F; -fx-text-fill: #ffffff; -fx-background-radius: 8 0 0 8; -fx-background-insets: 0;";
+    String STYLE_TICK_NEUTRO = "-fx-background-color: transparent;";
+    String STYLE_TICK_SUBINDO = "-fx-background-color: #4BB4B3;";
+    String STYLE_TICK_DESCENDO = "-fx-background-color: #EC3F3F;";
     String STYLE_TICK_NEGOCIANDO = "-fx-background-color: #fffd03; -fx-text-fill: #000000;";
     String STYLE_TICK_NEGOCIANDO_FALSE = ".lbl_informacao.right";
     String STYLE_GRAF_BARRAS_DEFAULT = "-fx-bar-fill: #F2F3F4; -fx-border-color: #1f1e1e;";
@@ -33,6 +33,7 @@ public interface Constants {
     DateTimeFormatter DTF_DATA_HORA_SEGUNDOS = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss", new Locale("pt", "br"));
     DateTimeFormatter DTF_TMODEL_DATA_TRANSACTION = DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy", new Locale("pt", "br"));
     DateTimeFormatter DTF_HORA_MINUTOS_SEGUNDOS = DateTimeFormatter.ofPattern("HH:mm:ss", new Locale("pt", "br"));
+    DateTimeFormatter DTF_HORA_MINUTOS = DateTimeFormatter.ofPattern("HH:mm", new Locale("pt", "br"));
     DateTimeFormatter DTF_MINUTOS_SEGUNDOS = DateTimeFormatter.ofPattern("mm:ss", new Locale("pt", "br"));
 
     /**
