@@ -150,7 +150,7 @@ public class Operacoes implements Initializable {
     public static final Integer SYMBOL_09 = 8;
     public static final Integer SYMBOL_10 = 9;
     public static final Integer SYMBOL_11 = 10;
-    public static final Integer SYMBOL_12 = 10;
+    public static final Integer SYMBOL_12 = 11;
 //    public static final String[] VOL_NAME = symbolObservableList.stream().map(Symbol::getName).collect(Collectors.toList()).toArray(String[]::new);
 
 
@@ -457,6 +457,8 @@ public class Operacoes implements Initializable {
                     getTickSubindo()[symbol_id] = new SimpleBooleanProperty(false);
                     getUltimoTickStr()[symbol_id] = new SimpleStringProperty("");
                     getUltimoOhlcStr()[symbol_id] = new SimpleStringProperty("");
+                }
+                if (symbol_id == 0) {
                     getTimeCandleStart()[time_id] = new SimpleIntegerProperty(0);
                     getTimeCandleToClose()[time_id] = new SimpleIntegerProperty(0);
                 }
@@ -626,7 +628,7 @@ public class Operacoes implements Initializable {
          */
 
         //SYMBOL_01
-        getLblSymbol_01().setText(getSymbolObservableList().get(SYMBOL_01).getSymbol());
+        getLblSymbol_01().setText(getSymbolObservableList().get(SYMBOL_01).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_01().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_01].getValue()
@@ -637,7 +639,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_01]));
 
         //SYMBOL_02
-        getLblSymbol_02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
+        getLblSymbol_02().setText(getSymbolObservableList().get(SYMBOL_02).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_02().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_02].getValue()
@@ -648,7 +650,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_02]));
 
         //SYMBOL_03
-        getLblSymbol_03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
+        getLblSymbol_03().setText(getSymbolObservableList().get(SYMBOL_03).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_03().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_03].getValue()
@@ -659,7 +661,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_03]));
 
         //SYMBOL_04
-        getLblSymbol_04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
+        getLblSymbol_04().setText(getSymbolObservableList().get(SYMBOL_04).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_04().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_04].getValue()
@@ -670,7 +672,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_04]));
 
         //SYMBOL_05
-        getLblSymbol_05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
+        getLblSymbol_05().setText(getSymbolObservableList().get(SYMBOL_05).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_05().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_05].getValue()
@@ -681,7 +683,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_05]));
 
         //SYMBOL_06
-        getLblSymbol_06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
+        getLblSymbol_06().setText(getSymbolObservableList().get(SYMBOL_06).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_06().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_06].getValue()
@@ -692,7 +694,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_06]));
 
         //SYMBOL_07
-        getLblSymbol_07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
+        getLblSymbol_07().setText(getSymbolObservableList().get(SYMBOL_07).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_07().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_07].getValue()
@@ -703,7 +705,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_07]));
 
         //SYMBOL_08
-        getLblSymbol_08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
+        getLblSymbol_08().setText(getSymbolObservableList().get(SYMBOL_08).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_08().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_08].getValue()
@@ -714,7 +716,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_08]));
 
         //SYMBOL_09
-        getLblSymbol_09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
+        getLblSymbol_09().setText(getSymbolObservableList().get(SYMBOL_09).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_09().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_09].getValue()
@@ -725,7 +727,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_09]));
 
         //SYMBOL_10
-        getLblSymbol_10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
+        getLblSymbol_10().setText(getSymbolObservableList().get(SYMBOL_10).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_10().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_10].getValue()
@@ -736,7 +738,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_10]));
 
         //SYMBOL_11
-        getLblSymbol_11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
+        getLblSymbol_11().setText(getSymbolObservableList().get(SYMBOL_11).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_11().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_11].getValue()
@@ -747,7 +749,7 @@ public class Operacoes implements Initializable {
                 getTickSubindo()[SYMBOL_11]));
 
         //SYMBOL_12
-        getLblSymbol_12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
+        getLblSymbol_12().setText(getSymbolObservableList().get(SYMBOL_12).getDisplay_name().replace(" Index", ""));
         getLblLastTickSymbol_12().textProperty().bind(Bindings.createStringBinding(() ->
                         getTickStyle().equals(TICK_STYLE.TICKS)
                                 ? getUltimoTickStr()[SYMBOL_12].getValue()
@@ -762,49 +764,229 @@ public class Operacoes implements Initializable {
     private void conectarObjetosEmVariaveis_Time01(Integer timer) {
 
         if (timer == TIME_1M) {
-            getTpn_T01().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_1M)));
+            getTpn_T01().setText(String.format("T%s - ", TICK_TIME.toEnum(timer)));
             getLblTpnT01_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
-                            getDataFromInteger(getTimeCandleStart()[TIME_1M].getValue()),
-                    getTimeCandleStart()[TIME_1M]));
+                            getDataFromInteger(getTimeCandleStart()[timer].getValue()),
+                    getTimeCandleStart()[timer]));
             getLblTpnT01_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
-                            String.format("%s s", getTimeCandleToClose()[TIME_1M].getValue()),
-                    getTimeCandleToClose()[TIME_1M]));
+                            String.format("%s s", getTimeCandleToClose()[timer].getValue()),
+                    getTimeCandleToClose()[timer]));
 
             //*-*-* Op_01
             getLblSymbol_T01_Op01().setText(getSymbolObservableList().get(SYMBOL_01).getSymbol());
+            getLblQtdCall_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_01].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_01]));
+            getLblQtdPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_01].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_01]));
+            getLblQtdCallOrPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_01].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_01].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op01().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_01].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_01]));
 
             //*-*-* Op_02
             getLblSymbol_T01_Op02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
+            getLblQtdCall_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_02].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_02]));
+            getLblQtdPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_02].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_02]));
+            getLblQtdCallOrPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_02].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_02].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op02().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_02].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_02]));
 
             //*-*-* Op_03
             getLblSymbol_T01_Op03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
+            getLblQtdCall_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_03].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_03]));
+            getLblQtdPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_03].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_03]));
+            getLblQtdCallOrPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_03].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_03].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op03().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_03].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_03]));
 
             //*-*-* Op_04
             getLblSymbol_T01_Op04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
+            getLblQtdCall_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_04].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_04]));
+            getLblQtdPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_04].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_04]));
+            getLblQtdCallOrPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_04].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_04].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op04().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_04].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_04]));
 
             //*-*-* Op_05
             getLblSymbol_T01_Op05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
+            getLblQtdCall_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_05].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_05]));
+            getLblQtdPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_05].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_05]));
+            getLblQtdCallOrPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_05].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_05].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op05().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_05].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_05]));
 
             //*-*-* Op_06
             getLblSymbol_T01_Op06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
+            getLblQtdCall_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_06].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_06]));
+            getLblQtdPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_06].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_06]));
+            getLblQtdCallOrPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_06].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_06].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op06().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_06].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_06]));
 
             //*-*-* Op_07
             getLblSymbol_T01_Op07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
+            getLblQtdCall_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_07].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_07]));
+            getLblQtdPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_07].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_07]));
+            getLblQtdCallOrPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_07].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_07].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op07().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_07].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_07]));
 
             //*-*-* Op_08
             getLblSymbol_T01_Op08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
+            getLblQtdCall_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_08].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_08]));
+            getLblQtdPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_08].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_08]));
+            getLblQtdCallOrPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_08].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_08].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op08().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_08].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_08]));
 
             //*-*-* Op_09
             getLblSymbol_T01_Op09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
+            getLblQtdCall_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_09].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_09]));
+            getLblQtdPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_09].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_09]));
+            getLblQtdCallOrPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_09].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_09].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op09().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_09].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_09]));
 
             //*-*-* Op_10
             getLblSymbol_T01_Op10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
+            getLblQtdCall_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_10].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_10]));
+            getLblQtdPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_10].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_10]));
+            getLblQtdCallOrPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_10].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_10].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op10().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_10].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_10]));
 
             //*-*-* Op_11
             getLblSymbol_T01_Op11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
+            getLblQtdCall_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_11].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_11]));
+            getLblQtdPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_11].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_11]));
+            getLblQtdCallOrPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_11].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_11].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op11().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_11].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_11]));
 
             //*-*-* Op_12
             getLblSymbol_T01_Op12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
+            getLblQtdCall_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdCall()[timer][SYMBOL_12].getValue().toString(),
+                    getQtdCall()[timer][SYMBOL_12]));
+            getLblQtdPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                            getQtdPut()[timer][SYMBOL_12].getValue().toString(),
+                    getQtdPut()[timer][SYMBOL_12]));
+            getLblQtdCallOrPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() -> {
+                if (getQtdCallOrPut()[timer][SYMBOL_12].getValue().compareTo(1) >= 0)
+                    getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                else if (getQtdCallOrPut()[timer][SYMBOL_12].getValue().compareTo(-1) <= 0)
+                    getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                else
+                    getImgCallOrPut_T01_Op12().setImage(null);
+                return getQtdCallOrPut()[timer][SYMBOL_12].getValue().toString().replace("-", "");
+            }, getQtdCallOrPut()[timer][SYMBOL_12]));
 
         } else if (timer == TIME_2M) {
 //                getTpn_T02().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_2M)));

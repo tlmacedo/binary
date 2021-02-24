@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -167,7 +168,7 @@ public class WSClient extends WebSocketListener {
             Symbol symbol = Operacoes.getSymbolObservableList().stream()
                     .filter(symbol1 -> symbol1.getSymbol().equals(ohlc.getSymbol()))
                     .findFirst().orElse(null);
-            int operador_id = symbol.getId().intValue() - 1;
+            int symbol_id = symbol.getId().intValue() - 1;
             int time_id = passthrough.getTickTime().getCod();
 
             HistoricoDeOhlc hOhlc = new HistoricoDeOhlc(
@@ -175,19 +176,46 @@ public class WSClient extends WebSocketListener {
                     ohlc.getPip_size(), ohlc.getEpoch()
             );
 
-            Operacoes.getUltimoOhlc()[time_id][operador_id].setValue(ohlc);
-            Operacoes.getHistoricoDeOhlcObservableList()[time_id][operador_id].add(0, hOhlc);
+            Operacoes.getUltimoOhlc()[time_id][symbol_id].setValue(ohlc);
+            Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].add(0, hOhlc);
 
             if (time_id == 0) {
-                Operacoes.getUltimoOhlcStr()[operador_id].setValue(ohlc.getQuoteCompleto());
-                if (Operacoes.getHistoricoDeOhlcObservableList()[time_id][operador_id].size() > 1)
-                    Operacoes.getTickSubindo()[operador_id].setValue(
-                            Operacoes.getHistoricoDeOhlcObservableList()[0][operador_id].get(0).getClose()
-                                    .compareTo(Operacoes.getHistoricoDeOhlcObservableList()[0][operador_id].get(1).getClose()) > 0);
-                if (Operacoes.getTimeCandleStart()[time_id].getValue().compareTo(0) == 0)
-                    Operacoes.getTimeCandleStart()[time_id].setValue(ohlc.getOpen_time());
-                Operacoes.getTimeCandleToClose()[time_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
+                Operacoes.getUltimoOhlcStr()[symbol_id].setValue(ohlc.getQuoteCompleto());
+                if (Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].size() > 1)
+                    Operacoes.getTickSubindo()[symbol_id].setValue(
+                            Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].get(0).getClose()
+                                    .compareTo(Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].get(1).getClose()) > 0);
             }
+//            if (symbol.getSymbol().contains("HZ")) {
+            if (Operacoes.getTimeCandleStart()[time_id].getValue().compareTo(0) == 0)
+                Operacoes.getTimeCandleStart()[time_id].setValue(ohlc.getOpen_time());
+            Operacoes.getTimeCandleToClose()[time_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
+//            }
+
+            if (Operacoes.getTimeCandleToClose()[time_id].getValue().compareTo(2) <= 0
+                    && Operacoes.getTimeCandleToClose()[time_id].getValue().compareTo(0) > 0) {
+                if (ohlc.getClose().compareTo(ohlc.getOpen()) > 0) {
+                    if (Operacoes.getQtdCallOrPut()[time_id][symbol_id].getValue().compareTo(0) > 0)
+                        Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(
+                                Operacoes.getQtdCallOrPut()[time_id][symbol_id].getValue() + 1);
+                    else
+                        Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(1);
+                    Operacoes.getQtdCall()[time_id][symbol_id].setValue(
+                            Operacoes.getQtdCall()[time_id][symbol_id].getValue() + 1);
+                } else if (ohlc.getClose().compareTo(ohlc.getOpen()) < 0) {
+                    if (Operacoes.getQtdCallOrPut()[time_id][symbol_id].getValue().compareTo(0) < 0)
+                        Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(
+                                Operacoes.getQtdCallOrPut()[time_id][symbol_id].getValue() - 1);
+                    else
+                        Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(-1);
+                    Operacoes.getQtdPut()[time_id][symbol_id].setValue(
+                            Operacoes.getQtdPut()[time_id][symbol_id].getValue() + 1);
+                } else {
+                    Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(0);
+                }
+            }
+
+
         });
 
     }
