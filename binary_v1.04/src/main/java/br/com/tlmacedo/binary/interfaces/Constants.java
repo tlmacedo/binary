@@ -39,11 +39,11 @@ public interface Constants {
     /**
      * Print Console return messages Ws Binary.
      */
-    Boolean CONSOLE_BINARY_ALL = true;
-    Boolean CONSOLE_BINARY_ALL_SEM_TICKS = false;
+    Boolean CONSOLE_BINARY_ALL = false;
+    Boolean CONSOLE_BINARY_ALL_SEM_TICKS = true;
 
     Boolean CONSOLE_BINARY_CONECTADO = true;
-    Boolean CONSOLE_BINARY_ACTIVE_SYMBOL = true;
+    //    Boolean CONSOLE_BINARY_ACTIVE_SYMBOL = true;
     Boolean CONSOLE_BINARY_AUTHORIZE = false;
     Boolean CONSOLE_BINARY_ERROR = false;
     Boolean CONSOLE_BINARY_TICK = false;

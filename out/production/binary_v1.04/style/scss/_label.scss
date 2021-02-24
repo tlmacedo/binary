@@ -29,6 +29,24 @@ Label {
   //  -fx-text-fill: #ffffff;
   //}
 
+  .vlr-conta-real &, .vlr-conta-virtual & {
+    -fx-font-family: $fontFamilyB;
+    -fx-text-fill: #000;
+    -fx-font-weight: bold;
+  }
+
+  //&.vlr-conta-real {
+  //  Hbox .& {
+  //    -fx-background-color: blue;
+  //  }
+  //}
+  //
+  //&.vlr-conta-virtual {
+  //  Hbox .& {
+  //    -fx-background-color: green;
+  //  }
+  //}
+
   &.tick-ultimo {
     -fx-text-fill: #ffffff;
     -fx-background-radius: 6;

@@ -14,6 +14,19 @@ VBox, HBox {
 
     -fx-background-radius: 4;
     -fx-border-radius: 4;
+
+    .vlr-conta-real {
+      -fx-background-radius: 4;
+      -fx-border-radius: 4;
+      -fx-background-color: #ff7e2a;
+    }
+
+    .vlr-conta-virtual {
+      -fx-background-radius: 4;
+      -fx-border-radius: 4;
+      -fx-background-color: #fdfd6c;
+    }
+
   }
 
 }

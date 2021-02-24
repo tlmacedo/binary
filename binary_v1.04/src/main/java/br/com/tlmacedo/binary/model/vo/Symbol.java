@@ -21,6 +21,7 @@ public class Symbol implements Serializable {
     String submarket_display_name;
     String symbol;
     String symbol_type;
+    Integer tickTime;
 
     public Symbol() {
     }
@@ -132,6 +133,15 @@ public class Symbol implements Serializable {
 
     public void setSymbol_type(String symbol_type) {
         this.symbol_type = symbol_type;
+    }
+
+    @Column(length = 1, nullable = false)
+    public Integer getTickTime() {
+        return tickTime;
+    }
+
+    public void setTickTime(Integer tickTime) {
+        this.tickTime = tickTime;
     }
 
     @Override

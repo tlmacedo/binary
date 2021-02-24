@@ -9,6 +9,7 @@ import br.com.tlmacedo.binary.model.enums.TICK_STYLE;
 import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Service_Alert;
+import br.com.tlmacedo.binary.services.Service_Mascara;
 import br.com.tlmacedo.binary.services.Util_Json;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -29,6 +30,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -71,10 +73,9 @@ public class Operacoes implements Initializable {
     /**
      * Contas corretora
      */
-    static final ObservableList<ContaToken> CONTA_TOKEN_OBSERVABLE_LIST =
-            FXCollections.observableArrayList(
-                    getContaTokenDAO().getAll(ContaToken.class, null, null)
-            );
+    static final ObservableList<ContaToken> CONTA_TOKEN_OBSERVABLE_LIST
+            = FXCollections.observableArrayList(
+            getContaTokenDAO().getAll(ContaToken.class, "tokenAtivo=1", "cReal, moeda, descricao"));
     static ObjectProperty<Authorize> authorize = new SimpleObjectProperty<>();
 
 
@@ -94,17 +95,18 @@ public class Operacoes implements Initializable {
      * Variaveis de controle do sistema
      */
 
-    BooleanProperty appAutorizado = new SimpleBooleanProperty(false);
-    Timeline roboRelogio;
-    LongProperty roboHoraInicial = new SimpleLongProperty();
-    LongProperty roboCronometro = new SimpleLongProperty();
-    BooleanProperty roboCronometroAtivado = new SimpleBooleanProperty(false);
-
+    private BooleanProperty appAutorizado = new SimpleBooleanProperty(false);
+    private Timeline roboRelogio;
+    private LongProperty roboHoraInicial = new SimpleLongProperty();
+    private LongProperty roboCronometro = new SimpleLongProperty();
+    private BooleanProperty roboCronometroAtivado = new SimpleBooleanProperty(false);
+    private ObjectProperty<BigDecimal> saldoInicial = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
     /**
      * Variaveis de informações para operadores
      */
     //** Variaveis **
+    static IntegerProperty[] qtdCandlesEntrada = new IntegerProperty[TICK_TIME.values().length];
     static ObjectProperty<Tick>[][] ultimoTick = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObjectProperty<Ohlc>[][] ultimoOhlc = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static StringProperty[] ultimoTickStr = new StringProperty[getSymbolObservableList().size()];
@@ -117,18 +119,10 @@ public class Operacoes implements Initializable {
     static IntegerProperty[][] qtdCallOrPut = new IntegerProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static IntegerProperty[][] qtdCall = new IntegerProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static IntegerProperty[][] qtdPut = new IntegerProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
-    //    static IntegerProperty[] maiorQtdDigito = new IntegerProperty[5];
-//    static IntegerProperty[] menorQtdDigito = new IntegerProperty[5];
-//    static StringProperty[] informacaoDetalhe01 = new StringProperty[5];
-//    static StringProperty[] informacaoValor01 = new StringProperty[5];
-//    static StringProperty[] informacaoDetalhe02 = new StringProperty[5];
-//    static StringProperty[] informacaoValor02 = new StringProperty[5];
+
     //** Listas **
-//    static ObservableList<HistoricoDeTicks>[] historicoDeTicks_TempObservableList = new ObservableList[getSymbolObservableList().size()];
-//    static ObservableList<HistoricoDeTicks>[] historicoDeTicksAnalise_TempObservableList = new ObservableList[getSymbolObservableList().size()];
     static ObservableList<HistoricoDeTicks>[][] historicoDeTicksObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObservableList<HistoricoDeOhlc>[][] historicoDeOhlcObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
-//    static ObservableList<HistoricoDeTicks>[] historicoDeTicksAnaliseObservableList = new ObservableList[5];
 //    static ObservableList<Transaction>[] transactionObservableList = new ObservableList[5];
 //    static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
 
@@ -173,7 +167,7 @@ public class Operacoes implements Initializable {
 
     // Detalhes e informações da conta
     public TitledPane tpn_Detalhes;
-    public ComboBox cboTpnDetalhesContaBinary;
+    public ComboBox<ContaToken> cboTpnDetalhesContaBinary;
     public Label lblTpnDetalhesQtdStakes;
     public Label lblTpnDetalhesQtdWins;
     public Label lblTpnDetalhesQtdLoss;
@@ -181,6 +175,7 @@ public class Operacoes implements Initializable {
     public Label lblTpnDetalhesProfitPorc;
     public Label lblDetalhesProprietarioConta;
     public Label lblDetalhesContaId;
+    public HBox hboxDetalhesSaldoConta;
     public Label lblDetalhesSaldoContaVlr;
     public Label lblDetalhesSaldoContaCifrao;
     public Label lblDetalhesSaldoInicial;
@@ -484,15 +479,70 @@ public class Operacoes implements Initializable {
 
     private void carregarObjetos() {
 
-//        getCboConta().setItems(getContaTokenDAO().getAll(ContaToken.class, "ativo=1", null)
-//                .stream().collect(Collectors.toCollection(FXCollections::observableArrayList)));
-//        ObservableList<Symbol> symbols = getSymbolDAO().getAll(Symbol.class, null, null).stream().collect(Collectors.toCollection(FXCollections::observableArrayList));
-//
-//        getCboSymbol01().setItems(symbols);
-//        getCboSymbol02().setItems(symbols);
-//        getCboSymbol03().setItems(symbols);
-//        getCboSymbol04().setItems(symbols);
-//        getCboSymbol05().setItems(symbols);
+        getCboTpnDetalhesContaBinary().setItems(getContaTokenObservableList());
+
+        saldoInicialProperty().bind(Bindings.createObjectBinding(() -> {
+            if (authorizeProperty().getValue() == null)
+                return BigDecimal.ZERO;
+            return authorizeProperty().getValue().getBalance();
+        }, authorizeProperty()));
+
+        getLblDetalhesSaldoInicial().textProperty().bind(Bindings.createStringBinding(() ->
+                        Service_Mascara.getValorMoeda(saldoInicialProperty().getValue()),
+                saldoInicialProperty()));
+
+        escutandoObjetos();
+
+    }
+
+    private void escutandoObjetos() {
+
+        appAutorizadoProperty().addListener((ov, o, n) -> {
+            getHboxDetalhesSaldoConta().getStyleClass().clear();
+            if (n != null && n) {
+                if (getAuthorize().getIs_virtual() == 1)
+                    getHboxDetalhesSaldoConta().getStyleClass().add("vlr-conta-virtual");
+                else
+                    getHboxDetalhesSaldoConta().getStyleClass().add("vlr-conta-real");
+            }
+        });
+
+        authorizeProperty().addListener((ov, o, n) -> {
+            if (n != null)
+                solicitarTransacoes();
+            getLblDetalhesProprietarioConta().setText(n != null
+                    ? (n.getFullname().replaceAll("\\W", "").length() > 0
+                    ? String.format("%s (%s)", n.getFullname(), n.getEmail())
+                    : String.format("%s", n.getEmail()))
+                    : "");
+            getLblDetalhesContaId().setText(n != null
+                    ? String.format("%s %s",
+                    n.getLoginid().replaceAll("\\d", ""),
+                    n.getLoginid().replaceAll("\\D", ""))
+                    : "");
+
+            getHboxDetalhesSaldoConta().getStyleClass().clear();
+            if (getAuthorize().getIs_virtual() == 1)
+                getHboxDetalhesSaldoConta().getStyleClass().add("vlr-conta-virtual");
+            else
+                getHboxDetalhesSaldoConta().getStyleClass().add("vlr-conta-real");
+
+            getLblDetalhesSaldoContaVlr().setText(n != null
+                    ? Service_Mascara.getValorMoeda(n.getBalance())
+                    : "0.00");
+            getLblDetalhesSaldoContaCifrao().setText(n != null
+                    ? n.getCurrency()
+                    : "");
+        });
+
+        getCboTpnDetalhesContaBinary().valueProperty().addListener((ov, o, n) -> {
+            if (n == null) {
+                setAppAutorizado(false);
+                return;
+            }
+            solicitarAutorizacaoApp(n.getTokenApi());
+
+        });
 
     }
 
@@ -582,6 +632,27 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
+    private void solicitarAutorizacaoApp(String tokenApi) {
+
+        if (tokenApi == null) return;
+        String jsonAuthorize = String.format("{\"authorize\": \"%s\"}", tokenApi);
+        getWsClientObjectProperty().getMyWebSocket().send(jsonAuthorize);
+
+    }
+
+    private void solicitarTransacoes() {
+
+        if (getAuthorize() == null) return;
+        try {
+            String jsonTransacoes = Util_Json.getJson_from_Object(new TransactionsStream());
+            getWsClientObjectProperty().getMyWebSocket().send(jsonTransacoes);
+            setAppAutorizado(true);
+        } catch (Exception ex) {
+            setAppAutorizado(false);
+            ex.printStackTrace();
+        }
+    }
+
     private void solicitarTicks() {
 
         Symbol symbol;
@@ -598,8 +669,6 @@ public class Operacoes implements Initializable {
                         getCboTpnNegociacaoQtdCandlesAnalise().getValue(), getTickStyle(), tempoVela, passthrough));
                 if (tempoVela == null) jsonHistory = jsonHistory.replace(",\"granularity\":null", "");
                 if (passthrough == null) jsonHistory = jsonHistory.replace(",\"passthrough\":null", "");
-//                if (tickTime.getCod() > 0) jsonHistory = jsonHistory.replace(",\"subscribe\":1", "");
-//                System.out.printf("jsonHistory: %s\n", jsonHistory);
                 getWsClientObjectProperty().getMyWebSocket().send(jsonHistory);
             }
         }
@@ -787,7 +856,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op01().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_01].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_01].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_01]));
 
             //*-*-* Op_02
@@ -805,7 +874,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op02().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_02].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_02].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_02]));
 
             //*-*-* Op_03
@@ -823,7 +892,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op03().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_03].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_03].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_03]));
 
             //*-*-* Op_04
@@ -841,7 +910,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op04().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_04].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_04].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_04]));
 
             //*-*-* Op_05
@@ -859,7 +928,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op05().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_05].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_05].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_05]));
 
             //*-*-* Op_06
@@ -877,7 +946,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op06().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_06].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_06].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_06]));
 
             //*-*-* Op_07
@@ -895,7 +964,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op07().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_07].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_07].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_07]));
 
             //*-*-* Op_08
@@ -913,7 +982,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op08().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_08].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_08].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_08]));
 
             //*-*-* Op_09
@@ -931,7 +1000,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op09().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_09].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_09].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_09]));
 
             //*-*-* Op_10
@@ -949,7 +1018,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op10().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_10].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_10].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_10]));
 
             //*-*-* Op_11
@@ -967,7 +1036,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op11().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_11].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_11].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_11]));
 
             //*-*-* Op_12
@@ -985,7 +1054,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
                 else
                     getImgCallOrPut_T01_Op12().setImage(null);
-                return getQtdCallOrPut()[timer][SYMBOL_12].getValue().toString().replace("-", "");
+                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_12].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_12]));
 
         } else if (timer == TIME_2M) {
@@ -1341,11 +1410,11 @@ public class Operacoes implements Initializable {
         this.tpn_Detalhes = tpn_Detalhes;
     }
 
-    public ComboBox getCboTpnDetalhesContaBinary() {
+    public ComboBox<ContaToken> getCboTpnDetalhesContaBinary() {
         return cboTpnDetalhesContaBinary;
     }
 
-    public void setCboTpnDetalhesContaBinary(ComboBox cboTpnDetalhesContaBinary) {
+    public void setCboTpnDetalhesContaBinary(ComboBox<ContaToken> cboTpnDetalhesContaBinary) {
         this.cboTpnDetalhesContaBinary = cboTpnDetalhesContaBinary;
     }
 
@@ -1403,6 +1472,14 @@ public class Operacoes implements Initializable {
 
     public void setLblDetalhesContaId(Label lblDetalhesContaId) {
         this.lblDetalhesContaId = lblDetalhesContaId;
+    }
+
+    public HBox getHboxDetalhesSaldoConta() {
+        return hboxDetalhesSaldoConta;
+    }
+
+    public void setHboxDetalhesSaldoConta(HBox hboxDetalhesSaldoConta) {
+        this.hboxDetalhesSaldoConta = hboxDetalhesSaldoConta;
     }
 
     public Label getLblDetalhesSaldoContaVlr() {
@@ -2931,5 +3008,26 @@ public class Operacoes implements Initializable {
 
     public void setTbvTransacoes_T01_Op12(TableView tbvTransacoes_T01_Op12) {
         this.tbvTransacoes_T01_Op12 = tbvTransacoes_T01_Op12;
+    }
+
+    public static IntegerProperty[] getQtdCandlesEntrada() {
+        return qtdCandlesEntrada;
+    }
+
+    public static void setQtdCandlesEntrada(IntegerProperty[] qtdCandlesEntrada) {
+        Operacoes.qtdCandlesEntrada = qtdCandlesEntrada;
+    }
+
+
+    public BigDecimal getSaldoInicial() {
+        return saldoInicial.get();
+    }
+
+    public ObjectProperty<BigDecimal> saldoInicialProperty() {
+        return saldoInicial;
+    }
+
+    public void setSaldoInicial(BigDecimal saldoInicial) {
+        this.saldoInicial.set(saldoInicial);
     }
 }

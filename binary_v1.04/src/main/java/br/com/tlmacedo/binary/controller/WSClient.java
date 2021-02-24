@@ -25,17 +25,20 @@ public class WSClient extends WebSocketListener {
     private Request request;
 
     private Msg_type msgType;
-    private Symbols symbols;
-    private Error error;
-    private History history;
-    private Tick tick;
-    private Ohlc ohlc;
-    private Candle candle;
     private Passthrough passthrough;
-    private Proposal proposal;
+    private History history;
+    private Ohlc ohlc;
+    private Tick tick;
     private Authorize authorize;
-    private Buy buy;
-    private Transaction transaction;
+
+
+//    private Symbols symbols;
+////    private Error error;
+////    private Candle candle;
+////    private Proposal proposal;
+////    private Authorize authorize;
+////    private Buy buy;
+////    private Transaction transaction;
 
     public WSClient() {
     }
@@ -66,11 +69,17 @@ public class WSClient extends WebSocketListener {
     public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
 
         setMsgType((Msg_type) Util_Json.getMsg_Type(text));
-//        imprime(text, getMsgType().getMsgType());
+        imprime(text, getMsgType().getMsgType());
 
         if (getMsgType().getMsgType() != null) {
-            setPassthrough((Passthrough) Util_Json.getObject_from_String(text, Passthrough.class));
+            if (text.toLowerCase().contains("passthrough"))
+                setPassthrough((Passthrough) Util_Json.getObject_from_String(text, Passthrough.class));
             switch (getMsgType().getMsgType()) {
+                case AUTHORIZE -> {
+                    setAuthorize((Authorize) Util_Json.getObject_from_String(text, Authorize.class));
+                    refreshAuthorize(getAuthorize());
+                }
+
                 case TICK -> {
                     setTick((Tick) Util_Json.getObject_from_String(text, Tick.class));
                     refreshTick(getPassthrough(), getTick());
@@ -102,14 +111,16 @@ public class WSClient extends WebSocketListener {
         if (CONSOLE_BINARY_ALL || CONSOLE_BINARY_ALL_SEM_TICKS) {
             if (CONSOLE_BINARY_ALL_SEM_TICKS) {
                 if (msgType.equals(MSG_TYPE.TICK)
-                        || msgType.equals(MSG_TYPE.OHLC))
+                        || msgType.equals(MSG_TYPE.HISTORY)
+                        || msgType.equals(MSG_TYPE.OHLC)
+                        || msgType.equals(MSG_TYPE.CANDLES))
                     return;
             }
             System.out.printf("..0..%s\n", text);
         } else {
             boolean print = false;
             switch (msgType) {
-                case ACTIVE_SYMBOLS -> print = CONSOLE_BINARY_ACTIVE_SYMBOL;
+//                case ACTIVE_SYMBOLS -> print = CONSOLE_BINARY_ACTIVE_SYMBOL;
                 case AUTHORIZE -> print = CONSOLE_BINARY_AUTHORIZE;
                 case ERROR -> print = CONSOLE_BINARY_ERROR;
                 case TICK -> print = CONSOLE_BINARY_TICK;
@@ -133,27 +144,15 @@ public class WSClient extends WebSocketListener {
 
     }
 
-    private void refreshActiveSymbols() {
-
-        Symbol symbol;
-        List<Symbol> symbolList =
-                getSymbols().getActive_symbols().stream()
-                        .filter(activeSymbol -> activeSymbol.getMarket().equals("synthetic_index"))
-                        .collect(Collectors.toList());
-        for (int i = 0; i < symbolList.size(); i++) {
-            symbol = symbolList.get(i);
-            Operacoes.getSymbolDAO().merger(symbol);
-        }
-
-    }
-
     private void refreshError() {
 
-        System.out.printf("deu erro!!!!!\n%s\n", getError().toString());
+//        System.out.printf("deu erro!!!!!\n%s\n", getError().toString());
 
     }
 
     private void refreshAuthorize(Authorize authorize) {
+
+        Platform.runLater(() -> Operacoes.setAuthorize(authorize));
 
     }
 
@@ -186,13 +185,11 @@ public class WSClient extends WebSocketListener {
                             Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].get(0).getClose()
                                     .compareTo(Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].get(1).getClose()) > 0);
             }
-//            if (symbol.getSymbol().contains("HZ")) {
             if (Operacoes.getTimeCandleStart()[time_id].getValue().compareTo(0) == 0)
                 Operacoes.getTimeCandleStart()[time_id].setValue(ohlc.getOpen_time());
             Operacoes.getTimeCandleToClose()[time_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
-//            }
 
-            if (Operacoes.getTimeCandleToClose()[time_id].getValue().compareTo(2) <= 0
+            if (Operacoes.getTimeCandleToClose()[time_id].getValue().compareTo(symbol.getTickTime()) <= 0
                     && Operacoes.getTimeCandleToClose()[time_id].getValue().compareTo(0) > 0) {
                 if (ohlc.getClose().compareTo(ohlc.getOpen()) > 0) {
                     if (Operacoes.getQtdCallOrPut()[time_id][symbol_id].getValue().compareTo(0) > 0)
@@ -251,6 +248,7 @@ public class WSClient extends WebSocketListener {
      * <p>
      */
 
+
     public static ObjectMapper getMapper() {
         return mapper;
     }
@@ -291,12 +289,12 @@ public class WSClient extends WebSocketListener {
         this.msgType = msgType;
     }
 
-    public Error getError() {
-        return error;
+    public Passthrough getPassthrough() {
+        return passthrough;
     }
 
-    public void setError(Error error) {
-        this.error = error;
+    public void setPassthrough(Passthrough passthrough) {
+        this.passthrough = passthrough;
     }
 
     public History getHistory() {
@@ -307,6 +305,14 @@ public class WSClient extends WebSocketListener {
         this.history = history;
     }
 
+    public Ohlc getOhlc() {
+        return ohlc;
+    }
+
+    public void setOhlc(Ohlc ohlc) {
+        this.ohlc = ohlc;
+    }
+
     public Tick getTick() {
         return tick;
     }
@@ -315,67 +321,11 @@ public class WSClient extends WebSocketListener {
         this.tick = tick;
     }
 
-    public Proposal getProposal() {
-        return proposal;
-    }
-
-    public void setProposal(Proposal proposal) {
-        this.proposal = proposal;
-    }
-
     public Authorize getAuthorize() {
         return authorize;
     }
 
     public void setAuthorize(Authorize authorize) {
         this.authorize = authorize;
-    }
-
-    public Buy getBuy() {
-        return buy;
-    }
-
-    public void setBuy(Buy buy) {
-        this.buy = buy;
-    }
-
-    public Transaction getTransaction() {
-        return transaction;
-    }
-
-    public void setTransaction(Transaction transaction) {
-        this.transaction = transaction;
-    }
-
-    public Symbols getSymbols() {
-        return symbols;
-    }
-
-    public void setSymbols(Symbols symbols) {
-        this.symbols = symbols;
-    }
-
-    public Candle getCandle() {
-        return candle;
-    }
-
-    public void setCandle(Candle candle) {
-        this.candle = candle;
-    }
-
-    public Passthrough getPassthrough() {
-        return passthrough;
-    }
-
-    public void setPassthrough(Passthrough passthrough) {
-        this.passthrough = passthrough;
-    }
-
-    public Ohlc getOhlc() {
-        return ohlc;
-    }
-
-    public void setOhlc(Ohlc ohlc) {
-        this.ohlc = ohlc;
     }
 }

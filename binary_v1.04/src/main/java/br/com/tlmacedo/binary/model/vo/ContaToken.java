@@ -13,10 +13,11 @@ public class ContaToken implements Serializable {
     LongProperty id = new SimpleLongProperty();
     StringProperty descricao = new SimpleStringProperty();
     StringProperty tokenApi = new SimpleStringProperty();
+    StringProperty moeda = new SimpleStringProperty();
     BooleanProperty cReal = new SimpleBooleanProperty();
     StringProperty email = new SimpleStringProperty();
     StringProperty senha = new SimpleStringProperty();
-    BooleanProperty ativo = new SimpleBooleanProperty();
+    BooleanProperty tokenAtivo = new SimpleBooleanProperty();
 
     public ContaToken() {
     }
@@ -61,6 +62,19 @@ public class ContaToken implements Serializable {
         this.tokenApi.set(tokenApi);
     }
 
+    @Column(length = 12, nullable = false)
+    public String getMoeda() {
+        return moeda.get();
+    }
+
+    public StringProperty moedaProperty() {
+        return moeda;
+    }
+
+    public void setMoeda(String moeda) {
+        this.moeda.set(moeda);
+    }
+
     @Column(length = 1, nullable = false)
     public boolean iscReal() {
         return cReal.get();
@@ -101,22 +115,23 @@ public class ContaToken implements Serializable {
     }
 
     @Column(length = 1, nullable = false)
-    public boolean isAtivo() {
-        return ativo.get();
+    public boolean isTokenAtivo() {
+        return tokenAtivo.get();
     }
 
-    public BooleanProperty ativoProperty() {
-        return ativo;
+    public BooleanProperty tokenAtivoProperty() {
+        return tokenAtivo;
     }
 
-    public void setAtivo(boolean ativo) {
-        this.ativo.set(ativo);
+    public void setTokenAtivo(boolean tokenAtivo) {
+        this.tokenAtivo.set(tokenAtivo);
     }
 
     @Override
     public String toString() {
-        return String.format("%s [%s]",
+        return String.format("[%s] %s_%s",
+                iscReal() ? "***REAL***" : "Virtual",
                 descricaoProperty().getValue(),
-                iscReal() ? "***REAL***" : "Virtual");
+                moedaProperty().getValue());
     }
 }
