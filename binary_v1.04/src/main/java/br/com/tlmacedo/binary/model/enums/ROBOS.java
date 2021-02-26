@@ -7,8 +7,7 @@ import java.util.List;
 public enum ROBOS {
 
     NULL(0, ""),
-    EVEN_ODD_01_PORCENTAGEM(32, "EVEN_ODD-PORCENTAGEM"),
-    OVER_01(40, "OVER");
+    ABR(1, "ABR");
 
     Integer cod;
     String descricao;

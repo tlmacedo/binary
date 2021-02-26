@@ -185,7 +185,7 @@ public class Operacoes implements Initializable {
 
     // Negociação
     public TitledPane tpn_Negociacao;
-    public ComboBox cboNegociacaoRobos;
+    public ComboBox<ROBOS> cboNegociacaoRobos;
     public Label lblNegociacaoParametros;
     public ComboBox<Integer> cboTpnNegociacaoQtdCandlesAnalise;
     public Label lblTpnNegociacaoDtHoraInicial;
@@ -481,6 +481,17 @@ public class Operacoes implements Initializable {
 
         getCboTpnDetalhesContaBinary().setItems(getContaTokenObservableList());
 
+        getCboNegociacaoRobos().setItems(ROBOS.getList().stream()
+                .collect(Collectors.toCollection(FXCollections::observableArrayList)));
+
+        objetosBindings();
+
+        escutandoObjetos();
+
+    }
+
+    private void objetosBindings() {
+
         saldoInicialProperty().bind(Bindings.createObjectBinding(() -> {
             if (authorizeProperty().getValue() == null)
                 return BigDecimal.ZERO;
@@ -490,8 +501,6 @@ public class Operacoes implements Initializable {
         getLblDetalhesSaldoInicial().textProperty().bind(Bindings.createStringBinding(() ->
                         Service_Mascara.getValorMoeda(saldoInicialProperty().getValue()),
                 saldoInicialProperty()));
-
-        escutandoObjetos();
 
     }
 
@@ -1538,11 +1547,11 @@ public class Operacoes implements Initializable {
         this.tpn_Negociacao = tpn_Negociacao;
     }
 
-    public ComboBox getCboNegociacaoRobos() {
+    public ComboBox<ROBOS> getCboNegociacaoRobos() {
         return cboNegociacaoRobos;
     }
 
-    public void setCboNegociacaoRobos(ComboBox cboNegociacaoRobos) {
+    public void setCboNegociacaoRobos(ComboBox<ROBOS> cboNegociacaoRobos) {
         this.cboNegociacaoRobos = cboNegociacaoRobos;
     }
 
