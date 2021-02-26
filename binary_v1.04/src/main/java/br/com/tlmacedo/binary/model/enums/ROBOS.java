@@ -6,7 +6,7 @@ import java.util.List;
 
 public enum ROBOS {
 
-    NULL(0, ""),
+    //    NULL(0, null),
     ABR(1, "ABR");
 
     Integer cod;
@@ -49,6 +49,8 @@ public enum ROBOS {
 
     @Override
     public String toString() {
+//        if (getDescricao() == null)
+//            return "";
         return getDescricao().toUpperCase();
     }
 }

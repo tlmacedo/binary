@@ -1,6 +1,7 @@
 package br.com.tlmacedo.binary.controller;
 
 import br.com.tlmacedo.binary.controller.estrategias.Abr;
+import br.com.tlmacedo.binary.interfaces.Robo;
 import br.com.tlmacedo.binary.model.dao.ContaTokenDAO;
 import br.com.tlmacedo.binary.model.dao.SymbolDAO;
 import br.com.tlmacedo.binary.model.dao.TransacoesDAO;
@@ -94,7 +95,7 @@ public class Operacoes implements Initializable {
      */
 
 
-    static final ObjectProperty<ROBOS> ROBO_ATIVO = new SimpleObjectProperty<>();
+    static final ObjectProperty<Robo> ROBO_ATIVO = new SimpleObjectProperty<>();
 
     /**
      * Variaveis de controle do sistema
@@ -130,6 +131,16 @@ public class Operacoes implements Initializable {
     static ObservableList<HistoricoDeOhlc>[][] historicoDeOhlcObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
 //    static ObservableList<Transaction>[] transactionObservableList = new ObservableList[5];
 //    static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
+
+
+    //** Operações com Robos **
+    private BooleanProperty[] timeAtivo = new BooleanProperty[TICK_TIME.values().length];
+    private ObjectProperty<BigDecimal>[] vlrStake;
+    private IntegerProperty[] qtdCandles;
+
+    private PriceProposal[][] priceProposal = new PriceProposal[TICK_TIME.values().length][getSymbolObservableList().size()];
+    private Proposal[][] proposal = new Proposal[TICK_TIME.values().length][getSymbolObservableList().size()];
+
 
     public static final Integer TIME_1M = 0;
     public static final Integer TIME_2M = 1;
@@ -458,6 +469,10 @@ public class Operacoes implements Initializable {
         getCboTpnNegociacaoQtdCandlesAnalise().getSelectionModel().select(0);
 
         for (int time_id = 0; time_id < TICK_TIME.values().length; time_id++) {
+
+
+            getTimeAtivo()[time_id] = new SimpleBooleanProperty(true);
+
             for (int symbol_id = 0; symbol_id < getSymbolObservableList().size(); symbol_id++) {
                 if (time_id == 0) {
                     getTickSubindo()[symbol_id] = new SimpleBooleanProperty(false);
@@ -494,16 +509,17 @@ public class Operacoes implements Initializable {
 
         getCboNegociacaoRobos().setItems(ROBOS.getList().stream()
                 .collect(Collectors.toCollection(FXCollections::observableArrayList)));
+        getCboNegociacaoRobos().getItems().add(0, null);
 
         objetosBindings();
 
         escutandoObjetos();
 
+        comandosDeBotoes();
+
     }
 
     private void objetosBindings() {
-
-        ROBO_ATIVOProperty().bind(getCboNegociacaoRobos().valueProperty());
 
         saldoInicialProperty().bind(Bindings.createObjectBinding(() -> {
             if (authorizeProperty().getValue() == null)
@@ -565,22 +581,29 @@ public class Operacoes implements Initializable {
             solicitarAutorizacaoApp(n.getTokenApi());
         });
 
-        ROBO_ATIVOProperty().addListener((ov, o, n) -> {
-            //if (o!=null)
-            if (n == null || n.getDescricao().equals("")) {
+        getCboNegociacaoRobos().valueProperty().addListener((ov, o, n) -> {
+            if (n == null) {
+                setRoboAtivo(null);
                 return;
-            } else {
-                switch (n) {
-                    case ABR -> {
-                        Abr abr = new Abr(this);
-                    }
+            }
+            switch (n) {
+                case ABR -> {
+                    Abr abr = new Abr();
+                    setRoboAtivo(abr);
                 }
+                default -> setRoboAtivo(null);
             }
         });
 
         getBtnTpnNegociacao_Contratos().disableProperty().bind(Bindings.createBooleanBinding(() ->
-                        (getAuthorize() == null || (getRoboAtivo() == null || getRoboAtivo().getDescricao().equals(""))),
+                        (getAuthorize() == null || getRoboAtivo() == null),
                 authorizeProperty(), ROBO_ATIVOProperty()));
+
+    }
+
+    private void comandosDeBotoes() {
+
+        getBtnTpnNegociacao_Contratos().setOnAction(event -> getRoboAtivo().definicaoDeContrato());
 
     }
 
@@ -607,6 +630,8 @@ public class Operacoes implements Initializable {
         conectarObjetosEmVariaveis_LastTicks();
 
         conectarObjetosEmVariaveis_Time01(TIME_1M);
+
+        conectarTimesAtivos();
 
 //        getTpn_T02().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_2M)));
 //        getTpn_T03().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_3M)));
@@ -1169,6 +1194,17 @@ public class Operacoes implements Initializable {
 
     }
 
+    private void conectarTimesAtivos() {
+
+        getChkTpn01_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_1M]);
+//        getChkTpn02_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_2M]);
+//        getChkTpn03_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_3M]);
+//        getChkTpn04_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_5M]);
+//        getChkTpn05_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_10M]);
+//        getChkTpn06_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_15M]);
+
+    }
+
     private String getDataFromInteger(Integer epoch) {
         return LocalDateTime.ofInstant(Instant.ofEpochSecond(epoch),
                 TimeZone.getDefault().toZoneId()).format(DTF_HORA_MINUTOS);
@@ -1280,6 +1316,18 @@ public class Operacoes implements Initializable {
         return TICK_STYLE;
     }
 
+    public static Robo getRoboAtivo() {
+        return ROBO_ATIVO.get();
+    }
+
+    public static ObjectProperty<Robo> ROBO_ATIVOProperty() {
+        return ROBO_ATIVO;
+    }
+
+    public static void setRoboAtivo(Robo roboAtivo) {
+        ROBO_ATIVO.set(roboAtivo);
+    }
+
     public boolean isAppAutorizado() {
         return appAutorizado.get();
     }
@@ -1334,6 +1382,26 @@ public class Operacoes implements Initializable {
 
     public void setRoboCronometroAtivado(boolean roboCronometroAtivado) {
         this.roboCronometroAtivado.set(roboCronometroAtivado);
+    }
+
+    public BigDecimal getSaldoInicial() {
+        return saldoInicial.get();
+    }
+
+    public ObjectProperty<BigDecimal> saldoInicialProperty() {
+        return saldoInicial;
+    }
+
+    public void setSaldoInicial(BigDecimal saldoInicial) {
+        this.saldoInicial.set(saldoInicial);
+    }
+
+    public static IntegerProperty[] getQtdCandlesEntrada() {
+        return qtdCandlesEntrada;
+    }
+
+    public static void setQtdCandlesEntrada(IntegerProperty[] qtdCandlesEntrada) {
+        Operacoes.qtdCandlesEntrada = qtdCandlesEntrada;
     }
 
     public static ObjectProperty<Tick>[][] getUltimoTick() {
@@ -1624,6 +1692,38 @@ public class Operacoes implements Initializable {
         this.lblTpnNegociacaoTempoUso = lblTpnNegociacaoTempoUso;
     }
 
+    public JFXButton getBtnTpnNegociacao_Contratos() {
+        return btnTpnNegociacao_Contratos;
+    }
+
+    public void setBtnTpnNegociacao_Contratos(JFXButton btnTpnNegociacao_Contratos) {
+        this.btnTpnNegociacao_Contratos = btnTpnNegociacao_Contratos;
+    }
+
+    public JFXButton getBtnTpnNegociacao_Iniciar() {
+        return btnTpnNegociacao_Iniciar;
+    }
+
+    public void setBtnTpnNegociacao_Iniciar(JFXButton btnTpnNegociacao_Iniciar) {
+        this.btnTpnNegociacao_Iniciar = btnTpnNegociacao_Iniciar;
+    }
+
+    public JFXButton getBtnTpnNegociacao_Pausar() {
+        return btnTpnNegociacao_Pausar;
+    }
+
+    public void setBtnTpnNegociacao_Pausar(JFXButton btnTpnNegociacao_Pausar) {
+        this.btnTpnNegociacao_Pausar = btnTpnNegociacao_Pausar;
+    }
+
+    public JFXButton getBtnTpnNegociacao_Stop() {
+        return btnTpnNegociacao_Stop;
+    }
+
+    public void setBtnTpnNegociacao_Stop(JFXButton btnTpnNegociacao_Stop) {
+        this.btnTpnNegociacao_Stop = btnTpnNegociacao_Stop;
+    }
+
     public TitledPane getTpn_LastTicks() {
         return tpn_LastTicks;
     }
@@ -1830,6 +1930,14 @@ public class Operacoes implements Initializable {
 
     public void setTpn_T01(TitledPane tpn_T01) {
         this.tpn_T01 = tpn_T01;
+    }
+
+    public JFXCheckBox getChkTpn01_TimeAtivo() {
+        return chkTpn01_TimeAtivo;
+    }
+
+    public void setChkTpn01_TimeAtivo(JFXCheckBox chkTpn01_TimeAtivo) {
+        this.chkTpn01_TimeAtivo = chkTpn01_TimeAtivo;
     }
 
     public Label getLblTpnT01_CandleTimeStart() {
@@ -3048,76 +3156,43 @@ public class Operacoes implements Initializable {
         this.tbvTransacoes_T01_Op12 = tbvTransacoes_T01_Op12;
     }
 
-    public static IntegerProperty[] getQtdCandlesEntrada() {
-        return qtdCandlesEntrada;
+    public PriceProposal[][] getPriceProposal() {
+        return priceProposal;
     }
 
-    public static void setQtdCandlesEntrada(IntegerProperty[] qtdCandlesEntrada) {
-        Operacoes.qtdCandlesEntrada = qtdCandlesEntrada;
+    public void setPriceProposal(PriceProposal[][] priceProposal) {
+        this.priceProposal = priceProposal;
     }
 
-
-    public BigDecimal getSaldoInicial() {
-        return saldoInicial.get();
+    public Proposal[][] getProposal() {
+        return proposal;
     }
 
-    public ObjectProperty<BigDecimal> saldoInicialProperty() {
-        return saldoInicial;
+    public void setProposal(Proposal[][] proposal) {
+        this.proposal = proposal;
     }
 
-    public void setSaldoInicial(BigDecimal saldoInicial) {
-        this.saldoInicial.set(saldoInicial);
+    public ObjectProperty<BigDecimal>[] getVlrStake() {
+        return vlrStake;
     }
 
-    public static ROBOS getRoboAtivo() {
-        return ROBO_ATIVO.get();
+    public void setVlrStake(ObjectProperty<BigDecimal>[] vlrStake) {
+        this.vlrStake = vlrStake;
     }
 
-    public static ObjectProperty<ROBOS> ROBO_ATIVOProperty() {
-        return ROBO_ATIVO;
+    public IntegerProperty[] getQtdCandles() {
+        return qtdCandles;
     }
 
-    public static void setRoboAtivo(ROBOS roboAtivo) {
-        ROBO_ATIVO.set(roboAtivo);
+    public void setQtdCandles(IntegerProperty[] qtdCandles) {
+        this.qtdCandles = qtdCandles;
     }
 
-    public JFXButton getBtnTpnNegociacao_Contratos() {
-        return btnTpnNegociacao_Contratos;
+    public BooleanProperty[] getTimeAtivo() {
+        return timeAtivo;
     }
 
-    public void setBtnTpnNegociacao_Contratos(JFXButton btnTpnNegociacao_Contratos) {
-        this.btnTpnNegociacao_Contratos = btnTpnNegociacao_Contratos;
-    }
-
-    public JFXButton getBtnTpnNegociacao_Iniciar() {
-        return btnTpnNegociacao_Iniciar;
-    }
-
-    public void setBtnTpnNegociacao_Iniciar(JFXButton btnTpnNegociacao_Iniciar) {
-        this.btnTpnNegociacao_Iniciar = btnTpnNegociacao_Iniciar;
-    }
-
-    public JFXButton getBtnTpnNegociacao_Pausar() {
-        return btnTpnNegociacao_Pausar;
-    }
-
-    public void setBtnTpnNegociacao_Pausar(JFXButton btnTpnNegociacao_Pausar) {
-        this.btnTpnNegociacao_Pausar = btnTpnNegociacao_Pausar;
-    }
-
-    public JFXButton getBtnTpnNegociacao_Stop() {
-        return btnTpnNegociacao_Stop;
-    }
-
-    public void setBtnTpnNegociacao_Stop(JFXButton btnTpnNegociacao_Stop) {
-        this.btnTpnNegociacao_Stop = btnTpnNegociacao_Stop;
-    }
-
-    public JFXCheckBox getChkTpn01_TimeAtivo() {
-        return chkTpn01_TimeAtivo;
-    }
-
-    public void setChkTpn01_TimeAtivo(JFXCheckBox chkTpn01_TimeAtivo) {
-        this.chkTpn01_TimeAtivo = chkTpn01_TimeAtivo;
+    public void setTimeAtivo(BooleanProperty[] timeAtivo) {
+        this.timeAtivo = timeAtivo;
     }
 }

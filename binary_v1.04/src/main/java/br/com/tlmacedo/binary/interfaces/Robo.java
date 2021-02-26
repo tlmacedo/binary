@@ -1,6 +1,6 @@
 package br.com.tlmacedo.binary.interfaces;
 
-public interface Estrategia {
+public interface Robo {
 
     void definicaoDeContrato();
 
