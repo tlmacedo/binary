@@ -91,6 +91,8 @@ public class Operacoes implements Initializable {
      */
 
 
+    static final ObjectProperty<ROBOS> ROBO_ATIVO = new SimpleObjectProperty<>();
+
     /**
      * Variaveis de controle do sistema
      */
@@ -492,6 +494,8 @@ public class Operacoes implements Initializable {
 
     private void objetosBindings() {
 
+        ROBO_ATIVOProperty().bind(getCboNegociacaoRobos().valueProperty());
+
         saldoInicialProperty().bind(Bindings.createObjectBinding(() -> {
             if (authorizeProperty().getValue() == null)
                 return BigDecimal.ZERO;
@@ -550,7 +554,10 @@ public class Operacoes implements Initializable {
                 return;
             }
             solicitarAutorizacaoApp(n.getTokenApi());
+        });
 
+        ROBO_ATIVOProperty().addListener((ov, o, n) -> {
+            //if (o!=null)
         });
 
     }
@@ -3038,5 +3045,17 @@ public class Operacoes implements Initializable {
 
     public void setSaldoInicial(BigDecimal saldoInicial) {
         this.saldoInicial.set(saldoInicial);
+    }
+
+    public static ROBOS getRoboAtivo() {
+        return ROBO_ATIVO.get();
+    }
+
+    public static ObjectProperty<ROBOS> ROBO_ATIVOProperty() {
+        return ROBO_ATIVO;
+    }
+
+    public static void setRoboAtivo(ROBOS roboAtivo) {
+        ROBO_ATIVO.set(roboAtivo);
     }
 }
