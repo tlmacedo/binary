@@ -1,5 +1,6 @@
 package br.com.tlmacedo.binary.controller;
 
+import br.com.tlmacedo.binary.controller.estrategias.Abr;
 import br.com.tlmacedo.binary.model.dao.ContaTokenDAO;
 import br.com.tlmacedo.binary.model.dao.SymbolDAO;
 import br.com.tlmacedo.binary.model.dao.TransacoesDAO;
@@ -11,6 +12,8 @@ import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Service_Mascara;
 import br.com.tlmacedo.binary.services.Util_Json;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -193,6 +196,11 @@ public class Operacoes implements Initializable {
     public Label lblTpnNegociacaoDtHoraInicial;
     public Label lblTpnNegociacaoDtHoraAtual;
     public Label lblTpnNegociacaoTempoUso;
+    public JFXButton btnTpnNegociacao_Contratos;
+    public JFXButton btnTpnNegociacao_Iniciar;
+    public JFXButton btnTpnNegociacao_Pausar;
+    public JFXButton btnTpnNegociacao_Stop;
+
 
     // LastTicks
     public TitledPane tpn_LastTicks;
@@ -223,6 +231,7 @@ public class Operacoes implements Initializable {
 
     // Time_01 *-*-*
     public TitledPane tpn_T01;
+    public JFXCheckBox chkTpn01_TimeAtivo;
     public Label lblTpnT01_CandleTimeStart;
     public Label lblTpnT01_TimeEnd;
     public Label lblTpnT01_QtdStakes;
@@ -558,7 +567,20 @@ public class Operacoes implements Initializable {
 
         ROBO_ATIVOProperty().addListener((ov, o, n) -> {
             //if (o!=null)
+            if (n == null || n.getDescricao().equals("")) {
+                return;
+            } else {
+                switch (n) {
+                    case ABR -> {
+                        Abr abr = new Abr(this);
+                    }
+                }
+            }
         });
+
+        getBtnTpnNegociacao_Contratos().disableProperty().bind(Bindings.createBooleanBinding(() ->
+                        (getAuthorize() == null || (getRoboAtivo() == null || getRoboAtivo().getDescricao().equals(""))),
+                authorizeProperty(), ROBO_ATIVOProperty()));
 
     }
 
@@ -3057,5 +3079,45 @@ public class Operacoes implements Initializable {
 
     public static void setRoboAtivo(ROBOS roboAtivo) {
         ROBO_ATIVO.set(roboAtivo);
+    }
+
+    public JFXButton getBtnTpnNegociacao_Contratos() {
+        return btnTpnNegociacao_Contratos;
+    }
+
+    public void setBtnTpnNegociacao_Contratos(JFXButton btnTpnNegociacao_Contratos) {
+        this.btnTpnNegociacao_Contratos = btnTpnNegociacao_Contratos;
+    }
+
+    public JFXButton getBtnTpnNegociacao_Iniciar() {
+        return btnTpnNegociacao_Iniciar;
+    }
+
+    public void setBtnTpnNegociacao_Iniciar(JFXButton btnTpnNegociacao_Iniciar) {
+        this.btnTpnNegociacao_Iniciar = btnTpnNegociacao_Iniciar;
+    }
+
+    public JFXButton getBtnTpnNegociacao_Pausar() {
+        return btnTpnNegociacao_Pausar;
+    }
+
+    public void setBtnTpnNegociacao_Pausar(JFXButton btnTpnNegociacao_Pausar) {
+        this.btnTpnNegociacao_Pausar = btnTpnNegociacao_Pausar;
+    }
+
+    public JFXButton getBtnTpnNegociacao_Stop() {
+        return btnTpnNegociacao_Stop;
+    }
+
+    public void setBtnTpnNegociacao_Stop(JFXButton btnTpnNegociacao_Stop) {
+        this.btnTpnNegociacao_Stop = btnTpnNegociacao_Stop;
+    }
+
+    public JFXCheckBox getChkTpn01_TimeAtivo() {
+        return chkTpn01_TimeAtivo;
+    }
+
+    public void setChkTpn01_TimeAtivo(JFXCheckBox chkTpn01_TimeAtivo) {
+        this.chkTpn01_TimeAtivo = chkTpn01_TimeAtivo;
     }
 }

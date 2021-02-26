@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.ComboBox?>
@@ -268,6 +270,42 @@
                                                        maxHeight="-Infinity" minHeight="-Infinity" prefHeight="23.0"
                                                        prefWidth="545.0"/>
                                             </children>
+                                        </VBox>
+                                        <VBox prefWidth="65.0">
+                                            <children>
+                                                <JFXButton fx:id="btnTpnNegociacao_Contratos" text="Contratos">
+                                                    <VBox.margin>
+                                                        <Insets bottom="2.0"/>
+                                                    </VBox.margin>
+                                                </JFXButton>
+                                                <JFXButton fx:id="btnTpnNegociacao_Iniciar" disable="true"
+                                                           layoutX="10.0" layoutY="10.0" text="Iniciar">
+                                                    <VBox.margin>
+                                                        <Insets top="2.0"/>
+                                                    </VBox.margin>
+                                                </JFXButton>
+                                            </children>
+                                            <HBox.margin>
+                                                <Insets left="2.0"/>
+                                            </HBox.margin>
+                                        </VBox>
+                                        <VBox layoutX="760.0" layoutY="10.0" prefWidth="65.0">
+                                            <children>
+                                                <JFXButton fx:id="btnTpnNegociacao_Pausar" disable="true" text="Pausar">
+                                                    <VBox.margin>
+                                                        <Insets bottom="2.0"/>
+                                                    </VBox.margin>
+                                                </JFXButton>
+                                                <JFXButton fx:id="btnTpnNegociacao_Stop" disable="true" layoutX="10.0"
+                                                           layoutY="10.0" text="Stop">
+                                                    <VBox.margin>
+                                                        <Insets top="2.0"/>
+                                                    </VBox.margin>
+                                                </JFXButton>
+                                            </children>
+                                            <HBox.margin>
+                                                <Insets left="2.0"/>
+                                            </HBox.margin>
                                         </VBox>
                                     </children>
                                 </HBox>
@@ -3064,6 +3102,8 @@
                     <graphic>
                         <HBox alignment="CENTER_LEFT" prefWidth="820.0" styleClass="main">
                             <children>
+                                <JFXCheckBox fx:id="chkTpn01_TimeAtivo" alignment="CENTER" contentDisplay="GRAPHIC_ONLY"
+                                             graphicTextGap="2.0" selected="true" text=" "/>
                                 <HBox alignment="CENTER_LEFT" layoutX="15.0" layoutY="10.0" prefWidth="180.0">
                                     <children>
                                         <HBox alignment="CENTER_LEFT" styleClass="informacoes">
@@ -3098,7 +3138,7 @@
                                         </HBox>
                                     </children>
                                 </HBox>
-                                <HBox alignment="CENTER_LEFT">
+                                <HBox alignment="CENTER_LEFT" prefWidth="250.0">
                                     <children>
                                         <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                             <children>
@@ -3147,7 +3187,7 @@
                                         </HBox>
                                     </children>
                                 </HBox>
-                                <HBox alignment="CENTER_RIGHT" prefWidth="387.0">
+                                <HBox alignment="CENTER_RIGHT" prefWidth="370.0">
                                     <children>
                                         <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                             <children>

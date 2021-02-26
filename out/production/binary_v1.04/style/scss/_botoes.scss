@@ -1,9 +1,21 @@
 .button {
+
+  //-fx-font-size: 12px;
+  //-fx-text-fill: #FF6600;
+  //-fx-border-color: #FF6600;
+  //-fx-background-color: transparent;
+  //-fx-border-radius: 8px;
+  //-fx-background-radius: 8px;
+  //-fx-text-alignment: center;
+  //-fx-cursor: pointer;
+
   -fx-font-size: $fontSizeh6;
   -fx-font-family: $fontFamily;
   -fx-text-fill: white;
-  -fx-padding: 0 4;
   -fx-alignment: center;
-  //-fx-pref-width: 95px;
-  //-fx-pref-height: 23px;
+  -jfx-button-type: RAISED;
+  -fx-pref-width: 63px;
+  -fx-pref-height: 22px;
+
 }
+
