@@ -18,6 +18,7 @@ public class PriceProposal implements Serializable {
     Integer duration;
     DURATION_UNIT duration_unit;
     String symbol;
+    Passthrough passthrough;
 
     public PriceProposal() {
     }
@@ -94,6 +95,14 @@ public class PriceProposal implements Serializable {
         this.symbol = symbol;
     }
 
+    public Passthrough getPassthrough() {
+        return passthrough;
+    }
+
+    public void setPassthrough(Passthrough passthrough) {
+        this.passthrough = passthrough;
+    }
+
     @Override
     public String toString() {
         return "PriceProposal{" +
@@ -106,6 +115,7 @@ public class PriceProposal implements Serializable {
                 ", duration=" + duration +
                 ", duration_unit=" + duration_unit +
                 ", symbol='" + symbol + '\'' +
+                ", passthrough=" + passthrough +
                 '}';
     }
 }

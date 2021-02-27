@@ -1,5 +1,6 @@
 package br.com.tlmacedo.binary.model.vo;
 
+import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.model.enums.TICK_STYLE;
 import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 
@@ -11,9 +12,19 @@ public class Passthrough implements Serializable {
     Symbol symbol;
     TICK_TIME tickTime;
     TICK_STYLE tickStyle;
+    CONTRACT_TYPE contractType;
     String mensagem;
 
+
     public Passthrough() {
+    }
+
+    public Passthrough(Symbol symbol, TICK_TIME tickTime, TICK_STYLE tickStyle, CONTRACT_TYPE contractType, String mensagem) {
+        this.symbol = symbol;
+        this.tickTime = tickTime;
+        this.tickStyle = tickStyle;
+        this.contractType = contractType;
+        this.mensagem = mensagem;
     }
 
     public Symbol getSymbol() {
@@ -40,6 +51,14 @@ public class Passthrough implements Serializable {
         this.tickStyle = tickStyle;
     }
 
+    public CONTRACT_TYPE getContractType() {
+        return contractType;
+    }
+
+    public void setContractType(CONTRACT_TYPE contractType) {
+        this.contractType = contractType;
+    }
+
     public String getMensagem() {
         return mensagem;
     }
@@ -54,6 +73,7 @@ public class Passthrough implements Serializable {
                 "symbol=" + symbol +
                 ", tickTime=" + tickTime +
                 ", tickStyle=" + tickStyle +
+                ", contractType=" + contractType +
                 ", mensagem='" + mensagem + '\'' +
                 '}';
     }

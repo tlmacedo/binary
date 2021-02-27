@@ -6,9 +6,7 @@ import br.com.tlmacedo.binary.model.dao.ContaTokenDAO;
 import br.com.tlmacedo.binary.model.dao.SymbolDAO;
 import br.com.tlmacedo.binary.model.dao.TransacoesDAO;
 import br.com.tlmacedo.binary.model.dao.TransactionDAO;
-import br.com.tlmacedo.binary.model.enums.ROBOS;
-import br.com.tlmacedo.binary.model.enums.TICK_STYLE;
-import br.com.tlmacedo.binary.model.enums.TICK_TIME;
+import br.com.tlmacedo.binary.model.enums.*;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Service_Mascara;
@@ -86,27 +84,26 @@ public class Operacoes implements Initializable {
     /**
      * Conexão e operação com WebService
      */
-    static final ObjectProperty<WSClient> WS_CLIENT_OBJECT_PROPERTY = new SimpleObjectProperty<>(new WSClient());
     static BooleanProperty wsConectado = new SimpleBooleanProperty(false);
+    static final ObjectProperty<WSClient> WS_CLIENT_OBJECT_PROPERTY = new SimpleObjectProperty<>(new WSClient());
     static final TICK_STYLE TICK_STYLE = CANDLES;
 
     /**
      * Robos
      */
-
-
+    static ObjectProperty<ROBOS> ROBO_Selecionado = new SimpleObjectProperty<>();
     static final ObjectProperty<Robo> ROBO_ATIVO = new SimpleObjectProperty<>();
+
 
     /**
      * Variaveis de controle do sistema
      */
-
-    private BooleanProperty appAutorizado = new SimpleBooleanProperty(false);
-    private Timeline roboRelogio;
-    private LongProperty roboHoraInicial = new SimpleLongProperty();
-    private LongProperty roboCronometro = new SimpleLongProperty();
-    private BooleanProperty roboCronometroAtivado = new SimpleBooleanProperty(false);
-    private ObjectProperty<BigDecimal> saldoInicial = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    static BooleanProperty appAutorizado = new SimpleBooleanProperty(false);
+    static Timeline roboRelogio;
+    static LongProperty roboHoraInicial = new SimpleLongProperty();
+    static LongProperty roboCronometro = new SimpleLongProperty();
+    static BooleanProperty roboCronometroAtivado = new SimpleBooleanProperty(false);
+    static ObjectProperty<BigDecimal> saldoInicial = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
     /**
      * Variaveis de informações para operadores
@@ -134,12 +131,12 @@ public class Operacoes implements Initializable {
 
 
     //** Operações com Robos **
-    private BooleanProperty[] timeAtivo = new BooleanProperty[TICK_TIME.values().length];
-    private ObjectProperty<BigDecimal>[] vlrStake;
-    private IntegerProperty[] qtdCandles;
+    private static BooleanProperty[] timeAtivo = new BooleanProperty[TICK_TIME.values().length];
+    static ObjectProperty<BigDecimal>[] vlrStkPadrao = new ObjectProperty[TICK_TIME.values().length];
+    static ObjectProperty<BigDecimal>[][] vlrStkContrato = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static IntegerProperty[] qtdCandles = new IntegerProperty[TICK_TIME.values().length];
 
-    private PriceProposal[][] priceProposal = new PriceProposal[TICK_TIME.values().length][getSymbolObservableList().size()];
-    private Proposal[][] proposal = new Proposal[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static PriceProposal[][] priceProposal = new PriceProposal[TICK_TIME.values().length][getSymbolObservableList().size()];
 
 
     public static final Integer TIME_1M = 0;
@@ -163,8 +160,6 @@ public class Operacoes implements Initializable {
     public static final Integer SYMBOL_12 = 11;
 //    public static final String[] VOL_NAME = symbolObservableList.stream().map(Symbol::getName).collect(Collectors.toList()).toArray(String[]::new);
 
-
-    static
 
     /**
      * <p>
@@ -441,7 +436,7 @@ public class Operacoes implements Initializable {
                             monitorarTicks();
                             solicitarTicks();
                         } else {
-//                            getBtnStop().fire();
+                            getBtnTpnNegociacao_Stop().fire();
                             new Service_Alert("Conexão fechou", "Conexão com a binary foi fechada!!", null)
                                     .alertOk();
                         }
@@ -470,8 +465,7 @@ public class Operacoes implements Initializable {
 
         for (int time_id = 0; time_id < TICK_TIME.values().length; time_id++) {
 
-
-            getTimeAtivo()[time_id] = new SimpleBooleanProperty(true);
+            getTimeAtivo()[time_id] = new SimpleBooleanProperty(false);
 
             for (int symbol_id = 0; symbol_id < getSymbolObservableList().size(); symbol_id++) {
                 if (time_id == 0) {
@@ -582,6 +576,7 @@ public class Operacoes implements Initializable {
         });
 
         getCboNegociacaoRobos().valueProperty().addListener((ov, o, n) -> {
+            setROBO_Selecionado(n);
             if (n == null) {
                 setRoboAtivo(null);
                 return;
@@ -591,7 +586,6 @@ public class Operacoes implements Initializable {
                     Abr abr = new Abr();
                     setRoboAtivo(abr);
                 }
-                default -> setRoboAtivo(null);
             }
         });
 
@@ -632,6 +626,7 @@ public class Operacoes implements Initializable {
         conectarObjetosEmVariaveis_Time01(TIME_1M);
 
         conectarTimesAtivos();
+
 
 //        getTpn_T02().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_2M)));
 //        getTpn_T03().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_3M)));
@@ -686,6 +681,43 @@ public class Operacoes implements Initializable {
     }
 
     /**
+     * Gerar PriceProposal and Proposal
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     */
+
+    public boolean gerarContrato(TICK_TIME time, Symbol symbol, CONTRACT_TYPE cType) {
+
+        try {
+            Passthrough passthrough = new Passthrough(symbol, time, getTickStyle(), cType, "");
+            int t_id = time.getCod(), s_id = symbol.getId().intValue() - 1;
+
+            getPriceProposal()[t_id][s_id] = new PriceProposal();
+
+            getPriceProposal()[t_id][s_id].setProposal(1);
+            getPriceProposal()[t_id][s_id].setAmount(getVlrStkContrato()[t_id][s_id].getValue());
+            getPriceProposal()[t_id][s_id].setBasis(PRICE_PROPOSAL_BASIS);
+            getPriceProposal()[t_id][s_id].setContract_type(cType);
+            getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
+            getPriceProposal()[t_id][s_id].setDuration(Integer.valueOf(time.getDescricao().replaceAll("\\D", "")) * 60);
+            getPriceProposal()[t_id][s_id].setDuration_unit(DURATION_UNIT.s);
+            getPriceProposal()[t_id][s_id].setSymbol(symbol.getSymbol());
+            getPriceProposal()[t_id][s_id].setPassthrough(passthrough);
+
+            solicitarProposal(getPriceProposal()[t_id][s_id]);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
+
+    }
+
+    /**
      * Socilitações para Web Service da Binary!!!
      * <p>
      * <p>
@@ -734,6 +766,17 @@ public class Operacoes implements Initializable {
                 if (passthrough == null) jsonHistory = jsonHistory.replace(",\"passthrough\":null", "");
                 getWsClientObjectProperty().getMyWebSocket().send(jsonHistory);
             }
+        }
+    }
+
+    public void solicitarProposal(PriceProposal priceProposal) {
+        if (!isAppAutorizado()) return;
+        try {
+            String jsonPriceProposal = Util_Json.getJson_from_Object(priceProposal)
+                    .replace("\"barrier\":null,", "");
+            getWsClientObjectProperty().getMyWebSocket().send(jsonPriceProposal);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -1196,12 +1239,19 @@ public class Operacoes implements Initializable {
 
     private void conectarTimesAtivos() {
 
-        getChkTpn01_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_1M]);
-//        getChkTpn02_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_2M]);
-//        getChkTpn03_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_3M]);
-//        getChkTpn04_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_5M]);
-//        getChkTpn05_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_10M]);
-//        getChkTpn06_TimeAtivo().selectedProperty().bind(getTimeAtivo()[TIME_15M]);
+        getTimeAtivo()[TIME_1M].bind(getChkTpn01_TimeAtivo().selectedProperty());
+//        getTimeAtivo()[TIME_2M].bind(getChkTpn02_TimeAtivo().selectedProperty());
+//        getTimeAtivo()[TIME_3M].bind(getChkTpn03_TimeAtivo().selectedProperty());
+//        getTimeAtivo()[TIME_5M].bind(getChkTpn04_TimeAtivo().selectedProperty());
+//        getTimeAtivo()[TIME_10M].bind(getChkTpn05_TimeAtivo().selectedProperty());
+//        getTimeAtivo()[TIME_15M].bind(getChkTpn06_TimeAtivo().selectedProperty());
+
+        getChkTpn01_TimeAtivo().setSelected(true);
+//        getChkTpn02_TimeAtivo().setSelected(true);
+//        getChkTpn03_TimeAtivo().setSelected(true);
+//        getChkTpn04_TimeAtivo().setSelected(true);
+//        getChkTpn05_TimeAtivo().setSelected(true);
+//        getChkTpn06_TimeAtivo().setSelected(true);
 
     }
 
@@ -1288,18 +1338,6 @@ public class Operacoes implements Initializable {
         Operacoes.authorize.set(authorize);
     }
 
-    public static WSClient getWsClientObjectProperty() {
-        return WS_CLIENT_OBJECT_PROPERTY.get();
-    }
-
-    public static ObjectProperty<WSClient> WS_CLIENT_OBJECT_PROPERTYProperty() {
-        return WS_CLIENT_OBJECT_PROPERTY;
-    }
-
-    public static void setWsClientObjectProperty(WSClient wsClientObjectProperty) {
-        WS_CLIENT_OBJECT_PROPERTY.set(wsClientObjectProperty);
-    }
-
     public static boolean isWsConectado() {
         return wsConectado.get();
     }
@@ -1310,6 +1348,18 @@ public class Operacoes implements Initializable {
 
     public static void setWsConectado(boolean wsConectado) {
         Operacoes.wsConectado.set(wsConectado);
+    }
+
+    public static WSClient getWsClientObjectProperty() {
+        return WS_CLIENT_OBJECT_PROPERTY.get();
+    }
+
+    public static ObjectProperty<WSClient> WS_CLIENT_OBJECT_PROPERTYProperty() {
+        return WS_CLIENT_OBJECT_PROPERTY;
+    }
+
+    public static void setWsClientObjectProperty(WSClient wsClientObjectProperty) {
+        WS_CLIENT_OBJECT_PROPERTY.set(wsClientObjectProperty);
     }
 
     public static br.com.tlmacedo.binary.model.enums.TICK_STYLE getTickStyle() {
@@ -1328,72 +1378,72 @@ public class Operacoes implements Initializable {
         ROBO_ATIVO.set(roboAtivo);
     }
 
-    public boolean isAppAutorizado() {
+    public static boolean isAppAutorizado() {
         return appAutorizado.get();
     }
 
-    public BooleanProperty appAutorizadoProperty() {
+    public static BooleanProperty appAutorizadoProperty() {
         return appAutorizado;
     }
 
-    public void setAppAutorizado(boolean appAutorizado) {
-        this.appAutorizado.set(appAutorizado);
+    public static void setAppAutorizado(boolean appAutorizado) {
+        Operacoes.appAutorizado.set(appAutorizado);
     }
 
-    public Timeline getRoboRelogio() {
+    public static Timeline getRoboRelogio() {
         return roboRelogio;
     }
 
-    public void setRoboRelogio(Timeline roboRelogio) {
-        this.roboRelogio = roboRelogio;
+    public static void setRoboRelogio(Timeline roboRelogio) {
+        Operacoes.roboRelogio = roboRelogio;
     }
 
-    public long getRoboHoraInicial() {
+    public static long getRoboHoraInicial() {
         return roboHoraInicial.get();
     }
 
-    public LongProperty roboHoraInicialProperty() {
+    public static LongProperty roboHoraInicialProperty() {
         return roboHoraInicial;
     }
 
-    public void setRoboHoraInicial(long roboHoraInicial) {
-        this.roboHoraInicial.set(roboHoraInicial);
+    public static void setRoboHoraInicial(long roboHoraInicial) {
+        Operacoes.roboHoraInicial.set(roboHoraInicial);
     }
 
-    public long getRoboCronometro() {
+    public static long getRoboCronometro() {
         return roboCronometro.get();
     }
 
-    public LongProperty roboCronometroProperty() {
+    public static LongProperty roboCronometroProperty() {
         return roboCronometro;
     }
 
-    public void setRoboCronometro(long roboCronometro) {
-        this.roboCronometro.set(roboCronometro);
+    public static void setRoboCronometro(long roboCronometro) {
+        Operacoes.roboCronometro.set(roboCronometro);
     }
 
-    public boolean isRoboCronometroAtivado() {
+    public static boolean isRoboCronometroAtivado() {
         return roboCronometroAtivado.get();
     }
 
-    public BooleanProperty roboCronometroAtivadoProperty() {
+    public static BooleanProperty roboCronometroAtivadoProperty() {
         return roboCronometroAtivado;
     }
 
-    public void setRoboCronometroAtivado(boolean roboCronometroAtivado) {
-        this.roboCronometroAtivado.set(roboCronometroAtivado);
+    public static void setRoboCronometroAtivado(boolean roboCronometroAtivado) {
+        Operacoes.roboCronometroAtivado.set(roboCronometroAtivado);
     }
 
-    public BigDecimal getSaldoInicial() {
+    public static BigDecimal getSaldoInicial() {
         return saldoInicial.get();
     }
 
-    public ObjectProperty<BigDecimal> saldoInicialProperty() {
+    public static ObjectProperty<BigDecimal> saldoInicialProperty() {
         return saldoInicial;
     }
 
-    public void setSaldoInicial(BigDecimal saldoInicial) {
-        this.saldoInicial.set(saldoInicial);
+    public static void setSaldoInicial(BigDecimal saldoInicial) {
+        Operacoes.saldoInicial.set(saldoInicial);
     }
 
     public static IntegerProperty[] getQtdCandlesEntrada() {
@@ -1500,12 +1550,52 @@ public class Operacoes implements Initializable {
         Operacoes.historicoDeOhlcObservableList = historicoDeOhlcObservableList;
     }
 
-    public static AnchorPane getPnlViewBinary() {
+    public static BooleanProperty[] getTimeAtivo() {
+        return timeAtivo;
+    }
+
+    public static void setTimeAtivo(BooleanProperty[] timeAtivo) {
+        Operacoes.timeAtivo = timeAtivo;
+    }
+
+    public static ObjectProperty<BigDecimal>[] getVlrStkPadrao() {
+        return vlrStkPadrao;
+    }
+
+    public static void setVlrStkPadrao(ObjectProperty<BigDecimal>[] vlrStkPadrao) {
+        Operacoes.vlrStkPadrao = vlrStkPadrao;
+    }
+
+    public static ObjectProperty<BigDecimal>[][] getVlrStkContrato() {
+        return vlrStkContrato;
+    }
+
+    public static void setVlrStkContrato(ObjectProperty<BigDecimal>[][] vlrStkContrato) {
+        Operacoes.vlrStkContrato = vlrStkContrato;
+    }
+
+    public static IntegerProperty[] getQtdCandles() {
+        return qtdCandles;
+    }
+
+    public static void setQtdCandles(IntegerProperty[] qtdCandles) {
+        Operacoes.qtdCandles = qtdCandles;
+    }
+
+    public static PriceProposal[][] getPriceProposal() {
+        return priceProposal;
+    }
+
+    public static void setPriceProposal(PriceProposal[][] priceProposal) {
+        Operacoes.priceProposal = priceProposal;
+    }
+
+    public AnchorPane getPnlViewBinary() {
         return pnlViewBinary;
     }
 
-    public static void setPnlViewBinary(AnchorPane pnlViewBinary) {
-        Operacoes.pnlViewBinary = pnlViewBinary;
+    public void setPnlViewBinary(AnchorPane pnlViewBinary) {
+        this.pnlViewBinary = pnlViewBinary;
     }
 
     public TitledPane getTpn_Detalhes() {
@@ -3156,43 +3246,15 @@ public class Operacoes implements Initializable {
         this.tbvTransacoes_T01_Op12 = tbvTransacoes_T01_Op12;
     }
 
-    public PriceProposal[][] getPriceProposal() {
-        return priceProposal;
+    public static ROBOS getROBO_Selecionado() {
+        return ROBO_Selecionado.get();
     }
 
-    public void setPriceProposal(PriceProposal[][] priceProposal) {
-        this.priceProposal = priceProposal;
+    public static ObjectProperty<ROBOS> ROBO_SelecionadoProperty() {
+        return ROBO_Selecionado;
     }
 
-    public Proposal[][] getProposal() {
-        return proposal;
-    }
-
-    public void setProposal(Proposal[][] proposal) {
-        this.proposal = proposal;
-    }
-
-    public ObjectProperty<BigDecimal>[] getVlrStake() {
-        return vlrStake;
-    }
-
-    public void setVlrStake(ObjectProperty<BigDecimal>[] vlrStake) {
-        this.vlrStake = vlrStake;
-    }
-
-    public IntegerProperty[] getQtdCandles() {
-        return qtdCandles;
-    }
-
-    public void setQtdCandles(IntegerProperty[] qtdCandles) {
-        this.qtdCandles = qtdCandles;
-    }
-
-    public BooleanProperty[] getTimeAtivo() {
-        return timeAtivo;
-    }
-
-    public void setTimeAtivo(BooleanProperty[] timeAtivo) {
-        this.timeAtivo = timeAtivo;
+    public static void setROBO_Selecionado(ROBOS ROBO_Selecionado) {
+        Operacoes.ROBO_Selecionado.set(ROBO_Selecionado);
     }
 }

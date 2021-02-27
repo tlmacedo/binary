@@ -6,6 +6,8 @@ import java.util.List;
 
 public enum CONTRACT_TYPE {
 
+    CALL(0, "CALL"),
+    PUT(1, "PUT"),
     //    MULTUP (0, "MULTUP"),
 //    MULTDOWN (1, "MULTDOWN"),
 //    UPORDOWN (2, "UPORDOWN"),
@@ -24,13 +26,11 @@ public enum CONTRACT_TYPE {
     DIGITUNDER(13, "DIGITUNDER"),
 
     //    NOTOUCH (14, "NOTOUCH"),
-    CALL(15, "CALL"),
 
     //    RANGE (16, "RANGE"),
 //    LBFLOATPUT (17, "LBFLOATPUT"),
     DIGITODD(18, "DIGITODD"),
 
-    PUT(19, "PUT"),
 
     //    ASIANU (20, "ASIANU"),
 //    LBFLOATCALL (21, "LBFLOATCALL"),

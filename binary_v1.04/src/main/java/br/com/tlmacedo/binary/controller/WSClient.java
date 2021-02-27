@@ -1,5 +1,6 @@
 package br.com.tlmacedo.binary.controller;
 
+import br.com.tlmacedo.binary.controller.estrategias.Abr;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.model.enums.MSG_TYPE;
 import br.com.tlmacedo.binary.model.vo.Error;
@@ -30,6 +31,8 @@ public class WSClient extends WebSocketListener {
     private Ohlc ohlc;
     private Tick tick;
     private Authorize authorize;
+
+    private Proposal proposal;
 
 
 //    private Symbols symbols;
@@ -79,7 +82,13 @@ public class WSClient extends WebSocketListener {
                     setAuthorize((Authorize) Util_Json.getObject_from_String(text, Authorize.class));
                     refreshAuthorize(getAuthorize());
                 }
-
+                case PROPOSAL -> {
+                    System.out.printf("001-case: Proposal\n");
+                    setProposal((Proposal) Util_Json.getObject_from_String(text, Proposal.class));
+                    System.out.printf("002-case: Proposal\n");
+                    refreshProposal(getPassthrough(), getProposal());
+                    System.out.printf("003-case: Proposal\n");
+                }
                 case TICK -> {
                     setTick((Tick) Util_Json.getObject_from_String(text, Tick.class));
                     refreshTick(getPassthrough(), getTick());
@@ -105,36 +114,6 @@ public class WSClient extends WebSocketListener {
      * <p>
      * <p>
      */
-
-    private void imprime(String text, MSG_TYPE msgType) {
-
-        if (CONSOLE_BINARY_ALL || CONSOLE_BINARY_ALL_SEM_TICKS) {
-            if (CONSOLE_BINARY_ALL_SEM_TICKS) {
-                if (msgType.equals(MSG_TYPE.TICK)
-                        || msgType.equals(MSG_TYPE.HISTORY)
-                        || msgType.equals(MSG_TYPE.OHLC)
-                        || msgType.equals(MSG_TYPE.CANDLES))
-                    return;
-            }
-            System.out.printf("..0..%s\n", text);
-        } else {
-            boolean print = false;
-            switch (msgType) {
-//                case ACTIVE_SYMBOLS -> print = CONSOLE_BINARY_ACTIVE_SYMBOL;
-                case AUTHORIZE -> print = CONSOLE_BINARY_AUTHORIZE;
-                case ERROR -> print = CONSOLE_BINARY_ERROR;
-                case TICK -> print = CONSOLE_BINARY_TICK;
-                case PROPOSAL -> print = CONSOLE_BINARY_PROPOSAL;
-                case BUY -> print = CONSOLE_BINARY_BUY;
-                case TRANSACTION -> print = CONSOLE_BINARY_TRANSACTION;
-                case HISTORY -> print = CONSOLE_BINARY_HISTORY;
-                default -> print = (CONSOLE_BINARY_ALL || CONSOLE_BINARY_ALL_SEM_TICKS);
-            }
-            if (print)
-                System.out.printf("..1..%s\n", text);
-        }
-
-    }
 
     private void openOrClosedSocket(boolean conectado) {
 
@@ -217,7 +196,17 @@ public class WSClient extends WebSocketListener {
 
     }
 
-    private void refreshProposal(Integer symbolId, Proposal proposal, CONTRACT_TYPE contractType) {
+    private void refreshProposal(Passthrough passthrough, Proposal proposal) {
+
+        Platform.runLater(() -> {
+            int s_id = passthrough.getSymbol().getId().intValue() - 1, t_id = passthrough.getTickTime().getCod();
+            CONTRACT_TYPE cType = passthrough.getContractType();
+            switch (Operacoes.getROBO_Selecionado()) {
+                case ABR -> {
+                    Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1] = proposal;
+                }
+            }
+        });
 
     }
 
@@ -238,6 +227,37 @@ public class WSClient extends WebSocketListener {
         });
 
     }
+
+    private void imprime(String text, MSG_TYPE msgType) {
+
+        if (CONSOLE_BINARY_ALL || CONSOLE_BINARY_ALL_SEM_TICKS) {
+            if (CONSOLE_BINARY_ALL_SEM_TICKS) {
+                if (msgType.equals(MSG_TYPE.TICK)
+                        || msgType.equals(MSG_TYPE.HISTORY)
+                        || msgType.equals(MSG_TYPE.OHLC)
+                        || msgType.equals(MSG_TYPE.CANDLES))
+                    return;
+            }
+            System.out.printf("..0..%s\n", text);
+        } else {
+            boolean print = false;
+            switch (msgType) {
+//                case ACTIVE_SYMBOLS -> print = CONSOLE_BINARY_ACTIVE_SYMBOL;
+                case AUTHORIZE -> print = CONSOLE_BINARY_AUTHORIZE;
+                case ERROR -> print = CONSOLE_BINARY_ERROR;
+                case TICK -> print = CONSOLE_BINARY_TICK;
+                case PROPOSAL -> print = CONSOLE_BINARY_PROPOSAL;
+                case BUY -> print = CONSOLE_BINARY_BUY;
+                case TRANSACTION -> print = CONSOLE_BINARY_TRANSACTION;
+                case HISTORY -> print = CONSOLE_BINARY_HISTORY;
+                default -> print = (CONSOLE_BINARY_ALL || CONSOLE_BINARY_ALL_SEM_TICKS);
+            }
+            if (print)
+                System.out.printf("..1..%s\n", text);
+        }
+
+    }
+
 
     /**
      * <p>
@@ -327,5 +347,13 @@ public class WSClient extends WebSocketListener {
 
     public void setAuthorize(Authorize authorize) {
         this.authorize = authorize;
+    }
+
+    public Proposal getProposal() {
+        return proposal;
+    }
+
+    public void setProposal(Proposal proposal) {
+        this.proposal = proposal;
     }
 }
