@@ -83,11 +83,8 @@ public class WSClient extends WebSocketListener {
                     refreshAuthorize(getAuthorize());
                 }
                 case PROPOSAL -> {
-                    System.out.printf("001-case: Proposal\n");
                     setProposal((Proposal) Util_Json.getObject_from_String(text, Proposal.class));
-                    System.out.printf("002-case: Proposal\n");
                     refreshProposal(getPassthrough(), getProposal());
-                    System.out.printf("003-case: Proposal\n");
                 }
                 case TICK -> {
                     setTick((Tick) Util_Json.getObject_from_String(text, Tick.class));

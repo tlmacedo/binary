@@ -132,6 +132,10 @@ public class Operacoes implements Initializable {
 
     //** Operações com Robos **
     private static BooleanProperty[] timeAtivo = new BooleanProperty[TICK_TIME.values().length];
+    static BooleanProperty btnContratoDisabled = new SimpleBooleanProperty(true);
+    static BooleanProperty btnIniciardisabled = new SimpleBooleanProperty(true);
+    static BooleanProperty btnPausarDisabled = new SimpleBooleanProperty(true);
+    static BooleanProperty btnStopDisabled = new SimpleBooleanProperty(true);
     static ObjectProperty<BigDecimal>[] vlrStkPadrao = new ObjectProperty[TICK_TIME.values().length];
     static ObjectProperty<BigDecimal>[][] vlrStkContrato = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static IntegerProperty[] qtdCandles = new IntegerProperty[TICK_TIME.values().length];
@@ -525,6 +529,11 @@ public class Operacoes implements Initializable {
                         Service_Mascara.getValorMoeda(saldoInicialProperty().getValue()),
                 saldoInicialProperty()));
 
+        getBtnTpnNegociacao_Contratos().disableProperty().bind(btnContratoDisabledProperty());
+        getBtnTpnNegociacao_Iniciar().disableProperty().bind(btnIniciardisabledProperty());
+        getBtnTpnNegociacao_Pausar().disableProperty().bind(btnPausarDisabledProperty());
+        getBtnTpnNegociacao_Stop().disableProperty().bind(btnStopDisabledProperty());
+
     }
 
     private void escutandoObjetos() {
@@ -540,8 +549,12 @@ public class Operacoes implements Initializable {
         });
 
         authorizeProperty().addListener((ov, o, n) -> {
-            if (n != null)
+            if (n != null) {
                 solicitarTransacoes();
+                setBtnContratoDisabled(true);
+            } else {
+                setBtnContratoDisabled(getRoboAtivo() == null);
+            }
             getLblDetalhesProprietarioConta().setText(n != null
                     ? (n.getFullname().replaceAll("\\W", "").length() > 0
                     ? String.format("%s (%s)", n.getFullname(), n.getEmail())
@@ -579,7 +592,10 @@ public class Operacoes implements Initializable {
             setROBO_Selecionado(n);
             if (n == null) {
                 setRoboAtivo(null);
+                setBtnContratoDisabled(true);
                 return;
+            } else {
+                setBtnContratoDisabled(getAuthorize() == null);
             }
             switch (n) {
                 case ABR -> {
@@ -588,10 +604,6 @@ public class Operacoes implements Initializable {
                 }
             }
         });
-
-        getBtnTpnNegociacao_Contratos().disableProperty().bind(Bindings.createBooleanBinding(() ->
-                        (getAuthorize() == null || getRoboAtivo() == null),
-                authorizeProperty(), ROBO_ATIVOProperty()));
 
     }
 
@@ -690,30 +702,24 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-    public boolean gerarContrato(TICK_TIME time, Symbol symbol, CONTRACT_TYPE cType) {
+    public void gerarContrato(TICK_TIME time, Symbol symbol, CONTRACT_TYPE cType) throws Exception {
 
-        try {
-            Passthrough passthrough = new Passthrough(symbol, time, getTickStyle(), cType, "");
-            int t_id = time.getCod(), s_id = symbol.getId().intValue() - 1;
+        Passthrough passthrough = new Passthrough(symbol, time, getTickStyle(), cType, "");
+        int t_id = time.getCod(), s_id = symbol.getId().intValue() - 1;
 
-            getPriceProposal()[t_id][s_id] = new PriceProposal();
+        getPriceProposal()[t_id][s_id] = new PriceProposal();
 
-            getPriceProposal()[t_id][s_id].setProposal(1);
-            getPriceProposal()[t_id][s_id].setAmount(getVlrStkContrato()[t_id][s_id].getValue());
-            getPriceProposal()[t_id][s_id].setBasis(PRICE_PROPOSAL_BASIS);
-            getPriceProposal()[t_id][s_id].setContract_type(cType);
-            getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
-            getPriceProposal()[t_id][s_id].setDuration(Integer.valueOf(time.getDescricao().replaceAll("\\D", "")) * 60);
-            getPriceProposal()[t_id][s_id].setDuration_unit(DURATION_UNIT.s);
-            getPriceProposal()[t_id][s_id].setSymbol(symbol.getSymbol());
-            getPriceProposal()[t_id][s_id].setPassthrough(passthrough);
+        getPriceProposal()[t_id][s_id].setProposal(1);
+        getPriceProposal()[t_id][s_id].setAmount(getVlrStkContrato()[t_id][s_id].getValue());
+        getPriceProposal()[t_id][s_id].setBasis(PRICE_PROPOSAL_BASIS);
+        getPriceProposal()[t_id][s_id].setContract_type(cType);
+        getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
+        getPriceProposal()[t_id][s_id].setDuration(Integer.valueOf(time.getDescricao().replaceAll("\\D", "")) * 60);
+        getPriceProposal()[t_id][s_id].setDuration_unit(DURATION_UNIT.s);
+        getPriceProposal()[t_id][s_id].setSymbol(symbol.getSymbol());
+        getPriceProposal()[t_id][s_id].setPassthrough(passthrough);
 
-            solicitarProposal(getPriceProposal()[t_id][s_id]);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
-        return true;
+        solicitarProposal(getPriceProposal()[t_id][s_id]);
 
     }
 
@@ -3256,5 +3262,53 @@ public class Operacoes implements Initializable {
 
     public static void setROBO_Selecionado(ROBOS ROBO_Selecionado) {
         Operacoes.ROBO_Selecionado.set(ROBO_Selecionado);
+    }
+
+    public static boolean isBtnContratoDisabled() {
+        return btnContratoDisabled.get();
+    }
+
+    public static BooleanProperty btnContratoDisabledProperty() {
+        return btnContratoDisabled;
+    }
+
+    public static void setBtnContratoDisabled(boolean btnContratoDisabled) {
+        Operacoes.btnContratoDisabled.set(btnContratoDisabled);
+    }
+
+    public static boolean isBtnIniciardisabled() {
+        return btnIniciardisabled.get();
+    }
+
+    public static BooleanProperty btnIniciardisabledProperty() {
+        return btnIniciardisabled;
+    }
+
+    public static void setBtnIniciardisabled(boolean btnIniciardisabled) {
+        Operacoes.btnIniciardisabled.set(btnIniciardisabled);
+    }
+
+    public static boolean isBtnPausarDisabled() {
+        return btnPausarDisabled.get();
+    }
+
+    public static BooleanProperty btnPausarDisabledProperty() {
+        return btnPausarDisabled;
+    }
+
+    public static void setBtnPausarDisabled(boolean btnPausarDisabled) {
+        Operacoes.btnPausarDisabled.set(btnPausarDisabled);
+    }
+
+    public static boolean isBtnStopDisabled() {
+        return btnStopDisabled.get();
+    }
+
+    public static BooleanProperty btnStopDisabledProperty() {
+        return btnStopDisabled;
+    }
+
+    public static void setBtnStopDisabled(boolean btnStopDisabled) {
+        Operacoes.btnStopDisabled.set(btnStopDisabled);
     }
 }

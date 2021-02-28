@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 
 public class Abr extends Operacoes implements Robo {
 
@@ -51,7 +52,13 @@ public class Abr extends Operacoes implements Robo {
                     }
                 }
             }
+            setBtnContratoDisabled(true);
+            setBtnIniciardisabled(false);
+            setBtnPausarDisabled(false);
+            setBtnStopDisabled(false);
         } catch (Exception ex) {
+            if (ex instanceof NoSuchElementException)
+                return;
             ex.printStackTrace();
         }
 
