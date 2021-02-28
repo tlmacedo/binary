@@ -18,11 +18,6 @@ public class Abr extends Operacoes implements Robo {
     static Proposal[][][] proposal = new Proposal[TICK_TIME.values().length][getSymbolObservableList().size()][2];
 
     @Override
-    public void setNameEstrategiaRobo(ROBOS nameRobo) {
-        setROBO_Selecionado(nameRobo);
-    }
-
-    @Override
     public void definicaoDeContrato() {
 
         System.out.printf("inicioDefinicaoDeContrato\n");
@@ -42,7 +37,7 @@ public class Abr extends Operacoes implements Robo {
             for (TICK_TIME tick_time : TICK_TIME.values()) {
                 if (!getTimeAtivo()[tick_time.getCod()].getValue()) continue;
                 getVlrStkPadrao()[tick_time.getCod()].setValue(vlr);
-                getQtdCandles()[tick_time.getCod()].setValue(qtd);
+                getQtdCandlesEntrada()[tick_time.getCod()].setValue(qtd);
                 for (int i = 0; i < getSymbolObservableList().size(); i++) {
                     getVlrStkContrato()[tick_time.getCod()][i]
                             .setValue(getVlrStkPadrao()[tick_time.getCod()].getValue());
@@ -56,10 +51,39 @@ public class Abr extends Operacoes implements Robo {
             setBtnIniciardisabled(false);
             setBtnPausarDisabled(false);
             setBtnStopDisabled(false);
+
+            setParametrosUtilizadosRobo(String.format("Robô: %s\nvlr_Stake: %s%s\tqtd_Candles: %s",
+                    getROBO_Selecionado(), getAuthorize().getCurrency(), vlr, qtd));
+
         } catch (Exception ex) {
             if (ex instanceof NoSuchElementException)
                 return;
             ex.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void monitorarCondicoesParaComprar() {
+
+        System.out.printf("\n\n\n");
+        for (TICK_TIME tickTime : TICK_TIME.values()) {
+            if (!getTimeAtivo()[tickTime.getCod()].getValue()) continue;
+            int t_id = tickTime.getCod();
+            for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+                int finalS_id = s_id;
+                getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
+                    if (Math.abs(n.intValue()) == getQtdCandlesEntrada()[t_id].getValue()) {
+                        solicitarCompraContrato(getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1]);
+                        System.out.printf("comprar[%s][%s]->%s\n",
+                                TICK_TIME.toEnum(t_id),
+                                getSymbolObservableList().get(finalS_id),
+                                n.intValue() > 0
+                                        ? CONTRACT_TYPE.PUT
+                                        : CONTRACT_TYPE.CALL);
+                    }
+                });
+            }
         }
 
     }
@@ -69,7 +93,7 @@ public class Abr extends Operacoes implements Robo {
         for (TICK_TIME tick_time : TICK_TIME.values()) {
             if (getTimeAtivo()[tick_time.getCod()].getValue()) {
                 getVlrStkPadrao()[tick_time.getCod()] = new SimpleObjectProperty<>();
-                getQtdCandles()[tick_time.getCod()] = new SimpleIntegerProperty();
+                getQtdCandlesEntrada()[tick_time.getCod()] = new SimpleIntegerProperty();
                 for (int i = 0; i < getSymbolObservableList().size(); i++)
                     getVlrStkContrato()[tick_time.getCod()][i] = new SimpleObjectProperty<>();
             }

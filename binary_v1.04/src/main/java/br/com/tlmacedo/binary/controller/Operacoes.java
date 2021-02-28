@@ -99,6 +99,7 @@ public class Operacoes implements Initializable {
      * Variaveis de controle do sistema
      */
     static BooleanProperty appAutorizado = new SimpleBooleanProperty(false);
+    static StringProperty parametrosUtilizadosRobo = new SimpleStringProperty("");
     static Timeline roboRelogio;
     static LongProperty roboHoraInicial = new SimpleLongProperty();
     static LongProperty roboCronometro = new SimpleLongProperty();
@@ -109,7 +110,6 @@ public class Operacoes implements Initializable {
      * Variaveis de informações para operadores
      */
     //** Variaveis **
-    static IntegerProperty[] qtdCandlesEntrada = new IntegerProperty[TICK_TIME.values().length];
     static ObjectProperty<Tick>[][] ultimoTick = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObjectProperty<Ohlc>[][] ultimoOhlc = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static StringProperty[] ultimoTickStr = new StringProperty[getSymbolObservableList().size()];
@@ -126,7 +126,7 @@ public class Operacoes implements Initializable {
     //** Listas **
     static ObservableList<HistoricoDeTicks>[][] historicoDeTicksObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObservableList<HistoricoDeOhlc>[][] historicoDeOhlcObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
-//    static ObservableList<Transaction>[] transactionObservableList = new ObservableList[5];
+    static ObservableList<Transaction>[][] transactionObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
 //    static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
 
 
@@ -138,7 +138,7 @@ public class Operacoes implements Initializable {
     static BooleanProperty btnStopDisabled = new SimpleBooleanProperty(true);
     static ObjectProperty<BigDecimal>[] vlrStkPadrao = new ObjectProperty[TICK_TIME.values().length];
     static ObjectProperty<BigDecimal>[][] vlrStkContrato = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
-    static IntegerProperty[] qtdCandles = new IntegerProperty[TICK_TIME.values().length];
+    static IntegerProperty[] qtdCandlesEntrada = new IntegerProperty[TICK_TIME.values().length];
 
     static PriceProposal[][] priceProposal = new PriceProposal[TICK_TIME.values().length][getSymbolObservableList().size()];
 
@@ -487,6 +487,7 @@ public class Operacoes implements Initializable {
                 getUltimoOhlc()[time_id][symbol_id] = new SimpleObjectProperty<>();
                 getHistoricoDeTicksObservableList()[time_id][symbol_id] = FXCollections.observableArrayList();
                 getHistoricoDeOhlcObservableList()[time_id][symbol_id] = FXCollections.observableArrayList();
+                getTransactionObservableList()[time_id][symbol_id] = FXCollections.observableArrayList();
 
 
                 getQtdCallOrPut()[time_id][symbol_id] = new SimpleIntegerProperty(0);
@@ -528,6 +529,8 @@ public class Operacoes implements Initializable {
         getLblDetalhesSaldoInicial().textProperty().bind(Bindings.createStringBinding(() ->
                         Service_Mascara.getValorMoeda(saldoInicialProperty().getValue()),
                 saldoInicialProperty()));
+
+        getLblNegociacaoParametros().textProperty().bind(parametrosUtilizadosRoboProperty());
 
         getBtnTpnNegociacao_Contratos().disableProperty().bind(btnContratoDisabledProperty());
         getBtnTpnNegociacao_Iniciar().disableProperty().bind(btnIniciardisabledProperty());
@@ -610,6 +613,12 @@ public class Operacoes implements Initializable {
     private void comandosDeBotoes() {
 
         getBtnTpnNegociacao_Contratos().setOnAction(event -> getRoboAtivo().definicaoDeContrato());
+
+        getBtnTpnNegociacao_Iniciar().setOnAction(event -> getRoboAtivo().monitorarCondicoesParaComprar());
+
+        getBtnTpnNegociacao_Stop().setOnAction(event -> {
+            getCboNegociacaoRobos().getSelectionModel().select(0);
+        });
 
     }
 
@@ -752,6 +761,7 @@ public class Operacoes implements Initializable {
             setAppAutorizado(false);
             ex.printStackTrace();
         }
+
     }
 
     private void solicitarTicks() {
@@ -773,9 +783,11 @@ public class Operacoes implements Initializable {
                 getWsClientObjectProperty().getMyWebSocket().send(jsonHistory);
             }
         }
+
     }
 
     public void solicitarProposal(PriceProposal priceProposal) {
+
         if (!isAppAutorizado()) return;
         try {
             String jsonPriceProposal = Util_Json.getJson_from_Object(priceProposal)
@@ -784,6 +796,19 @@ public class Operacoes implements Initializable {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+    }
+
+    public void solicitarCompraContrato(Proposal proposal) {
+
+        try {
+            String jsonBuyContrato = Util_Json.getJson_from_Object(proposal);
+            System.out.printf("jsonBuyContrato: %s\n", jsonBuyContrato);
+            getWsClientObjectProperty().getMyWebSocket().send(jsonBuyContrato);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
     }
 
 
@@ -1580,13 +1605,6 @@ public class Operacoes implements Initializable {
         Operacoes.vlrStkContrato = vlrStkContrato;
     }
 
-    public static IntegerProperty[] getQtdCandles() {
-        return qtdCandles;
-    }
-
-    public static void setQtdCandles(IntegerProperty[] qtdCandles) {
-        Operacoes.qtdCandles = qtdCandles;
-    }
 
     public static PriceProposal[][] getPriceProposal() {
         return priceProposal;
@@ -3310,5 +3328,25 @@ public class Operacoes implements Initializable {
 
     public static void setBtnStopDisabled(boolean btnStopDisabled) {
         Operacoes.btnStopDisabled.set(btnStopDisabled);
+    }
+
+    public static String getParametrosUtilizadosRobo() {
+        return parametrosUtilizadosRobo.get();
+    }
+
+    public static StringProperty parametrosUtilizadosRoboProperty() {
+        return parametrosUtilizadosRobo;
+    }
+
+    public static void setParametrosUtilizadosRobo(String parametrosUtilizadosRobo) {
+        Operacoes.parametrosUtilizadosRobo.set(parametrosUtilizadosRobo);
+    }
+
+    public static ObservableList<Transaction>[][] getTransactionObservableList() {
+        return transactionObservableList;
+    }
+
+    public static void setTransactionObservableList(ObservableList<Transaction>[][] transactionObservableList) {
+        Operacoes.transactionObservableList = transactionObservableList;
     }
 }

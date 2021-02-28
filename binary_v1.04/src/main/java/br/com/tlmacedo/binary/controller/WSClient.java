@@ -33,6 +33,8 @@ public class WSClient extends WebSocketListener {
     private Authorize authorize;
 
     private Proposal proposal;
+    private Buy buy;
+    private Transaction transaction;
 
 
 //    private Symbols symbols;
@@ -82,9 +84,9 @@ public class WSClient extends WebSocketListener {
                     setAuthorize((Authorize) Util_Json.getObject_from_String(text, Authorize.class));
                     refreshAuthorize(getAuthorize());
                 }
-                case PROPOSAL -> {
-                    setProposal((Proposal) Util_Json.getObject_from_String(text, Proposal.class));
-                    refreshProposal(getPassthrough(), getProposal());
+                case HISTORY -> {
+                    setHistory((History) Util_Json.getObject_from_String(text, History.class));
+                    refreshHistoryTick(getPassthrough(), getHistory());
                 }
                 case TICK -> {
                     setTick((Tick) Util_Json.getObject_from_String(text, Tick.class));
@@ -94,9 +96,17 @@ public class WSClient extends WebSocketListener {
                     setOhlc((Ohlc) Util_Json.getObject_from_String(text, Ohlc.class));
                     refreshOhlc(getPassthrough(), getOhlc());
                 }
-                case HISTORY -> {
-                    setHistory((History) Util_Json.getObject_from_String(text, History.class));
-                    refreshHistoryTick(getPassthrough(), getHistory());
+                case PROPOSAL -> {
+                    setProposal((Proposal) Util_Json.getObject_from_String(text, Proposal.class));
+                    refreshProposal(getPassthrough(), getProposal());
+                }
+                case BUY -> {
+                    setBuy((Buy) Util_Json.getObject_from_String(text, Buy.class));
+                    //refreshBuy();
+                }
+                case TRANSACTION -> {
+                    setTransaction((Transaction) Util_Json.getObject_from_String(text, Transaction.class));
+                    refreshTransaction(getPassthrough(), getTransaction());
                 }
             }
         }
@@ -213,7 +223,12 @@ public class WSClient extends WebSocketListener {
 
     }
 
-    private void refreshTransaction(Transaction transaction) {
+    private void refreshTransaction(Passthrough passthrough, Transaction transaction) {
+
+        Platform.runLater(() -> {
+            int t_id = passthrough.getTickTime().getCod(), s_id = passthrough.getSymbol().getId().intValue() - 1;
+            Operacoes.getTransactionObservableList()[t_id][s_id].add(0, transaction);
+        });
 
     }
 
@@ -352,5 +367,21 @@ public class WSClient extends WebSocketListener {
 
     public void setProposal(Proposal proposal) {
         this.proposal = proposal;
+    }
+
+    public Buy getBuy() {
+        return buy;
+    }
+
+    public void setBuy(Buy buy) {
+        this.buy = buy;
+    }
+
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
     }
 }
