@@ -802,7 +802,7 @@ public class Operacoes implements Initializable {
     public void solicitarCompraContrato(Proposal proposal) {
 
         try {
-            String jsonBuyContrato = Util_Json.getJson_from_Object(proposal);
+            String jsonBuyContrato = Util_Json.getJson_from_Object(new BuyContract(proposal));
             System.out.printf("jsonBuyContrato: %s\n", jsonBuyContrato);
             getWsClientObjectProperty().getMyWebSocket().send(jsonBuyContrato);
         } catch (Exception ex) {
