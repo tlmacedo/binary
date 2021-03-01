@@ -262,7 +262,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op01;
     public Label lblVlrOut_T01_Op01;
     public Label lblVlrDiff_T01_Op01;
-    public TableView tbvTransacoes_T01_Op01;
+    public TableView<Transaction> tbvTransacoes_T01_Op01;
     // Time_01 *-*-* Symbol_02
     public Label lblSymbol_T01_Op02;
     public Label lblQtdCall_T01_Op02;
@@ -275,7 +275,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op02;
     public Label lblVlrOut_T01_Op02;
     public Label lblVlrDiff_T01_Op02;
-    public TableView tbvTransacoes_T01_Op02;
+    public TableView<Transaction> tbvTransacoes_T01_Op02;
     // Time_01 *-*-* Symbol_03
     public Label lblSymbol_T01_Op03;
     public Label lblQtdCall_T01_Op03;
@@ -288,7 +288,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op03;
     public Label lblVlrOut_T01_Op03;
     public Label lblVlrDiff_T01_Op03;
-    public TableView tbvTransacoes_T01_Op03;
+    public TableView<Transaction> tbvTransacoes_T01_Op03;
     // Time_01 *-*-* Symbol_04
     public Label lblSymbol_T01_Op04;
     public Label lblQtdCall_T01_Op04;
@@ -301,7 +301,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op04;
     public Label lblVlrOut_T01_Op04;
     public Label lblVlrDiff_T01_Op04;
-    public TableView tbvTransacoes_T01_Op04;
+    public TableView<Transaction> tbvTransacoes_T01_Op04;
     // Time_01 *-*-* Symbol_05
     public Label lblSymbol_T01_Op05;
     public Label lblQtdCall_T01_Op05;
@@ -314,7 +314,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op05;
     public Label lblVlrOut_T01_Op05;
     public Label lblVlrDiff_T01_Op05;
-    public TableView tbvTransacoes_T01_Op05;
+    public TableView<Transaction> tbvTransacoes_T01_Op05;
     // Time_01 *-*-* Symbol_06
     public Label lblSymbol_T01_Op06;
     public Label lblQtdCall_T01_Op06;
@@ -327,7 +327,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op06;
     public Label lblVlrOut_T01_Op06;
     public Label lblVlrDiff_T01_Op06;
-    public TableView tbvTransacoes_T01_Op06;
+    public TableView<Transaction> tbvTransacoes_T01_Op06;
     // Time_01 *-*-* Symbol_07
     public Label lblSymbol_T01_Op07;
     public Label lblQtdCall_T01_Op07;
@@ -340,7 +340,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op07;
     public Label lblVlrOut_T01_Op07;
     public Label lblVlrDiff_T01_Op07;
-    public TableView tbvTransacoes_T01_Op07;
+    public TableView<Transaction> tbvTransacoes_T01_Op07;
     // Time_01 *-*-* Symbol_08
     public Label lblSymbol_T01_Op08;
     public Label lblQtdCall_T01_Op08;
@@ -353,7 +353,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op08;
     public Label lblVlrOut_T01_Op08;
     public Label lblVlrDiff_T01_Op08;
-    public TableView tbvTransacoes_T01_Op08;
+    public TableView<Transaction> tbvTransacoes_T01_Op08;
     // Time_01 *-*-* Symbol_09
     public Label lblSymbol_T01_Op09;
     public Label lblQtdCall_T01_Op09;
@@ -366,7 +366,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op09;
     public Label lblVlrOut_T01_Op09;
     public Label lblVlrDiff_T01_Op09;
-    public TableView tbvTransacoes_T01_Op09;
+    public TableView<Transaction> tbvTransacoes_T01_Op09;
     // Time_01 *-*-* Symbol_10
     public Label lblSymbol_T01_Op10;
     public Label lblQtdCall_T01_Op10;
@@ -379,7 +379,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op10;
     public Label lblVlrOut_T01_Op10;
     public Label lblVlrDiff_T01_Op10;
-    public TableView tbvTransacoes_T01_Op10;
+    public TableView<Transaction> tbvTransacoes_T01_Op10;
     // Time_01 *-*-* Symbol_11
     public Label lblSymbol_T01_Op11;
     public Label lblQtdCall_T01_Op11;
@@ -392,7 +392,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op11;
     public Label lblVlrOut_T01_Op11;
     public Label lblVlrDiff_T01_Op11;
-    public TableView tbvTransacoes_T01_Op11;
+    public TableView<Transaction> tbvTransacoes_T01_Op11;
     // Time_01 *-*-* Symbol_12
     public Label lblSymbol_T01_Op12;
     public Label lblQtdCall_T01_Op12;
@@ -405,7 +405,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op12;
     public Label lblVlrOut_T01_Op12;
     public Label lblVlrDiff_T01_Op12;
-    public TableView tbvTransacoes_T01_Op12;
+    public TableView<Transaction> tbvTransacoes_T01_Op12;
 
 
     /**
@@ -516,6 +516,8 @@ public class Operacoes implements Initializable {
 
         comandosDeBotoes();
 
+        preencherTabelas();
+
     }
 
     private void objetosBindings() {
@@ -549,6 +551,11 @@ public class Operacoes implements Initializable {
                 else
                     getHboxDetalhesSaldoConta().getStyleClass().add("vlr-conta-real");
             }
+        });
+
+        btnContratoDisabledProperty().addListener((ov, o, n) -> {
+            if (n == null || !n)
+                setParametrosUtilizadosRobo("");
         });
 
         authorizeProperty().addListener((ov, o, n) -> {
@@ -619,6 +626,41 @@ public class Operacoes implements Initializable {
         getBtnTpnNegociacao_Stop().setOnAction(event -> {
             getCboNegociacaoRobos().getSelectionModel().select(0);
         });
+
+    }
+
+    private void preencherTabelas() {
+
+        getTbvTransacoes_T01_Op01().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        getTbvTransacoes_T01_Op01().getSelectionModel().setCellSelectionEnabled(true);
+        getTbvTransacoes_T01_Op01().setEditable(false);
+        getTbvTransacoes_T01_Op01().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_01]);
+
+        getTbvTransacoes_T01_Op02().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        getTbvTransacoes_T01_Op02().getSelectionModel().setCellSelectionEnabled(true);
+        getTbvTransacoes_T01_Op02().setEditable(false);
+        getTbvTransacoes_T01_Op02().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_02]);
+
+        getTbvTransacoes_T01_Op03().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        getTbvTransacoes_T01_Op03().getSelectionModel().setCellSelectionEnabled(true);
+        getTbvTransacoes_T01_Op03().setEditable(false);
+        getTbvTransacoes_T01_Op03().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_03]);
+
+        getTbvTransacoes_T01_Op04().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        getTbvTransacoes_T01_Op04().getSelectionModel().setCellSelectionEnabled(true);
+        getTbvTransacoes_T01_Op04().setEditable(false);
+        getTbvTransacoes_T01_Op04().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_04]);
+
+        getTbvTransacoes_T01_Op05().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        getTbvTransacoes_T01_Op05().getSelectionModel().setCellSelectionEnabled(true);
+        getTbvTransacoes_T01_Op05().setEditable(false);
+        getTbvTransacoes_T01_Op05().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_05]);
+
+        getTbvTransacoes_T01_Op06().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        getTbvTransacoes_T01_Op06().getSelectionModel().setCellSelectionEnabled(true);
+        getTbvTransacoes_T01_Op06().setEditable(false);
+        getTbvTransacoes_T01_Op06().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_06]);
+
 
     }
 
@@ -1397,6 +1439,18 @@ public class Operacoes implements Initializable {
         return TICK_STYLE;
     }
 
+    public static ROBOS getROBO_Selecionado() {
+        return ROBO_Selecionado.get();
+    }
+
+    public static ObjectProperty<ROBOS> ROBO_SelecionadoProperty() {
+        return ROBO_Selecionado;
+    }
+
+    public static void setROBO_Selecionado(ROBOS ROBO_Selecionado) {
+        Operacoes.ROBO_Selecionado.set(ROBO_Selecionado);
+    }
+
     public static Robo getRoboAtivo() {
         return ROBO_ATIVO.get();
     }
@@ -1419,6 +1473,18 @@ public class Operacoes implements Initializable {
 
     public static void setAppAutorizado(boolean appAutorizado) {
         Operacoes.appAutorizado.set(appAutorizado);
+    }
+
+    public static String getParametrosUtilizadosRobo() {
+        return parametrosUtilizadosRobo.get();
+    }
+
+    public static StringProperty parametrosUtilizadosRoboProperty() {
+        return parametrosUtilizadosRobo;
+    }
+
+    public static void setParametrosUtilizadosRobo(String parametrosUtilizadosRobo) {
+        Operacoes.parametrosUtilizadosRobo.set(parametrosUtilizadosRobo);
     }
 
     public static Timeline getRoboRelogio() {
@@ -1475,14 +1541,6 @@ public class Operacoes implements Initializable {
 
     public static void setSaldoInicial(BigDecimal saldoInicial) {
         Operacoes.saldoInicial.set(saldoInicial);
-    }
-
-    public static IntegerProperty[] getQtdCandlesEntrada() {
-        return qtdCandlesEntrada;
-    }
-
-    public static void setQtdCandlesEntrada(IntegerProperty[] qtdCandlesEntrada) {
-        Operacoes.qtdCandlesEntrada = qtdCandlesEntrada;
     }
 
     public static ObjectProperty<Tick>[][] getUltimoTick() {
@@ -1581,12 +1639,68 @@ public class Operacoes implements Initializable {
         Operacoes.historicoDeOhlcObservableList = historicoDeOhlcObservableList;
     }
 
+    public static ObservableList<Transaction>[][] getTransactionObservableList() {
+        return transactionObservableList;
+    }
+
+    public static void setTransactionObservableList(ObservableList<Transaction>[][] transactionObservableList) {
+        Operacoes.transactionObservableList = transactionObservableList;
+    }
+
     public static BooleanProperty[] getTimeAtivo() {
         return timeAtivo;
     }
 
     public static void setTimeAtivo(BooleanProperty[] timeAtivo) {
         Operacoes.timeAtivo = timeAtivo;
+    }
+
+    public static boolean isBtnContratoDisabled() {
+        return btnContratoDisabled.get();
+    }
+
+    public static BooleanProperty btnContratoDisabledProperty() {
+        return btnContratoDisabled;
+    }
+
+    public static void setBtnContratoDisabled(boolean btnContratoDisabled) {
+        Operacoes.btnContratoDisabled.set(btnContratoDisabled);
+    }
+
+    public static boolean isBtnIniciardisabled() {
+        return btnIniciardisabled.get();
+    }
+
+    public static BooleanProperty btnIniciardisabledProperty() {
+        return btnIniciardisabled;
+    }
+
+    public static void setBtnIniciardisabled(boolean btnIniciardisabled) {
+        Operacoes.btnIniciardisabled.set(btnIniciardisabled);
+    }
+
+    public static boolean isBtnPausarDisabled() {
+        return btnPausarDisabled.get();
+    }
+
+    public static BooleanProperty btnPausarDisabledProperty() {
+        return btnPausarDisabled;
+    }
+
+    public static void setBtnPausarDisabled(boolean btnPausarDisabled) {
+        Operacoes.btnPausarDisabled.set(btnPausarDisabled);
+    }
+
+    public static boolean isBtnStopDisabled() {
+        return btnStopDisabled.get();
+    }
+
+    public static BooleanProperty btnStopDisabledProperty() {
+        return btnStopDisabled;
+    }
+
+    public static void setBtnStopDisabled(boolean btnStopDisabled) {
+        Operacoes.btnStopDisabled.set(btnStopDisabled);
     }
 
     public static ObjectProperty<BigDecimal>[] getVlrStkPadrao() {
@@ -1605,6 +1719,13 @@ public class Operacoes implements Initializable {
         Operacoes.vlrStkContrato = vlrStkContrato;
     }
 
+    public static IntegerProperty[] getQtdCandlesEntrada() {
+        return qtdCandlesEntrada;
+    }
+
+    public static void setQtdCandlesEntrada(IntegerProperty[] qtdCandlesEntrada) {
+        Operacoes.qtdCandlesEntrada = qtdCandlesEntrada;
+    }
 
     public static PriceProposal[][] getPriceProposal() {
         return priceProposal;
@@ -2206,11 +2327,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op01 = lblVlrDiff_T01_Op01;
     }
 
-    public TableView getTbvTransacoes_T01_Op01() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op01() {
         return tbvTransacoes_T01_Op01;
     }
 
-    public void setTbvTransacoes_T01_Op01(TableView tbvTransacoes_T01_Op01) {
+    public void setTbvTransacoes_T01_Op01(TableView<Transaction> tbvTransacoes_T01_Op01) {
         this.tbvTransacoes_T01_Op01 = tbvTransacoes_T01_Op01;
     }
 
@@ -2302,11 +2423,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op02 = lblVlrDiff_T01_Op02;
     }
 
-    public TableView getTbvTransacoes_T01_Op02() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op02() {
         return tbvTransacoes_T01_Op02;
     }
 
-    public void setTbvTransacoes_T01_Op02(TableView tbvTransacoes_T01_Op02) {
+    public void setTbvTransacoes_T01_Op02(TableView<Transaction> tbvTransacoes_T01_Op02) {
         this.tbvTransacoes_T01_Op02 = tbvTransacoes_T01_Op02;
     }
 
@@ -2398,11 +2519,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op03 = lblVlrDiff_T01_Op03;
     }
 
-    public TableView getTbvTransacoes_T01_Op03() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op03() {
         return tbvTransacoes_T01_Op03;
     }
 
-    public void setTbvTransacoes_T01_Op03(TableView tbvTransacoes_T01_Op03) {
+    public void setTbvTransacoes_T01_Op03(TableView<Transaction> tbvTransacoes_T01_Op03) {
         this.tbvTransacoes_T01_Op03 = tbvTransacoes_T01_Op03;
     }
 
@@ -2494,11 +2615,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op04 = lblVlrDiff_T01_Op04;
     }
 
-    public TableView getTbvTransacoes_T01_Op04() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op04() {
         return tbvTransacoes_T01_Op04;
     }
 
-    public void setTbvTransacoes_T01_Op04(TableView tbvTransacoes_T01_Op04) {
+    public void setTbvTransacoes_T01_Op04(TableView<Transaction> tbvTransacoes_T01_Op04) {
         this.tbvTransacoes_T01_Op04 = tbvTransacoes_T01_Op04;
     }
 
@@ -2590,11 +2711,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op05 = lblVlrDiff_T01_Op05;
     }
 
-    public TableView getTbvTransacoes_T01_Op05() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op05() {
         return tbvTransacoes_T01_Op05;
     }
 
-    public void setTbvTransacoes_T01_Op05(TableView tbvTransacoes_T01_Op05) {
+    public void setTbvTransacoes_T01_Op05(TableView<Transaction> tbvTransacoes_T01_Op05) {
         this.tbvTransacoes_T01_Op05 = tbvTransacoes_T01_Op05;
     }
 
@@ -2686,11 +2807,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op06 = lblVlrDiff_T01_Op06;
     }
 
-    public TableView getTbvTransacoes_T01_Op06() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op06() {
         return tbvTransacoes_T01_Op06;
     }
 
-    public void setTbvTransacoes_T01_Op06(TableView tbvTransacoes_T01_Op06) {
+    public void setTbvTransacoes_T01_Op06(TableView<Transaction> tbvTransacoes_T01_Op06) {
         this.tbvTransacoes_T01_Op06 = tbvTransacoes_T01_Op06;
     }
 
@@ -2782,11 +2903,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op07 = lblVlrDiff_T01_Op07;
     }
 
-    public TableView getTbvTransacoes_T01_Op07() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op07() {
         return tbvTransacoes_T01_Op07;
     }
 
-    public void setTbvTransacoes_T01_Op07(TableView tbvTransacoes_T01_Op07) {
+    public void setTbvTransacoes_T01_Op07(TableView<Transaction> tbvTransacoes_T01_Op07) {
         this.tbvTransacoes_T01_Op07 = tbvTransacoes_T01_Op07;
     }
 
@@ -2878,11 +2999,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op08 = lblVlrDiff_T01_Op08;
     }
 
-    public TableView getTbvTransacoes_T01_Op08() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op08() {
         return tbvTransacoes_T01_Op08;
     }
 
-    public void setTbvTransacoes_T01_Op08(TableView tbvTransacoes_T01_Op08) {
+    public void setTbvTransacoes_T01_Op08(TableView<Transaction> tbvTransacoes_T01_Op08) {
         this.tbvTransacoes_T01_Op08 = tbvTransacoes_T01_Op08;
     }
 
@@ -2974,11 +3095,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op09 = lblVlrDiff_T01_Op09;
     }
 
-    public TableView getTbvTransacoes_T01_Op09() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op09() {
         return tbvTransacoes_T01_Op09;
     }
 
-    public void setTbvTransacoes_T01_Op09(TableView tbvTransacoes_T01_Op09) {
+    public void setTbvTransacoes_T01_Op09(TableView<Transaction> tbvTransacoes_T01_Op09) {
         this.tbvTransacoes_T01_Op09 = tbvTransacoes_T01_Op09;
     }
 
@@ -3070,11 +3191,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op10 = lblVlrDiff_T01_Op10;
     }
 
-    public TableView getTbvTransacoes_T01_Op10() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op10() {
         return tbvTransacoes_T01_Op10;
     }
 
-    public void setTbvTransacoes_T01_Op10(TableView tbvTransacoes_T01_Op10) {
+    public void setTbvTransacoes_T01_Op10(TableView<Transaction> tbvTransacoes_T01_Op10) {
         this.tbvTransacoes_T01_Op10 = tbvTransacoes_T01_Op10;
     }
 
@@ -3166,11 +3287,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op11 = lblVlrDiff_T01_Op11;
     }
 
-    public TableView getTbvTransacoes_T01_Op11() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op11() {
         return tbvTransacoes_T01_Op11;
     }
 
-    public void setTbvTransacoes_T01_Op11(TableView tbvTransacoes_T01_Op11) {
+    public void setTbvTransacoes_T01_Op11(TableView<Transaction> tbvTransacoes_T01_Op11) {
         this.tbvTransacoes_T01_Op11 = tbvTransacoes_T01_Op11;
     }
 
@@ -3262,91 +3383,11 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op12 = lblVlrDiff_T01_Op12;
     }
 
-    public TableView getTbvTransacoes_T01_Op12() {
+    public TableView<Transaction> getTbvTransacoes_T01_Op12() {
         return tbvTransacoes_T01_Op12;
     }
 
-    public void setTbvTransacoes_T01_Op12(TableView tbvTransacoes_T01_Op12) {
+    public void setTbvTransacoes_T01_Op12(TableView<Transaction> tbvTransacoes_T01_Op12) {
         this.tbvTransacoes_T01_Op12 = tbvTransacoes_T01_Op12;
-    }
-
-    public static ROBOS getROBO_Selecionado() {
-        return ROBO_Selecionado.get();
-    }
-
-    public static ObjectProperty<ROBOS> ROBO_SelecionadoProperty() {
-        return ROBO_Selecionado;
-    }
-
-    public static void setROBO_Selecionado(ROBOS ROBO_Selecionado) {
-        Operacoes.ROBO_Selecionado.set(ROBO_Selecionado);
-    }
-
-    public static boolean isBtnContratoDisabled() {
-        return btnContratoDisabled.get();
-    }
-
-    public static BooleanProperty btnContratoDisabledProperty() {
-        return btnContratoDisabled;
-    }
-
-    public static void setBtnContratoDisabled(boolean btnContratoDisabled) {
-        Operacoes.btnContratoDisabled.set(btnContratoDisabled);
-    }
-
-    public static boolean isBtnIniciardisabled() {
-        return btnIniciardisabled.get();
-    }
-
-    public static BooleanProperty btnIniciardisabledProperty() {
-        return btnIniciardisabled;
-    }
-
-    public static void setBtnIniciardisabled(boolean btnIniciardisabled) {
-        Operacoes.btnIniciardisabled.set(btnIniciardisabled);
-    }
-
-    public static boolean isBtnPausarDisabled() {
-        return btnPausarDisabled.get();
-    }
-
-    public static BooleanProperty btnPausarDisabledProperty() {
-        return btnPausarDisabled;
-    }
-
-    public static void setBtnPausarDisabled(boolean btnPausarDisabled) {
-        Operacoes.btnPausarDisabled.set(btnPausarDisabled);
-    }
-
-    public static boolean isBtnStopDisabled() {
-        return btnStopDisabled.get();
-    }
-
-    public static BooleanProperty btnStopDisabledProperty() {
-        return btnStopDisabled;
-    }
-
-    public static void setBtnStopDisabled(boolean btnStopDisabled) {
-        Operacoes.btnStopDisabled.set(btnStopDisabled);
-    }
-
-    public static String getParametrosUtilizadosRobo() {
-        return parametrosUtilizadosRobo.get();
-    }
-
-    public static StringProperty parametrosUtilizadosRoboProperty() {
-        return parametrosUtilizadosRobo;
-    }
-
-    public static void setParametrosUtilizadosRobo(String parametrosUtilizadosRobo) {
-        Operacoes.parametrosUtilizadosRobo.set(parametrosUtilizadosRobo);
-    }
-
-    public static ObservableList<Transaction>[][] getTransactionObservableList() {
-        return transactionObservableList;
-    }
-
-    public static void setTransactionObservableList(ObservableList<Transaction>[][] transactionObservableList) {
-        Operacoes.transactionObservableList = transactionObservableList;
     }
 }

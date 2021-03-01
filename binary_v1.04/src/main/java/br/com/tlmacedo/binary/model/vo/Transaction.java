@@ -1,14 +1,16 @@
 package br.com.tlmacedo.binary.model.vo;
 
+import br.com.tlmacedo.binary.controller.Operacoes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Entity(name = "Transaction")
-@Table(name = "transaction")
 public class Transaction {
     public static final long serialVersionUID = 1L;
 
     ContaToken contaToken;
+
     String action;
     BigDecimal amount;
     BigDecimal balance;
@@ -28,10 +30,10 @@ public class Transaction {
     Long transaction_id;
     Integer transaction_time;
 
+
     public Transaction() {
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     public ContaToken getContaToken() {
         return contaToken;
     }
@@ -40,7 +42,6 @@ public class Transaction {
         this.contaToken = contaToken;
     }
 
-    @Column(length = 30, nullable = false)
     public String getAction() {
         return action;
     }
@@ -49,7 +50,6 @@ public class Transaction {
         this.action = action;
     }
 
-    @Column(length = 19, scale = 2, nullable = false)
     public BigDecimal getAmount() {
         return amount;
     }
@@ -58,7 +58,6 @@ public class Transaction {
         this.amount = amount;
     }
 
-    @Column(length = 19, scale = 2, nullable = false)
     public BigDecimal getBalance() {
         return balance;
     }
@@ -67,7 +66,6 @@ public class Transaction {
         this.balance = balance;
     }
 
-    @Column(length = 10)
     public String getBarrier() {
         return barrier;
     }
@@ -76,7 +74,6 @@ public class Transaction {
         this.barrier = barrier;
     }
 
-    @Column(length = 25, nullable = false)
     public Long getContract_id() {
         return contract_id;
     }
@@ -85,7 +82,6 @@ public class Transaction {
         this.contract_id = contract_id;
     }
 
-    @Column(length = 12, nullable = false)
     public String getCurrency() {
         return currency;
     }
@@ -94,7 +90,6 @@ public class Transaction {
         this.currency = currency;
     }
 
-    @Column(length = 25, nullable = false)
     public Integer getDate_expiry() {
         return date_expiry;
     }
@@ -103,7 +98,6 @@ public class Transaction {
         this.date_expiry = date_expiry;
     }
 
-    @Column(nullable = false)
     public String getDisplay_name() {
         return display_name;
     }
@@ -160,18 +154,19 @@ public class Transaction {
         this.stop_out = stop_out;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    public Symbol getActiveSymbol() {
+    public Symbol getSymbol() {
         return symbol;
     }
 
-    public void setActiveSymbol(Symbol symbol) {
+    public void setSymbol(Symbol symbol) {
         this.symbol = symbol;
     }
 
-    //    public void setSymbol(String symbol) {
-//        this.symbol = Operacoes.getSymbol(symbol);
-//    }
+    public void setSymbol(String symbol) {
+        this.symbol = Operacoes.getSymbolObservableList().stream()
+                .filter(symbol1 -> symbol1.getSymbol().equals(symbol))
+                .findFirst().orElse(null);
+    }
 
     public String getTake_profit() {
         return take_profit;
@@ -181,7 +176,6 @@ public class Transaction {
         this.take_profit = take_profit;
     }
 
-    @Id
     public Long getTransaction_id() {
         return transaction_id;
     }
@@ -216,10 +210,11 @@ public class Transaction {
                 ", low_barrier='" + low_barrier + '\'' +
                 ", purchase_time=" + purchase_time +
                 ", stop_out='" + stop_out + '\'' +
-                ", activeSymbol=" + symbol +
+                ", symbol=" + symbol +
                 ", take_profit='" + take_profit + '\'' +
                 ", transaction_id=" + transaction_id +
                 ", transaction_time=" + transaction_time +
                 '}';
     }
+
 }

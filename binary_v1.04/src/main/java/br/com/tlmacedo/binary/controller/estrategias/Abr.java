@@ -20,7 +20,6 @@ public class Abr extends Operacoes implements Robo {
     @Override
     public void definicaoDeContrato() {
 
-        System.out.printf("inicioDefinicaoDeContrato\n");
         try {
             BigDecimal vlr;
             Integer qtd;
@@ -74,13 +73,15 @@ public class Abr extends Operacoes implements Robo {
                 int finalS_id = s_id;
                 getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
                     if (Math.abs(n.intValue()) == getQtdCandlesEntrada()[t_id].getValue()) {
-                        solicitarCompraContrato(getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1]);
-                        System.out.printf("comprar[%s][%s]->%s\n",
-                                TICK_TIME.toEnum(t_id),
-                                getSymbolObservableList().get(finalS_id),
-                                n.intValue() > 0
-                                        ? CONTRACT_TYPE.PUT
-                                        : CONTRACT_TYPE.CALL);
+                        if (getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1] != null) {
+                            solicitarCompraContrato(getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1]);
+                            System.out.printf("comprar[%s][%s]->%s\n",
+                                    TICK_TIME.toEnum(t_id),
+                                    getSymbolObservableList().get(finalS_id),
+                                    n.intValue() > 0
+                                            ? CONTRACT_TYPE.PUT
+                                            : CONTRACT_TYPE.CALL);
+                        }
                     }
                 });
             }

@@ -7,8 +7,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Entity(name = "Transacoes")
-@Table(name = "transacoes")
 public class Transacoes implements Serializable {
     public static final long serialVersionUID = 1L;
 

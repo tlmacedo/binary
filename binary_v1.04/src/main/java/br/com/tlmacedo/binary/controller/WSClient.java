@@ -226,7 +226,10 @@ public class WSClient extends WebSocketListener {
     private void refreshTransaction(Passthrough passthrough, Transaction transaction) {
 
         Platform.runLater(() -> {
-            int t_id = passthrough.getTickTime().getCod(), s_id = passthrough.getSymbol().getId().intValue() - 1;
+            if (transaction.getAction() == null) return;
+            System.out.printf("transaction: %s\n", transaction);
+            int t_id = (transaction.getDate_expiry() - transaction.getTransaction_time()) / 60,
+                    s_id = transaction.getSymbol().getId().intValue() - 1;
             Operacoes.getTransactionObservableList()[t_id][s_id].add(0, transaction);
         });
 
