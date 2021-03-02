@@ -5,6 +5,7 @@ import br.com.tlmacedo.binary.model.enums.DURATION_UNIT;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class PriceProposal implements Serializable {
     public static final long serialVersionUID = 1L;

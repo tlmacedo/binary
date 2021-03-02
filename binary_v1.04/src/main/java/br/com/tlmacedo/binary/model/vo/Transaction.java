@@ -210,7 +210,7 @@ public class Transaction {
                 ", low_barrier='" + low_barrier + '\'' +
                 ", purchase_time=" + purchase_time +
                 ", stop_out='" + stop_out + '\'' +
-                ", symbol=" + symbol +
+                ", symbol=" + symbol.transictionToString() +
                 ", take_profit='" + take_profit + '\'' +
                 ", transaction_id=" + transaction_id +
                 ", transaction_time=" + transaction_time +

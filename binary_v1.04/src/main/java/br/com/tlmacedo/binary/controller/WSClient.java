@@ -3,6 +3,7 @@ package br.com.tlmacedo.binary.controller;
 import br.com.tlmacedo.binary.controller.estrategias.Abr;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.model.enums.MSG_TYPE;
+import br.com.tlmacedo.binary.model.enums.ROBOS;
 import br.com.tlmacedo.binary.model.vo.Error;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Util_Json;
@@ -106,7 +107,7 @@ public class WSClient extends WebSocketListener {
                 }
                 case TRANSACTION -> {
                     setTransaction((Transaction) Util_Json.getObject_from_String(text, Transaction.class));
-                    refreshTransaction(getPassthrough(), getTransaction());
+                    refreshTransaction(getTransaction());
                 }
             }
         }
@@ -153,48 +154,49 @@ public class WSClient extends WebSocketListener {
             Symbol symbol = Operacoes.getSymbolObservableList().stream()
                     .filter(symbol1 -> symbol1.getSymbol().equals(ohlc.getSymbol()))
                     .findFirst().orElse(null);
-            int symbol_id = symbol.getId().intValue() - 1;
-            int time_id = passthrough.getTickTime().getCod();
+            int s_id = symbol.getId().intValue() - 1;
+            int t_id = passthrough.getTickTime().getCod();
 
             HistoricoDeOhlc hOhlc = new HistoricoDeOhlc(
                     symbol, ohlc.getOpen(), ohlc.getHigh(), ohlc.getLow(), ohlc.getClose(),
                     ohlc.getPip_size(), ohlc.getEpoch()
             );
 
-            Operacoes.getUltimoOhlc()[time_id][symbol_id].setValue(ohlc);
-            Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].add(0, hOhlc);
+            Operacoes.getUltimoOhlc()[t_id][s_id].setValue(ohlc);
+            Operacoes.getHistoricoDeOhlcObservableList()[t_id][s_id].add(0, hOhlc);
 
-            if (time_id == 0) {
-                Operacoes.getUltimoOhlcStr()[symbol_id].setValue(ohlc.getQuoteCompleto());
-                if (Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].size() > 1)
-                    Operacoes.getTickSubindo()[symbol_id].setValue(
-                            Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].get(0).getClose()
-                                    .compareTo(Operacoes.getHistoricoDeOhlcObservableList()[time_id][symbol_id].get(1).getClose()) > 0);
+            if (t_id == 0) {
+                Operacoes.getUltimoOhlcStr()[s_id].setValue(ohlc.getQuoteCompleto());
+                if (Operacoes.getHistoricoDeOhlcObservableList()[t_id][s_id].size() > 1)
+                    Operacoes.getTickSubindo()[s_id].setValue(
+                            Operacoes.getHistoricoDeOhlcObservableList()[t_id][s_id].get(0).getClose()
+                                    .compareTo(Operacoes.getHistoricoDeOhlcObservableList()[t_id][s_id].get(1).getClose()) > 0);
             }
-            if (Operacoes.getTimeCandleStart()[time_id].getValue().compareTo(0) == 0)
-                Operacoes.getTimeCandleStart()[time_id].setValue(ohlc.getOpen_time());
-            Operacoes.getTimeCandleToClose()[time_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
+            if (Operacoes.getTimeCandleStart()[t_id].getValue().compareTo(0) == 0)
+                Operacoes.getTimeCandleStart()[t_id].setValue(ohlc.getOpen_time());
+//                Operacoes.getTimeCandleToClose()[t_id].setValue((ohlc.getEpoch() + symbol.getTickTime())
+//                        - (ohlc.getOpen_time() + ohlc.getGranularity()));
+            Operacoes.getTimeCandleToClose()[t_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
 
-            if (Operacoes.getTimeCandleToClose()[time_id].getValue().compareTo(symbol.getTickTime()) <= 0
-                    && Operacoes.getTimeCandleToClose()[time_id].getValue().compareTo(0) > 0) {
+            if (Operacoes.getTimeCandleToClose()[t_id].getValue().compareTo(symbol.getTickTime()) == 0) {
                 if (ohlc.getClose().compareTo(ohlc.getOpen()) > 0) {
-                    if (Operacoes.getQtdCallOrPut()[time_id][symbol_id].getValue().compareTo(0) > 0)
-                        Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(
-                                Operacoes.getQtdCallOrPut()[time_id][symbol_id].getValue() + 1);
+                    Operacoes.getQtdCall()[t_id][s_id].setValue(
+                            Operacoes.getQtdCall()[t_id][s_id].getValue() + 1);
+                    if (Operacoes.getQtdCallOrPut()[t_id][s_id].getValue().compareTo(0) > 0)
+                        Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(
+                                Operacoes.getQtdCallOrPut()[t_id][s_id].getValue() + 1);
                     else
-                        Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(1);
-                    Operacoes.getQtdCall()[time_id][symbol_id].setValue(
-                            Operacoes.getQtdCall()[time_id][symbol_id].getValue() + 1);
+                        Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(1);
                 } else if (ohlc.getClose().compareTo(ohlc.getOpen()) < 0) {
-                    if (Operacoes.getQtdCallOrPut()[time_id][symbol_id].getValue().compareTo(0) < 0)
-                        Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(
-                                Operacoes.getQtdCallOrPut()[time_id][symbol_id].getValue() - 1);
+                    Operacoes.getQtdPut()[t_id][s_id].setValue(
+                            Operacoes.getQtdPut()[t_id][s_id].getValue() + 1);
+                    if (Operacoes.getQtdCallOrPut()[t_id][s_id].getValue().compareTo(0) < 0)
+                        Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(
+                                Operacoes.getQtdCallOrPut()[t_id][s_id].getValue() - 1);
                     else
-                        Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(-1);
-                    Operacoes.getQtdPut()[time_id][symbol_id].setValue(
-                            Operacoes.getQtdPut()[time_id][symbol_id].getValue() + 1);
+                        Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(-1);
                 } else {
-                    Operacoes.getQtdCallOrPut()[time_id][symbol_id].setValue(0);
+                    Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(0);
                 }
             }
 
@@ -208,9 +210,13 @@ public class WSClient extends WebSocketListener {
         Platform.runLater(() -> {
             int s_id = passthrough.getSymbol().getId().intValue() - 1, t_id = passthrough.getTickTime().getCod();
             CONTRACT_TYPE cType = passthrough.getContractType();
-            switch (Operacoes.getROBO_Selecionado()) {
+
+            switch (ROBOS.valueOf(Operacoes.getRobo().getClass().getSimpleName().toUpperCase())) {
                 case ABR -> {
-                    Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1] = proposal;
+                    if (proposal.getAsk_price().compareTo(Operacoes.getVlrStkPadrao()[t_id].getValue()) <= 0)
+                        Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][0] = proposal;
+                    else
+                        Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][1] = proposal;
                 }
             }
         });
@@ -223,14 +229,13 @@ public class WSClient extends WebSocketListener {
 
     }
 
-    private void refreshTransaction(Passthrough passthrough, Transaction transaction) {
+    private void refreshTransaction(Transaction transaction) {
 
         Platform.runLater(() -> {
-            if (transaction.getAction() == null) return;
-            System.out.printf("transaction: %s\n", transaction);
-            int t_id = (transaction.getDate_expiry() - transaction.getTransaction_time()) / 60,
-                    s_id = transaction.getSymbol().getId().intValue() - 1;
-            Operacoes.getTransactionObservableList()[t_id][s_id].add(0, transaction);
+
+            if (transaction.getAction() != null)
+                Operacoes.getTransactionObservableList().add(0, transaction);
+
         });
 
     }
@@ -260,7 +265,7 @@ public class WSClient extends WebSocketListener {
 //                case ACTIVE_SYMBOLS -> print = CONSOLE_BINARY_ACTIVE_SYMBOL;
                 case AUTHORIZE -> print = CONSOLE_BINARY_AUTHORIZE;
                 case ERROR -> print = CONSOLE_BINARY_ERROR;
-                case TICK -> print = CONSOLE_BINARY_TICK;
+                case TICK, OHLC -> print = CONSOLE_BINARY_TICK;
                 case PROPOSAL -> print = CONSOLE_BINARY_PROPOSAL;
                 case BUY -> print = CONSOLE_BINARY_BUY;
                 case TRANSACTION -> print = CONSOLE_BINARY_TRANSACTION;

@@ -7,6 +7,7 @@ import br.com.tlmacedo.binary.model.dao.SymbolDAO;
 import br.com.tlmacedo.binary.model.dao.TransacoesDAO;
 import br.com.tlmacedo.binary.model.dao.TransactionDAO;
 import br.com.tlmacedo.binary.model.enums.*;
+import br.com.tlmacedo.binary.model.tableModel.TmodelTransactions;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Service_Mascara;
@@ -18,7 +19,9 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -41,10 +44,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -91,8 +91,8 @@ public class Operacoes implements Initializable {
     /**
      * Robos
      */
-    static ObjectProperty<ROBOS> ROBO_Selecionado = new SimpleObjectProperty<>();
-    static final ObjectProperty<Robo> ROBO_ATIVO = new SimpleObjectProperty<>();
+//    static ObjectProperty<ROBOS> ROBO_Selecionado = new SimpleObjectProperty<>();
+    static final ObjectProperty<Robo> ROBO = new SimpleObjectProperty<>();
 
 
     /**
@@ -126,16 +126,21 @@ public class Operacoes implements Initializable {
     //** Listas **
     static ObservableList<HistoricoDeTicks>[][] historicoDeTicksObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObservableList<HistoricoDeOhlc>[][] historicoDeOhlcObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
-    static ObservableList<Transaction>[][] transactionObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
-//    static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
+    static ObservableList<Transaction> transactionObservableList;
+    static TmodelTransactions[][] tmodelTransactions = new TmodelTransactions[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static FilteredList<Transaction>[][] transactionFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
 
 
     //** Operações com Robos **
-    private static BooleanProperty[] timeAtivo = new BooleanProperty[TICK_TIME.values().length];
-    static BooleanProperty btnContratoDisabled = new SimpleBooleanProperty(true);
-    static BooleanProperty btnIniciardisabled = new SimpleBooleanProperty(true);
-    static BooleanProperty btnPausarDisabled = new SimpleBooleanProperty(true);
-    static BooleanProperty btnStopDisabled = new SimpleBooleanProperty(true);
+    static BooleanProperty[][] resultLastTransiction = new BooleanProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static BooleanProperty[] timeAtivo = new BooleanProperty[TICK_TIME.values().length];
+    static BooleanProperty contratoGerado = new SimpleBooleanProperty(false);
+    static BooleanProperty disableContratoBtn = new SimpleBooleanProperty(true);
+    static BooleanProperty disableIniciarBtn = new SimpleBooleanProperty(true);
+    static BooleanProperty disablePausarBtn = new SimpleBooleanProperty(true);
+    static BooleanProperty disableStopBtn = new SimpleBooleanProperty(true);
+    static BooleanProperty roboMonitorando = new SimpleBooleanProperty(false);
+    static BooleanProperty roboMonitorandoPausado = new SimpleBooleanProperty(false);
     static ObjectProperty<BigDecimal>[] vlrStkPadrao = new ObjectProperty[TICK_TIME.values().length];
     static ObjectProperty<BigDecimal>[][] vlrStkContrato = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static IntegerProperty[] qtdCandlesEntrada = new IntegerProperty[TICK_TIME.values().length];
@@ -262,7 +267,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op01;
     public Label lblVlrOut_T01_Op01;
     public Label lblVlrDiff_T01_Op01;
-    public TableView<Transaction> tbvTransacoes_T01_Op01;
+    public TableView<Transaction> tbvTransaction_T01_Op01;
     // Time_01 *-*-* Symbol_02
     public Label lblSymbol_T01_Op02;
     public Label lblQtdCall_T01_Op02;
@@ -275,7 +280,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op02;
     public Label lblVlrOut_T01_Op02;
     public Label lblVlrDiff_T01_Op02;
-    public TableView<Transaction> tbvTransacoes_T01_Op02;
+    public TableView<Transaction> tbvTransaction_T01_Op02;
     // Time_01 *-*-* Symbol_03
     public Label lblSymbol_T01_Op03;
     public Label lblQtdCall_T01_Op03;
@@ -288,7 +293,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op03;
     public Label lblVlrOut_T01_Op03;
     public Label lblVlrDiff_T01_Op03;
-    public TableView<Transaction> tbvTransacoes_T01_Op03;
+    public TableView<Transaction> tbvTransaction_T01_Op03;
     // Time_01 *-*-* Symbol_04
     public Label lblSymbol_T01_Op04;
     public Label lblQtdCall_T01_Op04;
@@ -301,7 +306,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op04;
     public Label lblVlrOut_T01_Op04;
     public Label lblVlrDiff_T01_Op04;
-    public TableView<Transaction> tbvTransacoes_T01_Op04;
+    public TableView<Transaction> tbvTransaction_T01_Op04;
     // Time_01 *-*-* Symbol_05
     public Label lblSymbol_T01_Op05;
     public Label lblQtdCall_T01_Op05;
@@ -314,7 +319,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op05;
     public Label lblVlrOut_T01_Op05;
     public Label lblVlrDiff_T01_Op05;
-    public TableView<Transaction> tbvTransacoes_T01_Op05;
+    public TableView<Transaction> tbvTransaction_T01_Op05;
     // Time_01 *-*-* Symbol_06
     public Label lblSymbol_T01_Op06;
     public Label lblQtdCall_T01_Op06;
@@ -327,7 +332,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op06;
     public Label lblVlrOut_T01_Op06;
     public Label lblVlrDiff_T01_Op06;
-    public TableView<Transaction> tbvTransacoes_T01_Op06;
+    public TableView<Transaction> tbvTransaction_T01_Op06;
     // Time_01 *-*-* Symbol_07
     public Label lblSymbol_T01_Op07;
     public Label lblQtdCall_T01_Op07;
@@ -340,7 +345,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op07;
     public Label lblVlrOut_T01_Op07;
     public Label lblVlrDiff_T01_Op07;
-    public TableView<Transaction> tbvTransacoes_T01_Op07;
+    public TableView<Transaction> tbvTransaction_T01_Op07;
     // Time_01 *-*-* Symbol_08
     public Label lblSymbol_T01_Op08;
     public Label lblQtdCall_T01_Op08;
@@ -353,7 +358,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op08;
     public Label lblVlrOut_T01_Op08;
     public Label lblVlrDiff_T01_Op08;
-    public TableView<Transaction> tbvTransacoes_T01_Op08;
+    public TableView<Transaction> tbvTransaction_T01_Op08;
     // Time_01 *-*-* Symbol_09
     public Label lblSymbol_T01_Op09;
     public Label lblQtdCall_T01_Op09;
@@ -366,7 +371,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op09;
     public Label lblVlrOut_T01_Op09;
     public Label lblVlrDiff_T01_Op09;
-    public TableView<Transaction> tbvTransacoes_T01_Op09;
+    public TableView<Transaction> tbvTransaction_T01_Op09;
     // Time_01 *-*-* Symbol_10
     public Label lblSymbol_T01_Op10;
     public Label lblQtdCall_T01_Op10;
@@ -379,7 +384,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op10;
     public Label lblVlrOut_T01_Op10;
     public Label lblVlrDiff_T01_Op10;
-    public TableView<Transaction> tbvTransacoes_T01_Op10;
+    public TableView<Transaction> tbvTransaction_T01_Op10;
     // Time_01 *-*-* Symbol_11
     public Label lblSymbol_T01_Op11;
     public Label lblQtdCall_T01_Op11;
@@ -392,7 +397,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op11;
     public Label lblVlrOut_T01_Op11;
     public Label lblVlrDiff_T01_Op11;
-    public TableView<Transaction> tbvTransacoes_T01_Op11;
+    public TableView<Transaction> tbvTransaction_T01_Op11;
     // Time_01 *-*-* Symbol_12
     public Label lblSymbol_T01_Op12;
     public Label lblQtdCall_T01_Op12;
@@ -405,7 +410,7 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op12;
     public Label lblVlrOut_T01_Op12;
     public Label lblVlrDiff_T01_Op12;
-    public TableView<Transaction> tbvTransacoes_T01_Op12;
+    public TableView<Transaction> tbvTransaction_T01_Op12;
 
 
     /**
@@ -420,9 +425,8 @@ public class Operacoes implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        carregarVariaveisObjetos();
-        carregarObjetos();
-        carregarAcoesObjetos();
+        variaveis_Carregar();
+        objetos_Carregar();
         conectarObjetosEmVariaveis();
 
     }
@@ -462,47 +466,55 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-    private void carregarVariaveisObjetos() {
+    private void variaveis_Carregar() {
 
-        getCboTpnNegociacaoQtdCandlesAnalise().getItems().setAll(100, 75, 50, 25, 0);
-        getCboTpnNegociacaoQtdCandlesAnalise().getSelectionModel().select(0);
+        setTransactionObservableList(FXCollections.observableArrayList());
+        for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
 
-        for (int time_id = 0; time_id < TICK_TIME.values().length; time_id++) {
+            getTimeAtivo()[t_id] = new SimpleBooleanProperty(false);
 
-            getTimeAtivo()[time_id] = new SimpleBooleanProperty(false);
-
-            for (int symbol_id = 0; symbol_id < getSymbolObservableList().size(); symbol_id++) {
-                if (time_id == 0) {
-                    getTickSubindo()[symbol_id] = new SimpleBooleanProperty(false);
-                    getUltimoTickStr()[symbol_id] = new SimpleStringProperty("");
-                    getUltimoOhlcStr()[symbol_id] = new SimpleStringProperty("");
+            for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+                if (t_id == 0) {
+                    getTickSubindo()[s_id] = new SimpleBooleanProperty(false);
+                    getUltimoTickStr()[s_id] = new SimpleStringProperty("");
+                    getUltimoOhlcStr()[s_id] = new SimpleStringProperty("");
                 }
-                if (symbol_id == 0) {
-                    getTimeCandleStart()[time_id] = new SimpleIntegerProperty(0);
-                    getTimeCandleToClose()[time_id] = new SimpleIntegerProperty(0);
+                if (s_id == 0) {
+                    getTimeCandleStart()[t_id] = new SimpleIntegerProperty(0);
+                    getTimeCandleToClose()[t_id] = new SimpleIntegerProperty(0);
                 }
 
 
-                getUltimoTick()[time_id][symbol_id] = new SimpleObjectProperty<>();
-                getUltimoOhlc()[time_id][symbol_id] = new SimpleObjectProperty<>();
-                getHistoricoDeTicksObservableList()[time_id][symbol_id] = FXCollections.observableArrayList();
-                getHistoricoDeOhlcObservableList()[time_id][symbol_id] = FXCollections.observableArrayList();
-                getTransactionObservableList()[time_id][symbol_id] = FXCollections.observableArrayList();
+                getResultLastTransiction()[t_id][s_id] = new SimpleBooleanProperty(true);
+                getUltimoTick()[t_id][s_id] = new SimpleObjectProperty<>();
+                getUltimoOhlc()[t_id][s_id] = new SimpleObjectProperty<>();
+                getHistoricoDeTicksObservableList()[t_id][s_id] = FXCollections.observableArrayList();
+                getHistoricoDeOhlcObservableList()[t_id][s_id] = FXCollections.observableArrayList();
+                getTransactionFilteredList()[t_id][s_id] = new FilteredList<>(getTransactionObservableList());
 
 
-                getQtdCallOrPut()[time_id][symbol_id] = new SimpleIntegerProperty(0);
-                getQtdCall()[time_id][symbol_id] = new SimpleIntegerProperty(0);
-                getQtdPut()[time_id][symbol_id] = new SimpleIntegerProperty(0);
+                getQtdCallOrPut()[t_id][s_id] = new SimpleIntegerProperty(0);
+                getQtdCall()[t_id][s_id] = new SimpleIntegerProperty(0);
+                getQtdPut()[t_id][s_id] = new SimpleIntegerProperty(0);
+
+                getTmodelTransactions()[t_id][s_id] = new TmodelTransactions(getTransactionFilteredList()[t_id][s_id]);
+//                getTmodelTransactions()[t_id][s_id].setTransactionFilteredList(getTransactionFilteredList()[t_id][s_id]);
+
             }
         }
 
-        Thread threadInicial = new Thread(getTaskWsBinary());
-        threadInicial.setDaemon(true);
-        threadInicial.start();
+        variaveis_Bindins();
+
+        variaveis_Listener();
+
+        variaveis_Comandos();
 
     }
 
-    private void carregarObjetos() {
+    private void objetos_Carregar() {
+
+        getCboTpnNegociacaoQtdCandlesAnalise().getItems().setAll(100, 75, 50, 25, 0);
+        getCboTpnNegociacaoQtdCandlesAnalise().getSelectionModel().select(0);
 
         getCboTpnDetalhesContaBinary().setItems(getContaTokenObservableList());
 
@@ -510,23 +522,28 @@ public class Operacoes implements Initializable {
                 .collect(Collectors.toCollection(FXCollections::observableArrayList)));
         getCboNegociacaoRobos().getItems().add(0, null);
 
-        objetosBindings();
+        objetos_Bindings();
 
-        escutandoObjetos();
+        objetos_Listener();
 
-        comandosDeBotoes();
+        objetos_Comandos();
 
-        preencherTabelas();
+        Thread threadInicial = new Thread(getTaskWsBinary());
+        threadInicial.setDaemon(true);
+        threadInicial.start();
 
     }
 
-    private void objetosBindings() {
 
+    private void variaveis_Bindins() {
         saldoInicialProperty().bind(Bindings.createObjectBinding(() -> {
             if (authorizeProperty().getValue() == null)
                 return BigDecimal.ZERO;
             return authorizeProperty().getValue().getBalance();
         }, authorizeProperty()));
+    }
+
+    private void objetos_Bindings() {
 
         getLblDetalhesSaldoInicial().textProperty().bind(Bindings.createStringBinding(() ->
                         Service_Mascara.getValorMoeda(saldoInicialProperty().getValue()),
@@ -534,14 +551,14 @@ public class Operacoes implements Initializable {
 
         getLblNegociacaoParametros().textProperty().bind(parametrosUtilizadosRoboProperty());
 
-        getBtnTpnNegociacao_Contratos().disableProperty().bind(btnContratoDisabledProperty());
-        getBtnTpnNegociacao_Iniciar().disableProperty().bind(btnIniciardisabledProperty());
-        getBtnTpnNegociacao_Pausar().disableProperty().bind(btnPausarDisabledProperty());
-        getBtnTpnNegociacao_Stop().disableProperty().bind(btnStopDisabledProperty());
+        getBtnTpnNegociacao_Contratos().disableProperty().bind(disableContratoBtnProperty());
+        getBtnTpnNegociacao_Iniciar().disableProperty().bind(disableIniciarBtnProperty());
+        getBtnTpnNegociacao_Pausar().disableProperty().bind(disablePausarBtnProperty());
+        getBtnTpnNegociacao_Stop().disableProperty().bind(disableStopBtnProperty());
 
     }
 
-    private void escutandoObjetos() {
+    private void variaveis_Listener() {
 
         appAutorizadoProperty().addListener((ov, o, n) -> {
             getHboxDetalhesSaldoConta().getStyleClass().clear();
@@ -553,18 +570,8 @@ public class Operacoes implements Initializable {
             }
         });
 
-        btnContratoDisabledProperty().addListener((ov, o, n) -> {
-            if (n == null || !n)
-                setParametrosUtilizadosRobo("");
-        });
-
         authorizeProperty().addListener((ov, o, n) -> {
-            if (n != null) {
-                solicitarTransacoes();
-                setBtnContratoDisabled(true);
-            } else {
-                setBtnContratoDisabled(getRoboAtivo() == null);
-            }
+
             getLblDetalhesProprietarioConta().setText(n != null
                     ? (n.getFullname().replaceAll("\\W", "").length() > 0
                     ? String.format("%s (%s)", n.getFullname(), n.getEmail())
@@ -588,7 +595,35 @@ public class Operacoes implements Initializable {
             getLblDetalhesSaldoContaCifrao().setText(n != null
                     ? n.getCurrency()
                     : "");
+
         });
+
+        disableContratoBtnProperty().addListener((ov, o, n) -> {
+
+            if (n == null || !n)
+                setParametrosUtilizadosRobo("");
+
+        });
+
+        disableContratoBtnProperty().bind(Bindings.createBooleanBinding(() ->
+                        (!isWsConectado() || getAuthorize() == null || getRobo() == null || isContratoGerado()),
+                wsConectadoProperty(), authorizeProperty(), ROBOProperty(), contratoGeradoProperty()));
+
+        disableIniciarBtnProperty().bind(contratoGeradoProperty().not());
+
+        ROBOProperty().addListener((ov, o, n) -> {
+
+            if (n == null) {
+                setParametrosUtilizadosRobo("");
+                return;
+            }
+
+        });
+
+
+    }
+
+    private void objetos_Listener() {
 
         getCboTpnDetalhesContaBinary().valueProperty().addListener((ov, o, n) -> {
             if (n == null) {
@@ -599,29 +634,83 @@ public class Operacoes implements Initializable {
         });
 
         getCboNegociacaoRobos().valueProperty().addListener((ov, o, n) -> {
-            setROBO_Selecionado(n);
             if (n == null) {
-                setRoboAtivo(null);
-                setBtnContratoDisabled(true);
+                setRobo(null);
                 return;
-            } else {
-                setBtnContratoDisabled(getAuthorize() == null);
             }
             switch (n) {
                 case ABR -> {
                     Abr abr = new Abr();
-                    setRoboAtivo(abr);
+                    setRobo(abr);
+                }
+            }
+        });
+
+        getTransactionObservableList().addListener((ListChangeListener<? super Transaction>) c -> {
+            while (c.next()) {
+                for (Transaction transaction : c.getAddedSubList()) {
+                    if (transaction.getAction() == null) return;
+                    //System.out.printf("transaction: %s\n", transaction);
+                    int t_id = TIME_1M,
+//                    int t_id = ((transaction.getDate_expiry() - transaction.getTransaction_time()) / 60) - 1,
+                            s_id = getSymbolObservableList().stream().filter(symbol -> symbol.getSymbol()
+                                    .equals(transaction.getSymbol().getSymbol()))
+                                    .findFirst().get().getId().intValue() - 1;
+                    System.out.printf("\t\t[%s-%s:%s]\t\ttransaction[%s-%s][%s-%s]: %s\n",
+                            transaction.getDate_expiry(), transaction.getTransaction_time(), transaction.getDate_expiry() - transaction.getTransaction_time(),
+                            t_id, TICK_TIME.toEnum(t_id),
+                            s_id, getSymbolObservableList().get(s_id), transaction);
+                    switch (ACTION.valueOf(transaction.getAction().toUpperCase())) {
+                        case BUY -> {
+                            //getTransacoesObservableList()[t_id][s_id].add(0, new Transacoes().Transacoes_BUY(transaction));
+//                            getTransactionObservableList()
+                        }
+                        case SELL -> {
+                            getResultLastTransiction()[t_id][s_id].setValue(transaction.getAmount().compareTo(BigDecimal.ZERO) > 0);
+                            if (getResultLastTransiction()[t_id][s_id].getValue())
+                                getVlrStkContrato()[t_id][s_id].setValue(getVlrStkPadrao()[t_id].getValue());
+                            else
+                                getVlrStkContrato()[t_id][s_id].setValue(
+                                        getVlrStkContrato()[t_id][s_id].getValue().multiply(new BigDecimal("2.")));
+                            //new Transacoes().Transacoes_SELL(transaction);
+                        }
+                    }
                 }
             }
         });
 
     }
 
-    private void comandosDeBotoes() {
+    private void variaveis_Comandos() {
 
-        getBtnTpnNegociacao_Contratos().setOnAction(event -> getRoboAtivo().definicaoDeContrato());
+    }
 
-        getBtnTpnNegociacao_Iniciar().setOnAction(event -> getRoboAtivo().monitorarCondicoesParaComprar());
+    private void objetos_Comandos() {
+
+        getBtnTpnNegociacao_Contratos().setOnAction(event -> {
+            try {
+                if (!getCboTpnDetalhesContaBinary().getValue().isTransactionOK())
+                    solicitarTransacoes();
+                getRobo().definicaoDeContrato();
+                setContratoGerado(true);
+            } catch (Exception ex) {
+                if (ex instanceof NoSuchElementException)
+                    return;
+                ex.printStackTrace();
+            }
+        });
+
+        getBtnTpnNegociacao_Iniciar().setOnAction(event -> {
+            try {
+                getRobo().monitorarCondicoesParaComprar();
+                setRoboMonitorando(true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        getBtnTpnNegociacao_Pausar().setOnAction(event -> setRoboMonitorandoPausado(true));
+
 
         getBtnTpnNegociacao_Stop().setOnAction(event -> {
             getCboNegociacaoRobos().getSelectionModel().select(0);
@@ -631,54 +720,24 @@ public class Operacoes implements Initializable {
 
     private void preencherTabelas() {
 
-        getTbvTransacoes_T01_Op01().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        getTbvTransacoes_T01_Op01().getSelectionModel().setCellSelectionEnabled(true);
-        getTbvTransacoes_T01_Op01().setEditable(false);
-        getTbvTransacoes_T01_Op01().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_01]);
+        Platform.runLater(() -> {
+            for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+                if (!getTimeAtivo()[t_id].getValue()) continue;
+                for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+                    int finalT_id = t_id, finalS_id = s_id;
+                    getTmodelTransactions()[t_id][s_id].getTransactionFilteredList()
+                            .setPredicate(transaction ->
+//                                    (((transaction.getDate_expiry()
+//                                            - transaction.getTransaction_time()) / 60) - 1 == finalT_id) &&
+                                    transaction.getSymbol().equals(getSymbolObservableList().get(finalS_id).getSymbol()));
 
-        getTbvTransacoes_T01_Op02().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        getTbvTransacoes_T01_Op02().getSelectionModel().setCellSelectionEnabled(true);
-        getTbvTransacoes_T01_Op02().setEditable(false);
-        getTbvTransacoes_T01_Op02().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_02]);
+                    getTmodelTransactions()[t_id][s_id].criar_tabela();
+                    getTmodelTransactions()[t_id][s_id].tabela_preencher();
+                }
 
-        getTbvTransacoes_T01_Op03().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        getTbvTransacoes_T01_Op03().getSelectionModel().setCellSelectionEnabled(true);
-        getTbvTransacoes_T01_Op03().setEditable(false);
-        getTbvTransacoes_T01_Op03().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_03]);
+            }
+        });
 
-        getTbvTransacoes_T01_Op04().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        getTbvTransacoes_T01_Op04().getSelectionModel().setCellSelectionEnabled(true);
-        getTbvTransacoes_T01_Op04().setEditable(false);
-        getTbvTransacoes_T01_Op04().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_04]);
-
-        getTbvTransacoes_T01_Op05().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        getTbvTransacoes_T01_Op05().getSelectionModel().setCellSelectionEnabled(true);
-        getTbvTransacoes_T01_Op05().setEditable(false);
-        getTbvTransacoes_T01_Op05().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_05]);
-
-        getTbvTransacoes_T01_Op06().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        getTbvTransacoes_T01_Op06().getSelectionModel().setCellSelectionEnabled(true);
-        getTbvTransacoes_T01_Op06().setEditable(false);
-        getTbvTransacoes_T01_Op06().setItems(getTransactionObservableList()[TIME_1M][SYMBOL_06]);
-
-
-    }
-
-    private void carregarAcoesObjetos() {
-
-//        getOperador()[0].bind(getCboSymbol01().valueProperty());
-//        getOperador()[1].bind(getCboSymbol02().valueProperty());
-//        getOperador()[2].bind(getCboSymbol03().valueProperty());
-//        getOperador()[3].bind(getCboSymbol04().valueProperty());
-//        getOperador()[4].bind(getCboSymbol05().valueProperty());
-//
-//        for (int operadorId = 0; operadorId < 5; operadorId++) {
-//            int finalOperadorId = operadorId;
-//            getOperador()[operadorId].addListener((ov, o, n) -> {
-//                if (n == null) return;
-//                solicitarTicks(n);
-//            });
-//        }
 
     }
 
@@ -690,57 +749,7 @@ public class Operacoes implements Initializable {
 
         conectarTimesAtivos();
 
-
-//        getTpn_T02().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_2M)));
-//        getTpn_T03().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_3M)));
-//        getTpn_T04().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_5M)));
-//        getTpn_T05().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_10M)));
-//        getTpn_T06().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_15M)));
-
-
-        //        getUltimoOhlc()[0][0].addListener((ov, o, n) -> {
-//            if (n == null)
-//                getLblLastTickSymbol_01().setText("");
-//            if (n == null || o == null)
-//                return;
-//            getLblLastTickSymbol_01().setText(n.toString());
-//            if (getLblRoboHoraInicial().getText().equals(""))
-//                getLblRoboHoraInicial().setText(
-//                        LocalDateTime.ofInstant(Instant.ofEpochSecond(n.getOpen_time()),
-//                                TimeZone.getDefault().toZoneId()).format(DTF_TMODEL_DATA_TRANSACTION)
-//                );
-//            if (n.getClose().compareTo(o.getClose()) >= 0)
-//                getTpnLlUltTick_Op01().setStyle(STYLE_TICK_SUBINDO);
-//            else
-//                getTpnLlUltTick_Op01().setStyle(STYLE_TICK_DESCENDO);
-//            Integer time_close = (n.getGranularity() - (n.getEpoch() - n.getOpen_time()));
-//            getLblTime_Op01_T01().setText(String.format("%s M [t -%ss]",
-//                    n.getGranularity() / 60,
-//                    time_close));
-//            if (time_close <= 2 && time_close > 0) {
-//                if (n.getClose().compareTo(n.getOpen()) > 0) {
-//                    if (getQtdCallPut()[0][0].getValue().compareTo(BigDecimal.ZERO) > 0)
-//                        getQtdCallPut()[0][0].setValue(getQtdCallPut()[0][0].getValue().add(BigDecimal.ONE));
-//                    else
-//                        getQtdCallPut()[0][0].setValue(BigDecimal.ONE);
-//                    getLblQtdCallPut_Op01_T01().setText(getQtdCallPut()[0][0].getValue().toString());
-//                    getImgCallPut_Op01_T01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-//                } else if (n.getClose().compareTo(n.getOpen()) < 0) {
-//                    if (getQtdCallPut()[0][0].getValue().compareTo(BigDecimal.ZERO) < 0)
-//                        getQtdCallPut()[0][0].setValue(getQtdCallPut()[0][0].getValue().subtract(BigDecimal.ONE));
-//                    else
-//                        getQtdCallPut()[0][0].setValue(BigDecimal.ONE.negate());
-//                    getLblQtdCallPut_Op01_T01().setText(getQtdCallPut()[0][0].getValue().negate().toString());
-//                    getImgCallPut_Op01_T01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-//                } else {
-//                    getLblQtdCallPut_Op01_T01().setText("0");
-//                    getLblQtdCallPut_Op01_T01().setGraphic(null);
-//                }
-//                getLblQtdCallPut_Op01_T01().setText(getQtdCallPut()[0][0].getValue().toString().replace("-", ""));
-//            }
-//        });
-
-
+        preencherTabelas();
     }
 
     /**
@@ -753,7 +762,7 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-    public void gerarContrato(TICK_TIME time, Symbol symbol, CONTRACT_TYPE cType) throws Exception {
+    public void gerarContrato(TICK_TIME time, Symbol symbol, CONTRACT_TYPE cType, boolean win) throws Exception {
 
         Passthrough passthrough = new Passthrough(symbol, time, getTickStyle(), cType, "");
         int t_id = time.getCod(), s_id = symbol.getId().intValue() - 1;
@@ -761,7 +770,8 @@ public class Operacoes implements Initializable {
         getPriceProposal()[t_id][s_id] = new PriceProposal();
 
         getPriceProposal()[t_id][s_id].setProposal(1);
-        getPriceProposal()[t_id][s_id].setAmount(getVlrStkContrato()[t_id][s_id].getValue());
+        getPriceProposal()[t_id][s_id].setAmount(win ? getVlrStkContrato()[t_id][s_id].getValue()
+                : getVlrStkContrato()[t_id][s_id].getValue().multiply(new BigDecimal(2.)));
         getPriceProposal()[t_id][s_id].setBasis(PRICE_PROPOSAL_BASIS);
         getPriceProposal()[t_id][s_id].setContract_type(cType);
         getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
@@ -798,6 +808,7 @@ public class Operacoes implements Initializable {
         try {
             String jsonTransacoes = Util_Json.getJson_from_Object(new TransactionsStream());
             getWsClientObjectProperty().getMyWebSocket().send(jsonTransacoes);
+            getCboTpnDetalhesContaBinary().getValue().setTransactionOK(true);
             setAppAutorizado(true);
         } catch (Exception ex) {
             setAppAutorizado(false);
@@ -810,15 +821,33 @@ public class Operacoes implements Initializable {
 
         Symbol symbol;
         Passthrough passthrough = new Passthrough();
-        for (int z = 0; z < getSymbolObservableList().size(); z++) {
-            symbol = getSymbolObservableList().get(z);
+        Integer tempoVela;
+//        for (int z = 0; z < getSymbolObservableList().size(); z++) {
+//            symbol = getSymbolObservableList().get(z);
+//            passthrough.setTickStyle(getTickStyle());
+//            passthrough.setSymbol(symbol);
+//            for (TICK_TIME tickTime : TICK_TIME.values()) {
+//                tempoVela = Integer.parseInt(tickTime.getDescricao().replaceAll("\\D", "")) * 60;
+//                passthrough.setTickTime(tickTime);
+//                String jsonHistory = Util_Json.getJson_from_Object(new TicksHistory(symbol.getSymbol(),
+//                        getCboTpnNegociacaoQtdCandlesAnalise().getValue(), getTickStyle(), tempoVela, passthrough));
+//                if (tempoVela == null) jsonHistory = jsonHistory.replace(",\"granularity\":null", "");
+//                if (passthrough == null) jsonHistory = jsonHistory.replace(",\"passthrough\":null", "");
+//                getWsClientObjectProperty().getMyWebSocket().send(jsonHistory);
+//            }
+//        }
+
+        for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+            if (!getTimeAtivo()[t_id].getValue()) continue;
+            tempoVela = Integer.parseInt(TICK_TIME.toEnum(t_id).getDescricao().replaceAll("\\D", "")) * 60;
+            passthrough.setTickTime(TICK_TIME.toEnum(t_id));
             passthrough.setTickStyle(getTickStyle());
-            passthrough.setSymbol(symbol);
-            Integer tempoVela;
-            for (TICK_TIME tickTime : TICK_TIME.values()) {
-                tempoVela = Integer.parseInt(tickTime.getDescricao().replaceAll("\\D", "")) * 60;
-                passthrough.setTickTime(tickTime);
-                String jsonHistory = Util_Json.getJson_from_Object(new TicksHistory(symbol.getSymbol(),
+
+            for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+//                if (s_id>0)continue;//**************
+                passthrough.setSymbol(getSymbolObservableList().get(s_id));
+
+                String jsonHistory = Util_Json.getJson_from_Object(new TicksHistory(getSymbolObservableList().get(s_id).getSymbol(),
                         getCboTpnNegociacaoQtdCandlesAnalise().getValue(), getTickStyle(), tempoVela, passthrough));
                 if (tempoVela == null) jsonHistory = jsonHistory.replace(",\"granularity\":null", "");
                 if (passthrough == null) jsonHistory = jsonHistory.replace(",\"passthrough\":null", "");
@@ -844,8 +873,10 @@ public class Operacoes implements Initializable {
     public void solicitarCompraContrato(Proposal proposal) {
 
         try {
-            String jsonBuyContrato = Util_Json.getJson_from_Object(new BuyContract(proposal));
-            System.out.printf("jsonBuyContrato: %s\n", jsonBuyContrato);
+            if (proposal == null) return;
+            Passthrough passthrough = new Passthrough();
+            passthrough.setMensagem("testando passthrough!!!");
+            String jsonBuyContrato = Util_Json.getJson_from_Object(new BuyContract(proposal, passthrough));
             getWsClientObjectProperty().getMyWebSocket().send(jsonBuyContrato);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1017,7 +1048,7 @@ public class Operacoes implements Initializable {
                             getDataFromInteger(getTimeCandleStart()[timer].getValue()),
                     getTimeCandleStart()[timer]));
             getLblTpnT01_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
-                            String.format("%s s", getTimeCandleToClose()[timer].getValue()),
+                            String.format("- %s s", getTimeCandleToClose()[timer].getValue()),
                     getTimeCandleToClose()[timer]));
 
             //*-*-* Op_01
@@ -1037,6 +1068,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op01().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_01].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_01]));
+            getTmodelTransactions()[timer][SYMBOL_01].setTbvTransaction(getTbvTransaction_T01_Op01());
 
             //*-*-* Op_02
             getLblSymbol_T01_Op02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
@@ -1055,6 +1087,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op02().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_02].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_02]));
+            getTmodelTransactions()[timer][SYMBOL_02].setTbvTransaction(getTbvTransaction_T01_Op02());
 
             //*-*-* Op_03
             getLblSymbol_T01_Op03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
@@ -1073,6 +1106,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op03().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_03].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_03]));
+            getTmodelTransactions()[timer][SYMBOL_03].setTbvTransaction(getTbvTransaction_T01_Op03());
 
             //*-*-* Op_04
             getLblSymbol_T01_Op04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
@@ -1091,6 +1125,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op04().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_04].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_04]));
+            getTmodelTransactions()[timer][SYMBOL_04].setTbvTransaction(getTbvTransaction_T01_Op04());
 
             //*-*-* Op_05
             getLblSymbol_T01_Op05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
@@ -1109,6 +1144,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op05().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_05].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_05]));
+            getTmodelTransactions()[timer][SYMBOL_05].setTbvTransaction(getTbvTransaction_T01_Op05());
 
             //*-*-* Op_06
             getLblSymbol_T01_Op06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
@@ -1127,6 +1163,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op06().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_06].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_06]));
+            getTmodelTransactions()[timer][SYMBOL_06].setTbvTransaction(getTbvTransaction_T01_Op06());
 
             //*-*-* Op_07
             getLblSymbol_T01_Op07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
@@ -1145,6 +1182,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op07().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_07].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_07]));
+            getTmodelTransactions()[timer][SYMBOL_07].setTbvTransaction(getTbvTransaction_T01_Op07());
 
             //*-*-* Op_08
             getLblSymbol_T01_Op08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
@@ -1163,6 +1201,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op08().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_08].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_08]));
+            getTmodelTransactions()[timer][SYMBOL_08].setTbvTransaction(getTbvTransaction_T01_Op08());
 
             //*-*-* Op_09
             getLblSymbol_T01_Op09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
@@ -1181,6 +1220,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op09().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_09].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_09]));
+            getTmodelTransactions()[timer][SYMBOL_09].setTbvTransaction(getTbvTransaction_T01_Op09());
 
             //*-*-* Op_10
             getLblSymbol_T01_Op10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
@@ -1199,6 +1239,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op10().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_10].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_10]));
+            getTmodelTransactions()[timer][SYMBOL_10].setTbvTransaction(getTbvTransaction_T01_Op10());
 
             //*-*-* Op_11
             getLblSymbol_T01_Op11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
@@ -1217,6 +1258,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op11().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_11].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_11]));
+            getTmodelTransactions()[timer][SYMBOL_11].setTbvTransaction(getTbvTransaction_T01_Op11());
 
             //*-*-* Op_12
             getLblSymbol_T01_Op12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
@@ -1235,6 +1277,7 @@ public class Operacoes implements Initializable {
                     getImgCallOrPut_T01_Op12().setImage(null);
                 return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_12].getValue()));
             }, getQtdCallOrPut()[timer][SYMBOL_12]));
+            getTmodelTransactions()[timer][SYMBOL_12].setTbvTransaction(getTbvTransaction_T01_Op12());
 
         } else if (timer == TIME_2M) {
 //                getTpn_T02().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_2M)));
@@ -1350,6 +1393,7 @@ public class Operacoes implements Initializable {
 
 
     /**
+     * Getters and Setters
      * <p>
      * <p>
      * <p>
@@ -1439,28 +1483,16 @@ public class Operacoes implements Initializable {
         return TICK_STYLE;
     }
 
-    public static ROBOS getROBO_Selecionado() {
-        return ROBO_Selecionado.get();
+    public static Robo getRobo() {
+        return ROBO.get();
     }
 
-    public static ObjectProperty<ROBOS> ROBO_SelecionadoProperty() {
-        return ROBO_Selecionado;
+    public static ObjectProperty<Robo> ROBOProperty() {
+        return ROBO;
     }
 
-    public static void setROBO_Selecionado(ROBOS ROBO_Selecionado) {
-        Operacoes.ROBO_Selecionado.set(ROBO_Selecionado);
-    }
-
-    public static Robo getRoboAtivo() {
-        return ROBO_ATIVO.get();
-    }
-
-    public static ObjectProperty<Robo> ROBO_ATIVOProperty() {
-        return ROBO_ATIVO;
-    }
-
-    public static void setRoboAtivo(Robo roboAtivo) {
-        ROBO_ATIVO.set(roboAtivo);
+    public static void setRobo(Robo robo) {
+        ROBO.set(robo);
     }
 
     public static boolean isAppAutorizado() {
@@ -1639,12 +1671,28 @@ public class Operacoes implements Initializable {
         Operacoes.historicoDeOhlcObservableList = historicoDeOhlcObservableList;
     }
 
-    public static ObservableList<Transaction>[][] getTransactionObservableList() {
+    public static ObservableList<Transaction> getTransactionObservableList() {
         return transactionObservableList;
     }
 
-    public static void setTransactionObservableList(ObservableList<Transaction>[][] transactionObservableList) {
+    public static void setTransactionObservableList(ObservableList<Transaction> transactionObservableList) {
         Operacoes.transactionObservableList = transactionObservableList;
+    }
+
+    public static TmodelTransactions[][] getTmodelTransactions() {
+        return tmodelTransactions;
+    }
+
+    public static void setTmodelTransactions(TmodelTransactions[][] tmodelTransactions) {
+        Operacoes.tmodelTransactions = tmodelTransactions;
+    }
+
+    public static FilteredList<Transaction>[][] getTransactionFilteredList() {
+        return transactionFilteredList;
+    }
+
+    public static void setTransactionFilteredList(FilteredList<Transaction>[][] transactionFilteredList) {
+        Operacoes.transactionFilteredList = transactionFilteredList;
     }
 
     public static BooleanProperty[] getTimeAtivo() {
@@ -1655,52 +1703,88 @@ public class Operacoes implements Initializable {
         Operacoes.timeAtivo = timeAtivo;
     }
 
-    public static boolean isBtnContratoDisabled() {
-        return btnContratoDisabled.get();
+    public static boolean isContratoGerado() {
+        return contratoGerado.get();
     }
 
-    public static BooleanProperty btnContratoDisabledProperty() {
-        return btnContratoDisabled;
+    public static BooleanProperty contratoGeradoProperty() {
+        return contratoGerado;
     }
 
-    public static void setBtnContratoDisabled(boolean btnContratoDisabled) {
-        Operacoes.btnContratoDisabled.set(btnContratoDisabled);
+    public static void setContratoGerado(boolean contratoGerado) {
+        Operacoes.contratoGerado.set(contratoGerado);
     }
 
-    public static boolean isBtnIniciardisabled() {
-        return btnIniciardisabled.get();
+    public static boolean isDisableContratoBtn() {
+        return disableContratoBtn.get();
     }
 
-    public static BooleanProperty btnIniciardisabledProperty() {
-        return btnIniciardisabled;
+    public static BooleanProperty disableContratoBtnProperty() {
+        return disableContratoBtn;
     }
 
-    public static void setBtnIniciardisabled(boolean btnIniciardisabled) {
-        Operacoes.btnIniciardisabled.set(btnIniciardisabled);
+    public static void setDisableContratoBtn(boolean disableContratoBtn) {
+        Operacoes.disableContratoBtn.set(disableContratoBtn);
     }
 
-    public static boolean isBtnPausarDisabled() {
-        return btnPausarDisabled.get();
+    public static boolean isDisableIniciarBtn() {
+        return disableIniciarBtn.get();
     }
 
-    public static BooleanProperty btnPausarDisabledProperty() {
-        return btnPausarDisabled;
+    public static BooleanProperty disableIniciarBtnProperty() {
+        return disableIniciarBtn;
     }
 
-    public static void setBtnPausarDisabled(boolean btnPausarDisabled) {
-        Operacoes.btnPausarDisabled.set(btnPausarDisabled);
+    public static void setDisableIniciarBtn(boolean disableIniciarBtn) {
+        Operacoes.disableIniciarBtn.set(disableIniciarBtn);
     }
 
-    public static boolean isBtnStopDisabled() {
-        return btnStopDisabled.get();
+    public static boolean isDisablePausarBtn() {
+        return disablePausarBtn.get();
     }
 
-    public static BooleanProperty btnStopDisabledProperty() {
-        return btnStopDisabled;
+    public static BooleanProperty disablePausarBtnProperty() {
+        return disablePausarBtn;
     }
 
-    public static void setBtnStopDisabled(boolean btnStopDisabled) {
-        Operacoes.btnStopDisabled.set(btnStopDisabled);
+    public static void setDisablePausarBtn(boolean disablePausarBtn) {
+        Operacoes.disablePausarBtn.set(disablePausarBtn);
+    }
+
+    public static boolean isDisableStopBtn() {
+        return disableStopBtn.get();
+    }
+
+    public static BooleanProperty disableStopBtnProperty() {
+        return disableStopBtn;
+    }
+
+    public static void setDisableStopBtn(boolean disableStopBtn) {
+        Operacoes.disableStopBtn.set(disableStopBtn);
+    }
+
+    public static boolean isRoboMonitorando() {
+        return roboMonitorando.get();
+    }
+
+    public static BooleanProperty roboMonitorandoProperty() {
+        return roboMonitorando;
+    }
+
+    public static void setRoboMonitorando(boolean roboMonitorando) {
+        Operacoes.roboMonitorando.set(roboMonitorando);
+    }
+
+    public static boolean isRoboMonitorandoPausado() {
+        return roboMonitorandoPausado.get();
+    }
+
+    public static BooleanProperty roboMonitorandoPausadoProperty() {
+        return roboMonitorandoPausado;
+    }
+
+    public static void setRoboMonitorandoPausado(boolean roboMonitorandoPausado) {
+        Operacoes.roboMonitorandoPausado.set(roboMonitorandoPausado);
     }
 
     public static ObjectProperty<BigDecimal>[] getVlrStkPadrao() {
@@ -2327,12 +2411,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op01 = lblVlrDiff_T01_Op01;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op01() {
-        return tbvTransacoes_T01_Op01;
+    public TableView<Transaction> getTbvTransaction_T01_Op01() {
+        return tbvTransaction_T01_Op01;
     }
 
-    public void setTbvTransacoes_T01_Op01(TableView<Transaction> tbvTransacoes_T01_Op01) {
-        this.tbvTransacoes_T01_Op01 = tbvTransacoes_T01_Op01;
+    public void setTbvTransaction_T01_Op01(TableView<Transaction> tbvTransaction_T01_Op01) {
+        this.tbvTransaction_T01_Op01 = tbvTransaction_T01_Op01;
     }
 
     public Label getLblSymbol_T01_Op02() {
@@ -2423,12 +2507,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op02 = lblVlrDiff_T01_Op02;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op02() {
-        return tbvTransacoes_T01_Op02;
+    public TableView<Transaction> getTbvTransaction_T01_Op02() {
+        return tbvTransaction_T01_Op02;
     }
 
-    public void setTbvTransacoes_T01_Op02(TableView<Transaction> tbvTransacoes_T01_Op02) {
-        this.tbvTransacoes_T01_Op02 = tbvTransacoes_T01_Op02;
+    public void setTbvTransaction_T01_Op02(TableView<Transaction> tbvTransaction_T01_Op02) {
+        this.tbvTransaction_T01_Op02 = tbvTransaction_T01_Op02;
     }
 
     public Label getLblSymbol_T01_Op03() {
@@ -2519,12 +2603,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op03 = lblVlrDiff_T01_Op03;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op03() {
-        return tbvTransacoes_T01_Op03;
+    public TableView<Transaction> getTbvTransaction_T01_Op03() {
+        return tbvTransaction_T01_Op03;
     }
 
-    public void setTbvTransacoes_T01_Op03(TableView<Transaction> tbvTransacoes_T01_Op03) {
-        this.tbvTransacoes_T01_Op03 = tbvTransacoes_T01_Op03;
+    public void setTbvTransaction_T01_Op03(TableView<Transaction> tbvTransaction_T01_Op03) {
+        this.tbvTransaction_T01_Op03 = tbvTransaction_T01_Op03;
     }
 
     public Label getLblSymbol_T01_Op04() {
@@ -2615,12 +2699,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op04 = lblVlrDiff_T01_Op04;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op04() {
-        return tbvTransacoes_T01_Op04;
+    public TableView<Transaction> getTbvTransaction_T01_Op04() {
+        return tbvTransaction_T01_Op04;
     }
 
-    public void setTbvTransacoes_T01_Op04(TableView<Transaction> tbvTransacoes_T01_Op04) {
-        this.tbvTransacoes_T01_Op04 = tbvTransacoes_T01_Op04;
+    public void setTbvTransaction_T01_Op04(TableView<Transaction> tbvTransaction_T01_Op04) {
+        this.tbvTransaction_T01_Op04 = tbvTransaction_T01_Op04;
     }
 
     public Label getLblSymbol_T01_Op05() {
@@ -2711,12 +2795,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op05 = lblVlrDiff_T01_Op05;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op05() {
-        return tbvTransacoes_T01_Op05;
+    public TableView<Transaction> getTbvTransaction_T01_Op05() {
+        return tbvTransaction_T01_Op05;
     }
 
-    public void setTbvTransacoes_T01_Op05(TableView<Transaction> tbvTransacoes_T01_Op05) {
-        this.tbvTransacoes_T01_Op05 = tbvTransacoes_T01_Op05;
+    public void setTbvTransaction_T01_Op05(TableView<Transaction> tbvTransaction_T01_Op05) {
+        this.tbvTransaction_T01_Op05 = tbvTransaction_T01_Op05;
     }
 
     public Label getLblSymbol_T01_Op06() {
@@ -2807,12 +2891,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op06 = lblVlrDiff_T01_Op06;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op06() {
-        return tbvTransacoes_T01_Op06;
+    public TableView<Transaction> getTbvTransaction_T01_Op06() {
+        return tbvTransaction_T01_Op06;
     }
 
-    public void setTbvTransacoes_T01_Op06(TableView<Transaction> tbvTransacoes_T01_Op06) {
-        this.tbvTransacoes_T01_Op06 = tbvTransacoes_T01_Op06;
+    public void setTbvTransaction_T01_Op06(TableView<Transaction> tbvTransaction_T01_Op06) {
+        this.tbvTransaction_T01_Op06 = tbvTransaction_T01_Op06;
     }
 
     public Label getLblSymbol_T01_Op07() {
@@ -2903,12 +2987,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op07 = lblVlrDiff_T01_Op07;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op07() {
-        return tbvTransacoes_T01_Op07;
+    public TableView<Transaction> getTbvTransaction_T01_Op07() {
+        return tbvTransaction_T01_Op07;
     }
 
-    public void setTbvTransacoes_T01_Op07(TableView<Transaction> tbvTransacoes_T01_Op07) {
-        this.tbvTransacoes_T01_Op07 = tbvTransacoes_T01_Op07;
+    public void setTbvTransaction_T01_Op07(TableView<Transaction> tbvTransaction_T01_Op07) {
+        this.tbvTransaction_T01_Op07 = tbvTransaction_T01_Op07;
     }
 
     public Label getLblSymbol_T01_Op08() {
@@ -2999,12 +3083,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op08 = lblVlrDiff_T01_Op08;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op08() {
-        return tbvTransacoes_T01_Op08;
+    public TableView<Transaction> getTbvTransaction_T01_Op08() {
+        return tbvTransaction_T01_Op08;
     }
 
-    public void setTbvTransacoes_T01_Op08(TableView<Transaction> tbvTransacoes_T01_Op08) {
-        this.tbvTransacoes_T01_Op08 = tbvTransacoes_T01_Op08;
+    public void setTbvTransaction_T01_Op08(TableView<Transaction> tbvTransaction_T01_Op08) {
+        this.tbvTransaction_T01_Op08 = tbvTransaction_T01_Op08;
     }
 
     public Label getLblSymbol_T01_Op09() {
@@ -3095,12 +3179,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op09 = lblVlrDiff_T01_Op09;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op09() {
-        return tbvTransacoes_T01_Op09;
+    public TableView<Transaction> getTbvTransaction_T01_Op09() {
+        return tbvTransaction_T01_Op09;
     }
 
-    public void setTbvTransacoes_T01_Op09(TableView<Transaction> tbvTransacoes_T01_Op09) {
-        this.tbvTransacoes_T01_Op09 = tbvTransacoes_T01_Op09;
+    public void setTbvTransaction_T01_Op09(TableView<Transaction> tbvTransaction_T01_Op09) {
+        this.tbvTransaction_T01_Op09 = tbvTransaction_T01_Op09;
     }
 
     public Label getLblSymbol_T01_Op10() {
@@ -3191,12 +3275,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op10 = lblVlrDiff_T01_Op10;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op10() {
-        return tbvTransacoes_T01_Op10;
+    public TableView<Transaction> getTbvTransaction_T01_Op10() {
+        return tbvTransaction_T01_Op10;
     }
 
-    public void setTbvTransacoes_T01_Op10(TableView<Transaction> tbvTransacoes_T01_Op10) {
-        this.tbvTransacoes_T01_Op10 = tbvTransacoes_T01_Op10;
+    public void setTbvTransaction_T01_Op10(TableView<Transaction> tbvTransaction_T01_Op10) {
+        this.tbvTransaction_T01_Op10 = tbvTransaction_T01_Op10;
     }
 
     public Label getLblSymbol_T01_Op11() {
@@ -3287,12 +3371,12 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op11 = lblVlrDiff_T01_Op11;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op11() {
-        return tbvTransacoes_T01_Op11;
+    public TableView<Transaction> getTbvTransaction_T01_Op11() {
+        return tbvTransaction_T01_Op11;
     }
 
-    public void setTbvTransacoes_T01_Op11(TableView<Transaction> tbvTransacoes_T01_Op11) {
-        this.tbvTransacoes_T01_Op11 = tbvTransacoes_T01_Op11;
+    public void setTbvTransaction_T01_Op11(TableView<Transaction> tbvTransaction_T01_Op11) {
+        this.tbvTransaction_T01_Op11 = tbvTransaction_T01_Op11;
     }
 
     public Label getLblSymbol_T01_Op12() {
@@ -3383,11 +3467,19 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op12 = lblVlrDiff_T01_Op12;
     }
 
-    public TableView<Transaction> getTbvTransacoes_T01_Op12() {
-        return tbvTransacoes_T01_Op12;
+    public TableView<Transaction> getTbvTransaction_T01_Op12() {
+        return tbvTransaction_T01_Op12;
     }
 
-    public void setTbvTransacoes_T01_Op12(TableView<Transaction> tbvTransacoes_T01_Op12) {
-        this.tbvTransacoes_T01_Op12 = tbvTransacoes_T01_Op12;
+    public void setTbvTransaction_T01_Op12(TableView<Transaction> tbvTransaction_T01_Op12) {
+        this.tbvTransaction_T01_Op12 = tbvTransaction_T01_Op12;
+    }
+
+    public static BooleanProperty[][] getResultLastTransiction() {
+        return resultLastTransiction;
+    }
+
+    public static void setResultLastTransiction(BooleanProperty[][] resultLastTransiction) {
+        Operacoes.resultLastTransiction = resultLastTransiction;
     }
 }

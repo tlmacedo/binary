@@ -26,7 +26,7 @@ public enum TICK_TIME {
         for (TICK_TIME style : TICK_TIME.values())
             if (cod == style.getCod())
                 return style;
-        throw new IllegalArgumentException("Id inválido!!!");
+        throw new IllegalArgumentException(String.format("Id[%s] inválido!!!", cod));
     }
 
     public static List<TICK_TIME> getList() {

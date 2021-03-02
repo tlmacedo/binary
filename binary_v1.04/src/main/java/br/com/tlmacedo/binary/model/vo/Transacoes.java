@@ -44,6 +44,16 @@ public class Transacoes implements Serializable {
 
     }
 
+    public Transacoes Transacoes_BUY(Transaction transaction) {
+        System.out.printf("BUY\n");
+        return null;
+    }
+
+    public Transacoes Transacoes_SELL(Transaction transaction) {
+        System.out.printf("SELL\n");
+        return null;
+    }
+
     public void newTransacao_BUY(Transaction transaction) {
 
 //        this.contaToken = new SimpleObjectProperty<>(transaction.getContaToken());

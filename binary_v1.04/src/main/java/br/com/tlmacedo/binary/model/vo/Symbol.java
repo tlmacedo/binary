@@ -149,6 +149,10 @@ public class Symbol implements Serializable {
         return String.format("%s", getDisplay_name());
     }
 
+    public String transictionToString() {
+        return String.format("%s", getSymbol());
+    }
+
     //    @Override
 //    public String toString() {
 //        return "ActiveSymbol{" +

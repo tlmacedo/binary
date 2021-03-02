@@ -18,6 +18,7 @@ public class ContaToken implements Serializable {
     StringProperty email = new SimpleStringProperty();
     StringProperty senha = new SimpleStringProperty();
     BooleanProperty tokenAtivo = new SimpleBooleanProperty();
+    BooleanProperty transactionOK = new SimpleBooleanProperty(false);
 
     public ContaToken() {
     }
@@ -125,6 +126,19 @@ public class ContaToken implements Serializable {
 
     public void setTokenAtivo(boolean tokenAtivo) {
         this.tokenAtivo.set(tokenAtivo);
+    }
+
+    @Transient
+    public boolean isTransactionOK() {
+        return transactionOK.get();
+    }
+
+    public BooleanProperty transactionOKProperty() {
+        return transactionOK;
+    }
+
+    public void setTransactionOK(boolean transactionOK) {
+        this.transactionOK.set(transactionOK);
     }
 
     @Override

@@ -4,8 +4,8 @@ import br.com.tlmacedo.binary.model.enums.ROBOS;
 
 public interface Robo {
 
-    void definicaoDeContrato();
+    void definicaoDeContrato() throws Exception;
 
-    void monitorarCondicoesParaComprar();
+    void monitorarCondicoesParaComprar() throws Exception;
 
 }
