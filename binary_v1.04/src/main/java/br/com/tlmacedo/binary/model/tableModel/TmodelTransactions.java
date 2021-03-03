@@ -8,6 +8,7 @@ import br.com.tlmacedo.binary.services.Service_DataHoraCarimbo;
 import br.com.tlmacedo.binary.services.Service_Mascara;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
@@ -25,7 +26,11 @@ public class TmodelTransactions {
     private TableColumn<Transaction, String> colStakeVenda;
 
     private TableView<Transaction> tbvTransaction;
+    private ObservableList<Transaction> transactionObservableList;
     private FilteredList<Transaction> transactionFilteredList;
+
+    public TmodelTransactions() {
+    }
 
     public TmodelTransactions(FilteredList transactionFilteredList) {
         this.transactionFilteredList = transactionFilteredList;
@@ -122,7 +127,6 @@ public class TmodelTransactions {
 //        getTbvTransactions().getSelectionModel().setCellSelectionEnabled(true);
         getTbvTransaction().setEditable(true);
 
-        System.out.printf("TmodelTransactions->tabela_preencher\n\n");
         getTransactionFilteredList().addListener((ListChangeListener<? super Transaction>) c -> {
             while (c.next()) {
                 for (Transaction transaction : c.getAddedSubList())
@@ -142,6 +146,7 @@ public class TmodelTransactions {
      * <p>
      * <p>
      */
+
 
     public TableColumn<Transaction, String> getColTransaction_id() {
         return colTransaction_id;
@@ -205,6 +210,14 @@ public class TmodelTransactions {
 
     public void setTbvTransaction(TableView<Transaction> tbvTransaction) {
         this.tbvTransaction = tbvTransaction;
+    }
+
+    public ObservableList<Transaction> getTransactionObservableList() {
+        return transactionObservableList;
+    }
+
+    public void setTransactionObservableList(ObservableList<Transaction> transactionObservableList) {
+        this.transactionObservableList = transactionObservableList;
     }
 
     public FilteredList<Transaction> getTransactionFilteredList() {

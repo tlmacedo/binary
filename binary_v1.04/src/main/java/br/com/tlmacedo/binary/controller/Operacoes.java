@@ -10,6 +10,7 @@ import br.com.tlmacedo.binary.model.enums.*;
 import br.com.tlmacedo.binary.model.tableModel.TmodelTransactions;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Service_Alert;
+import br.com.tlmacedo.binary.services.Service_DataHoraCarimbo;
 import br.com.tlmacedo.binary.services.Service_Mascara;
 import br.com.tlmacedo.binary.services.Util_Json;
 import com.jfoenix.controls.JFXButton;
@@ -91,7 +92,6 @@ public class Operacoes implements Initializable {
     /**
      * Robos
      */
-//    static ObjectProperty<ROBOS> ROBO_Selecionado = new SimpleObjectProperty<>();
     static final ObjectProperty<Robo> ROBO = new SimpleObjectProperty<>();
 
 
@@ -100,19 +100,13 @@ public class Operacoes implements Initializable {
      */
     static BooleanProperty appAutorizado = new SimpleBooleanProperty(false);
     static StringProperty parametrosUtilizadosRobo = new SimpleStringProperty("");
-    static Timeline roboRelogio;
-    static LongProperty roboHoraInicial = new SimpleLongProperty();
-    static LongProperty roboCronometro = new SimpleLongProperty();
-    static BooleanProperty roboCronometroAtivado = new SimpleBooleanProperty(false);
     static ObjectProperty<BigDecimal> saldoInicial = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
     /**
      * Variaveis de informações para operadores
      */
     //** Variaveis **
-    static ObjectProperty<Tick>[][] ultimoTick = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObjectProperty<Ohlc>[][] ultimoOhlc = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
-    static StringProperty[] ultimoTickStr = new StringProperty[getSymbolObservableList().size()];
     static StringProperty[] ultimoOhlcStr = new StringProperty[getSymbolObservableList().size()];
     static BooleanProperty[] tickSubindo = new BooleanProperty[getSymbolObservableList().size()];
 
@@ -124,7 +118,6 @@ public class Operacoes implements Initializable {
     static IntegerProperty[][] qtdPut = new IntegerProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
 
     //** Listas **
-    static ObservableList<HistoricoDeTicks>[][] historicoDeTicksObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObservableList<HistoricoDeOhlc>[][] historicoDeOhlcObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObservableList<Transaction> transactionObservableList;
     static TmodelTransactions[][] tmodelTransactions = new TmodelTransactions[TICK_TIME.values().length][getSymbolObservableList().size()];
@@ -267,150 +260,175 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op01;
     public Label lblVlrOut_T01_Op01;
     public Label lblVlrDiff_T01_Op01;
-    public TableView<Transaction> tbvTransaction_T01_Op01;
-    // Time_01 *-*-* Symbol_02
-    public Label lblSymbol_T01_Op02;
-    public Label lblQtdCall_T01_Op02;
-    public Label lblQtdPut_T01_Op02;
-    public Label lblQtdCallOrPut_T01_Op02;
-    public ImageView imgCallOrPut_T01_Op02;
-    public Label lblQtdStakes_T01_Op02;
-    public Label lblQtdWins_T01_Op02;
-    public Label lblQtdLoss_T01_Op02;
-    public Label lblVlrIn_T01_Op02;
-    public Label lblVlrOut_T01_Op02;
-    public Label lblVlrDiff_T01_Op02;
-    public TableView<Transaction> tbvTransaction_T01_Op02;
-    // Time_01 *-*-* Symbol_03
-    public Label lblSymbol_T01_Op03;
-    public Label lblQtdCall_T01_Op03;
-    public Label lblQtdPut_T01_Op03;
-    public Label lblQtdCallOrPut_T01_Op03;
-    public ImageView imgCallOrPut_T01_Op03;
-    public Label lblQtdStakes_T01_Op03;
-    public Label lblQtdWins_T01_Op03;
-    public Label lblQtdLoss_T01_Op03;
-    public Label lblVlrIn_T01_Op03;
-    public Label lblVlrOut_T01_Op03;
-    public Label lblVlrDiff_T01_Op03;
-    public TableView<Transaction> tbvTransaction_T01_Op03;
-    // Time_01 *-*-* Symbol_04
-    public Label lblSymbol_T01_Op04;
-    public Label lblQtdCall_T01_Op04;
-    public Label lblQtdPut_T01_Op04;
-    public Label lblQtdCallOrPut_T01_Op04;
-    public ImageView imgCallOrPut_T01_Op04;
-    public Label lblQtdStakes_T01_Op04;
-    public Label lblQtdWins_T01_Op04;
-    public Label lblQtdLoss_T01_Op04;
-    public Label lblVlrIn_T01_Op04;
-    public Label lblVlrOut_T01_Op04;
-    public Label lblVlrDiff_T01_Op04;
-    public TableView<Transaction> tbvTransaction_T01_Op04;
-    // Time_01 *-*-* Symbol_05
-    public Label lblSymbol_T01_Op05;
-    public Label lblQtdCall_T01_Op05;
-    public Label lblQtdPut_T01_Op05;
-    public Label lblQtdCallOrPut_T01_Op05;
-    public ImageView imgCallOrPut_T01_Op05;
-    public Label lblQtdStakes_T01_Op05;
-    public Label lblQtdWins_T01_Op05;
-    public Label lblQtdLoss_T01_Op05;
-    public Label lblVlrIn_T01_Op05;
-    public Label lblVlrOut_T01_Op05;
-    public Label lblVlrDiff_T01_Op05;
-    public TableView<Transaction> tbvTransaction_T01_Op05;
-    // Time_01 *-*-* Symbol_06
-    public Label lblSymbol_T01_Op06;
-    public Label lblQtdCall_T01_Op06;
-    public Label lblQtdPut_T01_Op06;
-    public Label lblQtdCallOrPut_T01_Op06;
-    public ImageView imgCallOrPut_T01_Op06;
-    public Label lblQtdStakes_T01_Op06;
-    public Label lblQtdWins_T01_Op06;
-    public Label lblQtdLoss_T01_Op06;
-    public Label lblVlrIn_T01_Op06;
-    public Label lblVlrOut_T01_Op06;
-    public Label lblVlrDiff_T01_Op06;
-    public TableView<Transaction> tbvTransaction_T01_Op06;
-    // Time_01 *-*-* Symbol_07
-    public Label lblSymbol_T01_Op07;
-    public Label lblQtdCall_T01_Op07;
-    public Label lblQtdPut_T01_Op07;
-    public Label lblQtdCallOrPut_T01_Op07;
-    public ImageView imgCallOrPut_T01_Op07;
-    public Label lblQtdStakes_T01_Op07;
-    public Label lblQtdWins_T01_Op07;
-    public Label lblQtdLoss_T01_Op07;
-    public Label lblVlrIn_T01_Op07;
-    public Label lblVlrOut_T01_Op07;
-    public Label lblVlrDiff_T01_Op07;
-    public TableView<Transaction> tbvTransaction_T01_Op07;
-    // Time_01 *-*-* Symbol_08
-    public Label lblSymbol_T01_Op08;
-    public Label lblQtdCall_T01_Op08;
-    public Label lblQtdPut_T01_Op08;
-    public Label lblQtdCallOrPut_T01_Op08;
-    public ImageView imgCallOrPut_T01_Op08;
-    public Label lblQtdStakes_T01_Op08;
-    public Label lblQtdWins_T01_Op08;
-    public Label lblQtdLoss_T01_Op08;
-    public Label lblVlrIn_T01_Op08;
-    public Label lblVlrOut_T01_Op08;
-    public Label lblVlrDiff_T01_Op08;
-    public TableView<Transaction> tbvTransaction_T01_Op08;
-    // Time_01 *-*-* Symbol_09
-    public Label lblSymbol_T01_Op09;
-    public Label lblQtdCall_T01_Op09;
-    public Label lblQtdPut_T01_Op09;
-    public Label lblQtdCallOrPut_T01_Op09;
-    public ImageView imgCallOrPut_T01_Op09;
-    public Label lblQtdStakes_T01_Op09;
-    public Label lblQtdWins_T01_Op09;
-    public Label lblQtdLoss_T01_Op09;
-    public Label lblVlrIn_T01_Op09;
-    public Label lblVlrOut_T01_Op09;
-    public Label lblVlrDiff_T01_Op09;
-    public TableView<Transaction> tbvTransaction_T01_Op09;
-    // Time_01 *-*-* Symbol_10
-    public Label lblSymbol_T01_Op10;
-    public Label lblQtdCall_T01_Op10;
-    public Label lblQtdPut_T01_Op10;
-    public Label lblQtdCallOrPut_T01_Op10;
-    public ImageView imgCallOrPut_T01_Op10;
-    public Label lblQtdStakes_T01_Op10;
-    public Label lblQtdWins_T01_Op10;
-    public Label lblQtdLoss_T01_Op10;
-    public Label lblVlrIn_T01_Op10;
-    public Label lblVlrOut_T01_Op10;
-    public Label lblVlrDiff_T01_Op10;
-    public TableView<Transaction> tbvTransaction_T01_Op10;
-    // Time_01 *-*-* Symbol_11
-    public Label lblSymbol_T01_Op11;
-    public Label lblQtdCall_T01_Op11;
-    public Label lblQtdPut_T01_Op11;
-    public Label lblQtdCallOrPut_T01_Op11;
-    public ImageView imgCallOrPut_T01_Op11;
-    public Label lblQtdStakes_T01_Op11;
-    public Label lblQtdWins_T01_Op11;
-    public Label lblQtdLoss_T01_Op11;
-    public Label lblVlrIn_T01_Op11;
-    public Label lblVlrOut_T01_Op11;
-    public Label lblVlrDiff_T01_Op11;
-    public TableView<Transaction> tbvTransaction_T01_Op11;
-    // Time_01 *-*-* Symbol_12
-    public Label lblSymbol_T01_Op12;
-    public Label lblQtdCall_T01_Op12;
-    public Label lblQtdPut_T01_Op12;
-    public Label lblQtdCallOrPut_T01_Op12;
-    public ImageView imgCallOrPut_T01_Op12;
-    public Label lblQtdStakes_T01_Op12;
-    public Label lblQtdWins_T01_Op12;
-    public Label lblQtdLoss_T01_Op12;
-    public Label lblVlrIn_T01_Op12;
-    public Label lblVlrOut_T01_Op12;
-    public Label lblVlrDiff_T01_Op12;
-    public TableView<Transaction> tbvTransaction_T01_Op12;
+    public TableView tbvTransaction_T01_Op01;
+//    // Time_01 *-*-* Symbol_02
+//    public Label lblSymbol_T01_Op02;
+//    public Label lblQtdCall_T01_Op02;
+//    public Label lblQtdPut_T01_Op02;
+//    public Label lblQtdCallOrPut_T01_Op02;
+//    public ImageView imgCallOrPut_T01_Op02;
+//    public Label lblQtdStakes_T01_Op02;
+//    public Label lblQtdWins_T01_Op02;
+//    public Label lblQtdLoss_T01_Op02;
+//    public Label lblVlrIn_T01_Op02;
+//    public Label lblVlrOut_T01_Op02;
+//    public Label lblVlrDiff_T01_Op02;
+//    public TableView tbvTransaction_T01_Op02;
+//    // Time_01 *-*-* Symbol_03
+//    public Label lblSymbol_T01_Op03;
+//    public Label lblQtdCall_T01_Op03;
+//    public Label lblQtdPut_T01_Op03;
+//    public Label lblQtdCallOrPut_T01_Op03;
+//    public ImageView imgCallOrPut_T01_Op03;
+//    public Label lblQtdStakes_T01_Op03;
+//    public Label lblQtdWins_T01_Op03;
+//    public Label lblQtdLoss_T01_Op03;
+//    public Label lblVlrIn_T01_Op03;
+//    public Label lblVlrOut_T01_Op03;
+//    public Label lblVlrDiff_T01_Op03;
+//    public TableView tbvTransaction_T01_Op03;
+//    // Time_01 *-*-* Symbol_04
+//    public Label lblSymbol_T01_Op04;
+//    public Label lblQtdCall_T01_Op04;
+//    public Label lblQtdPut_T01_Op04;
+//    public Label lblQtdCallOrPut_T01_Op04;
+//    public ImageView imgCallOrPut_T01_Op04;
+//    public Label lblQtdStakes_T01_Op04;
+//    public Label lblQtdWins_T01_Op04;
+//    public Label lblQtdLoss_T01_Op04;
+//    public Label lblVlrIn_T01_Op04;
+//    public Label lblVlrOut_T01_Op04;
+//    public Label lblVlrDiff_T01_Op04;
+//    public TableView tbvTransaction_T01_Op04;
+//    // Time_01 *-*-* Symbol_05
+//    public Label lblSymbol_T01_Op05;
+//    public Label lblQtdCall_T01_Op05;
+//    public Label lblQtdPut_T01_Op05;
+//    public Label lblQtdCallOrPut_T01_Op05;
+//    public ImageView imgCallOrPut_T01_Op05;
+//    public Label lblQtdStakes_T01_Op05;
+//    public Label lblQtdWins_T01_Op05;
+//    public Label lblQtdLoss_T01_Op05;
+//    public Label lblVlrIn_T01_Op05;
+//    public Label lblVlrOut_T01_Op05;
+//    public Label lblVlrDiff_T01_Op05;
+//    public TableView tbvTransaction_T01_Op05;
+//    // Time_01 *-*-* Symbol_06
+//    public Label lblSymbol_T01_Op06;
+//    public Label lblQtdCall_T01_Op06;
+//    public Label lblQtdPut_T01_Op06;
+//    public Label lblQtdCallOrPut_T01_Op06;
+//    public ImageView imgCallOrPut_T01_Op06;
+//    public Label lblQtdStakes_T01_Op06;
+//    public Label lblQtdWins_T01_Op06;
+//    public Label lblQtdLoss_T01_Op06;
+//    public Label lblVlrIn_T01_Op06;
+//    public Label lblVlrOut_T01_Op06;
+//    public Label lblVlrDiff_T01_Op06;
+//    public TableView tbvTransaction_T01_Op06;
+//    // Time_01 *-*-* Symbol_07
+//    public Label lblSymbol_T01_Op07;
+//    public Label lblQtdCall_T01_Op07;
+//    public Label lblQtdPut_T01_Op07;
+//    public Label lblQtdCallOrPut_T01_Op07;
+//    public ImageView imgCallOrPut_T01_Op07;
+//    public Label lblQtdStakes_T01_Op07;
+//    public Label lblQtdWins_T01_Op07;
+//    public Label lblQtdLoss_T01_Op07;
+//    public Label lblVlrIn_T01_Op07;
+//    public Label lblVlrOut_T01_Op07;
+//    public Label lblVlrDiff_T01_Op07;
+//    public TableView tbvTransaction_T01_Op07;
+//    // Time_01 *-*-* Symbol_08
+//    public Label lblSymbol_T01_Op08;
+//    public Label lblQtdCall_T01_Op08;
+//    public Label lblQtdPut_T01_Op08;
+//    public Label lblQtdCallOrPut_T01_Op08;
+//    public ImageView imgCallOrPut_T01_Op08;
+//    public Label lblQtdStakes_T01_Op08;
+//    public Label lblQtdWins_T01_Op08;
+//    public Label lblQtdLoss_T01_Op08;
+//    public Label lblVlrIn_T01_Op08;
+//    public Label lblVlrOut_T01_Op08;
+//    public Label lblVlrDiff_T01_Op08;
+//    public TableView tbvTransaction_T01_Op08;
+//    // Time_01 *-*-* Symbol_09
+//    public Label lblSymbol_T01_Op09;
+//    public Label lblQtdCall_T01_Op09;
+//    public Label lblQtdPut_T01_Op09;
+//    public Label lblQtdCallOrPut_T01_Op09;
+//    public ImageView imgCallOrPut_T01_Op09;
+//    public Label lblQtdStakes_T01_Op09;
+//    public Label lblQtdWins_T01_Op09;
+//    public Label lblQtdLoss_T01_Op09;
+//    public Label lblVlrIn_T01_Op09;
+//    public Label lblVlrOut_T01_Op09;
+//    public Label lblVlrDiff_T01_Op09;
+//    public TableView tbvTransaction_T01_Op09;
+//    // Time_01 *-*-* Symbol_10
+//    public Label lblSymbol_T01_Op10;
+//    public Label lblQtdCall_T01_Op10;
+//    public Label lblQtdPut_T01_Op10;
+//    public Label lblQtdCallOrPut_T01_Op10;
+//    public ImageView imgCallOrPut_T01_Op10;
+//    public Label lblQtdStakes_T01_Op10;
+//    public Label lblQtdWins_T01_Op10;
+//    public Label lblQtdLoss_T01_Op10;
+//    public Label lblVlrIn_T01_Op10;
+//    public Label lblVlrOut_T01_Op10;
+//    public Label lblVlrDiff_T01_Op10;
+//    public TableView tbvTransaction_T01_Op10;
+//    // Time_01 *-*-* Symbol_11
+//    public Label lblSymbol_T01_Op11;
+//    public Label lblQtdCall_T01_Op11;
+//    public Label lblQtdPut_T01_Op11;
+//    public Label lblQtdCallOrPut_T01_Op11;
+//    public ImageView imgCallOrPut_T01_Op11;
+//    public Label lblQtdStakes_T01_Op11;
+//    public Label lblQtdWins_T01_Op11;
+//    public Label lblQtdLoss_T01_Op11;
+//    public Label lblVlrIn_T01_Op11;
+//    public Label lblVlrOut_T01_Op11;
+//    public Label lblVlrDiff_T01_Op11;
+//    public TableView tbvTransaction_T01_Op11;
+//    // Time_01 *-*-* Symbol_12
+//    public Label lblSymbol_T01_Op12;
+//    public Label lblQtdCall_T01_Op12;
+//    public Label lblQtdPut_T01_Op12;
+//    public Label lblQtdCallOrPut_T01_Op12;
+//    public ImageView imgCallOrPut_T01_Op12;
+//    public Label lblQtdStakes_T01_Op12;
+//    public Label lblQtdWins_T01_Op12;
+//    public Label lblQtdLoss_T01_Op12;
+//    public Label lblVlrIn_T01_Op12;
+//    public Label lblVlrOut_T01_Op12;
+//    public Label lblVlrDiff_T01_Op12;
+//    public TableView tbvTransaction_T01_Op12;
+
+    // Time_02 *-*-*
+    public TitledPane tpn_T02;
+    public JFXCheckBox chkTpn02_TimeAtivo;
+    public Label lblTpnT02_CandleTimeStart;
+    public Label lblTpnT02_TimeEnd;
+    public Label lblTpnT02_QtdStakes;
+    public Label lblTpnT02_QtdWins;
+    public Label lblTpnT02_QtdLoss;
+    public Label lblTpnT02_VlrIn;
+    public Label lblTpnT02_VlrOut;
+    public Label lblTpnT02_VlrDiff;
+    // Time_02 *-*-* Symbol_01
+    public Label lblSymbol_T02_Op01;
+    public Label lblQtdCall_T02_Op01;
+    public Label lblQtdPut_T02_Op01;
+    public Label lblQtdCallOrPut_T02_Op01;
+    public ImageView imgCallOrPut_T02_Op01;
+    public Label lblQtdStakes_T02_Op01;
+    public Label lblQtdWins_T02_Op01;
+    public Label lblQtdLoss_T02_Op01;
+    public Label lblVlrIn_T02_Op01;
+    public Label lblVlrOut_T02_Op01;
+    public Label lblVlrDiff_T02_Op01;
+    public TableView tbvTransaction_T02_Op01;
 
 
     /**
@@ -425,8 +443,16 @@ public class Operacoes implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+            getTimeAtivo()[t_id] = new SimpleBooleanProperty(false);
+        }
+
+        conectarTimesAtivos();
+
         variaveis_Carregar();
+
         objetos_Carregar();
+
         conectarObjetosEmVariaveis();
 
     }
@@ -470,36 +496,34 @@ public class Operacoes implements Initializable {
 
         setTransactionObservableList(FXCollections.observableArrayList());
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+            if (t_id > 0 && !getTimeAtivo()[t_id].getValue()) continue;
 
-            getTimeAtivo()[t_id] = new SimpleBooleanProperty(false);
+            getTimeCandleStart()[t_id] = new SimpleIntegerProperty(0);
+            getTimeCandleToClose()[t_id] = new SimpleIntegerProperty(0);
 
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 if (t_id == 0) {
-                    getTickSubindo()[s_id] = new SimpleBooleanProperty(false);
-                    getUltimoTickStr()[s_id] = new SimpleStringProperty("");
                     getUltimoOhlcStr()[s_id] = new SimpleStringProperty("");
-                }
-                if (s_id == 0) {
-                    getTimeCandleStart()[t_id] = new SimpleIntegerProperty(0);
-                    getTimeCandleToClose()[t_id] = new SimpleIntegerProperty(0);
+                    getTickSubindo()[s_id] = new SimpleBooleanProperty(false);
                 }
 
-
-                getResultLastTransiction()[t_id][s_id] = new SimpleBooleanProperty(true);
-                getUltimoTick()[t_id][s_id] = new SimpleObjectProperty<>();
                 getUltimoOhlc()[t_id][s_id] = new SimpleObjectProperty<>();
-                getHistoricoDeTicksObservableList()[t_id][s_id] = FXCollections.observableArrayList();
                 getHistoricoDeOhlcObservableList()[t_id][s_id] = FXCollections.observableArrayList();
-                getTransactionFilteredList()[t_id][s_id] = new FilteredList<>(getTransactionObservableList());
 
-
-                getQtdCallOrPut()[t_id][s_id] = new SimpleIntegerProperty(0);
                 getQtdCall()[t_id][s_id] = new SimpleIntegerProperty(0);
                 getQtdPut()[t_id][s_id] = new SimpleIntegerProperty(0);
+                getQtdCallOrPut()[t_id][s_id] = new SimpleIntegerProperty(0);
 
-                getTmodelTransactions()[t_id][s_id] = new TmodelTransactions(getTransactionFilteredList()[t_id][s_id]);
+//                getTmodelTransactions()[t_id][s_id] = new TmodelTransactions();
+//                getTmodelTransactions()[t_id][s_id].criar_tabela();
+//
+//                getTransactionFilteredList()[t_id][s_id] = new FilteredList<>(getTransactionObservableList());
 //                getTmodelTransactions()[t_id][s_id].setTransactionFilteredList(getTransactionFilteredList()[t_id][s_id]);
-
+//                contectarTabelaEmLista(t_id, s_id);
+//
+//                getTmodelTransactions()[t_id][s_id].setTransactionObservableList(getTransactionObservableList());
+//                //getTmodelTransactions()[t_id][s_id].escutarTransactions();
+//                getTmodelTransactions()[t_id][s_id].tabela_preencher();
             }
         }
 
@@ -536,11 +560,13 @@ public class Operacoes implements Initializable {
 
 
     private void variaveis_Bindins() {
+
         saldoInicialProperty().bind(Bindings.createObjectBinding(() -> {
             if (authorizeProperty().getValue() == null)
                 return BigDecimal.ZERO;
             return authorizeProperty().getValue().getBalance();
         }, authorizeProperty()));
+
     }
 
     private void objetos_Bindings() {
@@ -650,9 +676,7 @@ public class Operacoes implements Initializable {
             while (c.next()) {
                 for (Transaction transaction : c.getAddedSubList()) {
                     if (transaction.getAction() == null) return;
-                    //System.out.printf("transaction: %s\n", transaction);
                     int t_id = TIME_1M,
-//                    int t_id = ((transaction.getDate_expiry() - transaction.getTransaction_time()) / 60) - 1,
                             s_id = getSymbolObservableList().stream().filter(symbol -> symbol.getSymbol()
                                     .equals(transaction.getSymbol().getSymbol()))
                                     .findFirst().get().getId().intValue() - 1;
@@ -662,8 +686,6 @@ public class Operacoes implements Initializable {
                             s_id, getSymbolObservableList().get(s_id), transaction);
                     switch (ACTION.valueOf(transaction.getAction().toUpperCase())) {
                         case BUY -> {
-                            //getTransacoesObservableList()[t_id][s_id].add(0, new Transacoes().Transacoes_BUY(transaction));
-//                            getTransactionObservableList()
                         }
                         case SELL -> {
                             getResultLastTransiction()[t_id][s_id].setValue(transaction.getAmount().compareTo(BigDecimal.ZERO) > 0);
@@ -672,7 +694,6 @@ public class Operacoes implements Initializable {
                             else
                                 getVlrStkContrato()[t_id][s_id].setValue(
                                         getVlrStkContrato()[t_id][s_id].getValue().multiply(new BigDecimal("2.")));
-                            //new Transacoes().Transacoes_SELL(transaction);
                         }
                     }
                 }
@@ -741,15 +762,255 @@ public class Operacoes implements Initializable {
 
     }
 
+//    private void conectarTabelasEmVariaveis() {
+//        if (timer == TIME_1M) {
+//            getTpn_T01().setText(String.format("T%s - ", TICK_TIME.toEnum(timer)));
+//            getLblTpnT01_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getDataFromInteger(getTimeCandleStart()[timer].getValue()),
+//                    getTimeCandleStart()[timer]));
+//            getLblTpnT01_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+//                            String.format("- %s s", getTimeCandleToClose()[timer].getValue()),
+//                    getTimeCandleToClose()[timer]));
+//
+//            //*-*-* Op_01
+//            getLblSymbol_T01_Op01().setText(getSymbolObservableList().get(SYMBOL_01).getSymbol());
+//            getLblQtdCall_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_01].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_01]));
+//            getLblQtdPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_01].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_01]));
+//            getLblQtdCallOrPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_01].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_01].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op01().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_01].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_01]));
+//            getTmodelTransactions()[timer][SYMBOL_01].setTbvTransaction(getTbvTransaction_T01_Op01());
+//
+//            //*-*-* Op_02
+//            getLblSymbol_T01_Op02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
+//            getLblQtdCall_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_02].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_02]));
+//            getLblQtdPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_02].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_02]));
+//            getLblQtdCallOrPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_02].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_02].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op02().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_02].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_02]));
+//            getTmodelTransactions()[timer][SYMBOL_02].setTbvTransaction(getTbvTransaction_T01_Op02());
+//
+//            //*-*-* Op_03
+//            getLblSymbol_T01_Op03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
+//            getLblQtdCall_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_03].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_03]));
+//            getLblQtdPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_03].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_03]));
+//            getLblQtdCallOrPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_03].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_03].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op03().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_03].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_03]));
+//            getTmodelTransactions()[timer][SYMBOL_03].setTbvTransaction(getTbvTransaction_T01_Op03());
+//
+//            //*-*-* Op_04
+//            getLblSymbol_T01_Op04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
+//            getLblQtdCall_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_04].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_04]));
+//            getLblQtdPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_04].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_04]));
+//            getLblQtdCallOrPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_04].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_04].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op04().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_04].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_04]));
+//            getTmodelTransactions()[timer][SYMBOL_04].setTbvTransaction(getTbvTransaction_T01_Op04());
+//
+//            //*-*-* Op_05
+//            getLblSymbol_T01_Op05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
+//            getLblQtdCall_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_05].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_05]));
+//            getLblQtdPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_05].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_05]));
+//            getLblQtdCallOrPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_05].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_05].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op05().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_05].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_05]));
+//            getTmodelTransactions()[timer][SYMBOL_05].setTbvTransaction(getTbvTransaction_T01_Op05());
+//
+//            //*-*-* Op_06
+//            getLblSymbol_T01_Op06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
+//            getLblQtdCall_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_06].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_06]));
+//            getLblQtdPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_06].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_06]));
+//            getLblQtdCallOrPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_06].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_06].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op06().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_06].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_06]));
+//            getTmodelTransactions()[timer][SYMBOL_06].setTbvTransaction(getTbvTransaction_T01_Op06());
+//
+//            //*-*-* Op_07
+//            getLblSymbol_T01_Op07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
+//            getLblQtdCall_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_07].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_07]));
+//            getLblQtdPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_07].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_07]));
+//            getLblQtdCallOrPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_07].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_07].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op07().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_07].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_07]));
+//            getTmodelTransactions()[timer][SYMBOL_07].setTbvTransaction(getTbvTransaction_T01_Op07());
+//
+//            //*-*-* Op_08
+//            getLblSymbol_T01_Op08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
+//            getLblQtdCall_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_08].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_08]));
+//            getLblQtdPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_08].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_08]));
+//            getLblQtdCallOrPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_08].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_08].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op08().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_08].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_08]));
+//            getTmodelTransactions()[timer][SYMBOL_08].setTbvTransaction(getTbvTransaction_T01_Op08());
+//
+//            //*-*-* Op_09
+//            getLblSymbol_T01_Op09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
+//            getLblQtdCall_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_09].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_09]));
+//            getLblQtdPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_09].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_09]));
+//            getLblQtdCallOrPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_09].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_09].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op09().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_09].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_09]));
+//            getTmodelTransactions()[timer][SYMBOL_09].setTbvTransaction(getTbvTransaction_T01_Op09());
+//
+//            //*-*-* Op_10
+//            getLblSymbol_T01_Op10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
+//            getLblQtdCall_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_10].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_10]));
+//            getLblQtdPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_10].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_10]));
+//            getLblQtdCallOrPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_10].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_10].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op10().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_10].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_10]));
+//            getTmodelTransactions()[timer][SYMBOL_10].setTbvTransaction(getTbvTransaction_T01_Op10());
+//
+//            //*-*-* Op_11
+//            getLblSymbol_T01_Op11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
+//            getLblQtdCall_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_11].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_11]));
+//            getLblQtdPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_11].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_11]));
+//            getLblQtdCallOrPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_11].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_11].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op11().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_11].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_11]));
+//            getTmodelTransactions()[timer][SYMBOL_11].setTbvTransaction(getTbvTransaction_T01_Op11());
+//
+//            //*-*-* Op_12
+//            getLblSymbol_T01_Op12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
+//            getLblQtdCall_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdCall()[timer][SYMBOL_12].getValue().toString(),
+//                    getQtdCall()[timer][SYMBOL_12]));
+//            getLblQtdPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+//                            getQtdPut()[timer][SYMBOL_12].getValue().toString(),
+//                    getQtdPut()[timer][SYMBOL_12]));
+//            getLblQtdCallOrPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() -> {
+//                if (getQtdCallOrPut()[timer][SYMBOL_12].getValue().compareTo(1) >= 0)
+//                    getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+//                else if (getQtdCallOrPut()[timer][SYMBOL_12].getValue().compareTo(-1) <= 0)
+//                    getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+//                else
+//                    getImgCallOrPut_T01_Op12().setImage(null);
+//                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_12].getValue()));
+//            }, getQtdCallOrPut()[timer][SYMBOL_12]));
+//            getTmodelTransactions()[timer][SYMBOL_12].setTbvTransaction(getTbvTransaction_T01_Op12());
+//
+//        }
+//    }
+
     private void conectarObjetosEmVariaveis() {
 
         conectarObjetosEmVariaveis_LastTicks();
 
-        conectarObjetosEmVariaveis_Time01(TIME_1M);
+        conectarObjetosEmVariaveis_Timers();
 
-        conectarTimesAtivos();
+        //preencherTabelas();
 
-        preencherTabelas();
     }
 
     /**
@@ -838,7 +1099,7 @@ public class Operacoes implements Initializable {
 //        }
 
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
-            if (!getTimeAtivo()[t_id].getValue()) continue;
+            if (t_id > 0 && !getTimeAtivo()[t_id].getValue()) continue;
             tempoVela = Integer.parseInt(TICK_TIME.toEnum(t_id).getDescricao().replaceAll("\\D", "")) * 60;
             passthrough.setTickTime(TICK_TIME.toEnum(t_id));
             passthrough.setTickStyle(getTickStyle());
@@ -895,460 +1156,228 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-//    public static Integer getSymbolId(String symbol) {
-//        for (Symbol activeSymbol : getActiveSymbolObservableList())
-//            if (symbol.equals(activeSymbol.getSymbol()))
-//                return activeSymbol.getId().intValue();
-//        return null;
-//    }
+
     private void conectarObjetosEmVariaveis_LastTicks() {
-        /**
-         * Last Ticks
-         */
 
-        //SYMBOL_01
-        getLblSymbol_01().setText(getSymbolObservableList().get(SYMBOL_01).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_01().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_01].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_01].getValue(),
-                getUltimoTickStr()[SYMBOL_01], getUltimoOhlcStr()[SYMBOL_01]));
-        getLblLastTickSymbol_01().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_01].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_01]));
-
-        //SYMBOL_02
-        getLblSymbol_02().setText(getSymbolObservableList().get(SYMBOL_02).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_02().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_02].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_02].getValue(),
-                getUltimoTickStr()[SYMBOL_02], getUltimoOhlcStr()[SYMBOL_02]));
-        getLblLastTickSymbol_02().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_02].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_02]));
-
-        //SYMBOL_03
-        getLblSymbol_03().setText(getSymbolObservableList().get(SYMBOL_03).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_03().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_03].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_03].getValue(),
-                getUltimoTickStr()[SYMBOL_03], getUltimoOhlcStr()[SYMBOL_03]));
-        getLblLastTickSymbol_03().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_03].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_03]));
-
-        //SYMBOL_04
-        getLblSymbol_04().setText(getSymbolObservableList().get(SYMBOL_04).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_04().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_04].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_04].getValue(),
-                getUltimoTickStr()[SYMBOL_04], getUltimoOhlcStr()[SYMBOL_04]));
-        getLblLastTickSymbol_04().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_04].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_04]));
-
-        //SYMBOL_05
-        getLblSymbol_05().setText(getSymbolObservableList().get(SYMBOL_05).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_05().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_05].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_05].getValue(),
-                getUltimoTickStr()[SYMBOL_05], getUltimoOhlcStr()[SYMBOL_05]));
-        getLblLastTickSymbol_05().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_05].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_05]));
-
-        //SYMBOL_06
-        getLblSymbol_06().setText(getSymbolObservableList().get(SYMBOL_06).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_06().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_06].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_06].getValue(),
-                getUltimoTickStr()[SYMBOL_06], getUltimoOhlcStr()[SYMBOL_06]));
-        getLblLastTickSymbol_06().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_06].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_06]));
-
-        //SYMBOL_07
-        getLblSymbol_07().setText(getSymbolObservableList().get(SYMBOL_07).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_07().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_07].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_07].getValue(),
-                getUltimoTickStr()[SYMBOL_07], getUltimoOhlcStr()[SYMBOL_07]));
-        getLblLastTickSymbol_07().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_07].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_07]));
-
-        //SYMBOL_08
-        getLblSymbol_08().setText(getSymbolObservableList().get(SYMBOL_08).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_08().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_08].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_08].getValue(),
-                getUltimoTickStr()[SYMBOL_08], getUltimoOhlcStr()[SYMBOL_08]));
-        getLblLastTickSymbol_08().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_08].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_08]));
-
-        //SYMBOL_09
-        getLblSymbol_09().setText(getSymbolObservableList().get(SYMBOL_09).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_09().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_09].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_09].getValue(),
-                getUltimoTickStr()[SYMBOL_09], getUltimoOhlcStr()[SYMBOL_09]));
-        getLblLastTickSymbol_09().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_09].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_09]));
-
-        //SYMBOL_10
-        getLblSymbol_10().setText(getSymbolObservableList().get(SYMBOL_10).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_10().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_10].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_10].getValue(),
-                getUltimoTickStr()[SYMBOL_10], getUltimoOhlcStr()[SYMBOL_10]));
-        getLblLastTickSymbol_10().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_10].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_10]));
-
-        //SYMBOL_11
-        getLblSymbol_11().setText(getSymbolObservableList().get(SYMBOL_11).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_11().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_11].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_11].getValue(),
-                getUltimoTickStr()[SYMBOL_11], getUltimoOhlcStr()[SYMBOL_11]));
-        getLblLastTickSymbol_11().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_11].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_11]));
-
-        //SYMBOL_12
-        getLblSymbol_12().setText(getSymbolObservableList().get(SYMBOL_12).getDisplay_name().replace(" Index", ""));
-        getLblLastTickSymbol_12().textProperty().bind(Bindings.createStringBinding(() ->
-                        getTickStyle().equals(TICK_STYLE.TICKS)
-                                ? getUltimoTickStr()[SYMBOL_12].getValue()
-                                : getUltimoOhlcStr()[SYMBOL_12].getValue(),
-                getUltimoTickStr()[SYMBOL_12], getUltimoOhlcStr()[SYMBOL_12]));
-        getLblLastTickSymbol_12().styleProperty().bind(Bindings.createStringBinding(() ->
-                        getTickSubindo()[SYMBOL_12].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
-                getTickSubindo()[SYMBOL_12]));
+        for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+            //SYMBOL_01
+            if (s_id == SYMBOL_01) {
+                getLblSymbol_01().setText(getSymbolObservableList().get(SYMBOL_01).toString());
+                getLblLastTickSymbol_01().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_01].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_01]));
+                getLblLastTickSymbol_01().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_01].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_01]));
+            }
+            //SYMBOL_02
+            if (s_id == SYMBOL_02) {
+                getLblSymbol_02().setText(getSymbolObservableList().get(SYMBOL_02).toString());
+                getLblLastTickSymbol_02().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_02].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_02]));
+                getLblLastTickSymbol_02().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_02].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_02]));
+            }
+            //SYMBOL_03
+            if (s_id == SYMBOL_03) {
+                getLblSymbol_03().setText(getSymbolObservableList().get(SYMBOL_03).toString());
+                getLblLastTickSymbol_03().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_03].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_03]));
+                getLblLastTickSymbol_03().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_03].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_03]));
+            }
+            //SYMBOL_04
+            if (s_id == SYMBOL_04) {
+                getLblSymbol_04().setText(getSymbolObservableList().get(SYMBOL_04).toString());
+                getLblLastTickSymbol_04().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_04].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_04]));
+                getLblLastTickSymbol_04().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_04].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_04]));
+            }
+            //SYMBOL_05
+            if (s_id == SYMBOL_05) {
+                getLblSymbol_05().setText(getSymbolObservableList().get(SYMBOL_05).toString());
+                getLblLastTickSymbol_05().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_05].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_05]));
+                getLblLastTickSymbol_05().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_05].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_05]));
+            }
+            //SYMBOL_06
+            if (s_id == SYMBOL_06) {
+                getLblSymbol_06().setText(getSymbolObservableList().get(SYMBOL_06).toString());
+                getLblLastTickSymbol_06().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_06].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_06]));
+                getLblLastTickSymbol_06().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_06].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_06]));
+            }
+            //SYMBOL_07
+            if (s_id == SYMBOL_07) {
+                getLblSymbol_07().setText(getSymbolObservableList().get(SYMBOL_07).toString());
+                getLblLastTickSymbol_07().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_07].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_07]));
+                getLblLastTickSymbol_07().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_07].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_07]));
+            }
+            //SYMBOL_08
+            if (s_id == SYMBOL_08) {
+                getLblSymbol_08().setText(getSymbolObservableList().get(SYMBOL_08).toString());
+                getLblLastTickSymbol_08().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_08].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_08]));
+                getLblLastTickSymbol_08().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_08].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_08]));
+            }
+            //SYMBOL_09
+            if (s_id == SYMBOL_09) {
+                getLblSymbol_09().setText(getSymbolObservableList().get(SYMBOL_09).toString());
+                getLblLastTickSymbol_09().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_09].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_09]));
+                getLblLastTickSymbol_09().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_09].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_09]));
+            }
+            //SYMBOL_10
+            if (s_id == SYMBOL_10) {
+                getLblSymbol_10().setText(getSymbolObservableList().get(SYMBOL_10).toString());
+                getLblLastTickSymbol_10().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_10].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_10]));
+                getLblLastTickSymbol_10().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_10].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_10]));
+            }
+            //SYMBOL_11
+            if (s_id == SYMBOL_11) {
+                getLblSymbol_11().setText(getSymbolObservableList().get(SYMBOL_11).toString());
+                getLblLastTickSymbol_11().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_11].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_11]));
+                getLblLastTickSymbol_11().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_11].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_11]));
+            }
+            //SYMBOL_12
+            if (s_id == SYMBOL_12) {
+                getLblSymbol_12().setText(getSymbolObservableList().get(SYMBOL_12).toString());
+                getLblLastTickSymbol_12().textProperty().bind(Bindings.createStringBinding(() ->
+                                getTickStyle().equals(TICK_STYLE.CANDLES)
+                                        ? getUltimoOhlcStr()[SYMBOL_12].getValue() : "",
+                        getUltimoOhlcStr()[SYMBOL_12]));
+                getLblLastTickSymbol_12().styleProperty().bind(Bindings.createStringBinding(() ->
+                                getTickSubindo()[SYMBOL_12].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO,
+                        getTickSubindo()[SYMBOL_12]));
+            }
+        }
 
     }
 
-    private void conectarObjetosEmVariaveis_Time01(Integer timer) {
+    private void conectarObjetosEmVariaveis_Timers() {
+        for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+            if (t_id == TIME_1M)
+                getTpn_T01().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+            if (t_id == TIME_2M)
+                getTpn_T02().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+//            if (t_id == TIME_3M)
+//                getTpn_T03().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+//            if (t_id == TIME_5M)
+//                getTpn_T04().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+//            if (t_id == TIME_10M)
+//                getTpn_T05().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+//            if (t_id == TIME_15M)
+//                getTpn_T06().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+        }
 
-        if (timer == TIME_1M) {
-            getTpn_T01().setText(String.format("T%s - ", TICK_TIME.toEnum(timer)));
-            getLblTpnT01_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
-                            getDataFromInteger(getTimeCandleStart()[timer].getValue()),
-                    getTimeCandleStart()[timer]));
-            getLblTpnT01_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
-                            String.format("- %s s", getTimeCandleToClose()[timer].getValue()),
-                    getTimeCandleToClose()[timer]));
+        for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+            if (!getTimeAtivo()[t_id].getValue())
+                continue;
+            int finalT_id = t_id;
+            if (t_id == TIME_1M) {
+                getLblTpnT01_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
+                                Service_DataHoraCarimbo.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
+                        getTimeCandleStart()[t_id]));
+                getLblTpnT01_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                String.format("- %s s", getTimeCandleToClose()[finalT_id].getValue()),
+                        getTimeCandleToClose()[t_id]));
 
-            //*-*-* Op_01
-            getLblSymbol_T01_Op01().setText(getSymbolObservableList().get(SYMBOL_01).getSymbol());
-            getLblQtdCall_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_01].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_01]));
-            getLblQtdPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_01].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_01]));
-            getLblQtdCallOrPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_01].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_01].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op01().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_01].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_01]));
-            getTmodelTransactions()[timer][SYMBOL_01].setTbvTransaction(getTbvTransaction_T01_Op01());
+                for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+                    int finalS_id = s_id;
+                    //*-*-* Op_01
+                    if (s_id == SYMBOL_01) {
+                        getLblSymbol_T01_Op01().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op01().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                }
+            }
+            if (t_id == TIME_2M) {
+                getLblTpnT02_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
+                                Service_DataHoraCarimbo.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
+                        getTimeCandleStart()[t_id]));
+                getLblTpnT02_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                String.format("- %s s", getTimeCandleToClose()[finalT_id].getValue()),
+                        getTimeCandleToClose()[t_id]));
 
-            //*-*-* Op_02
-            getLblSymbol_T01_Op02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
-            getLblQtdCall_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_02].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_02]));
-            getLblQtdPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_02].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_02]));
-            getLblQtdCallOrPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_02].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_02].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op02().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_02].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_02]));
-            getTmodelTransactions()[timer][SYMBOL_02].setTbvTransaction(getTbvTransaction_T01_Op02());
-
-            //*-*-* Op_03
-            getLblSymbol_T01_Op03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
-            getLblQtdCall_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_03].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_03]));
-            getLblQtdPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_03].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_03]));
-            getLblQtdCallOrPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_03].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_03].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op03().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_03].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_03]));
-            getTmodelTransactions()[timer][SYMBOL_03].setTbvTransaction(getTbvTransaction_T01_Op03());
-
-            //*-*-* Op_04
-            getLblSymbol_T01_Op04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
-            getLblQtdCall_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_04].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_04]));
-            getLblQtdPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_04].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_04]));
-            getLblQtdCallOrPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_04].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_04].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op04().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_04].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_04]));
-            getTmodelTransactions()[timer][SYMBOL_04].setTbvTransaction(getTbvTransaction_T01_Op04());
-
-            //*-*-* Op_05
-            getLblSymbol_T01_Op05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
-            getLblQtdCall_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_05].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_05]));
-            getLblQtdPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_05].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_05]));
-            getLblQtdCallOrPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_05].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_05].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op05().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_05].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_05]));
-            getTmodelTransactions()[timer][SYMBOL_05].setTbvTransaction(getTbvTransaction_T01_Op05());
-
-            //*-*-* Op_06
-            getLblSymbol_T01_Op06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
-            getLblQtdCall_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_06].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_06]));
-            getLblQtdPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_06].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_06]));
-            getLblQtdCallOrPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_06].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_06].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op06().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_06].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_06]));
-            getTmodelTransactions()[timer][SYMBOL_06].setTbvTransaction(getTbvTransaction_T01_Op06());
-
-            //*-*-* Op_07
-            getLblSymbol_T01_Op07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
-            getLblQtdCall_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_07].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_07]));
-            getLblQtdPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_07].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_07]));
-            getLblQtdCallOrPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_07].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_07].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op07().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_07].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_07]));
-            getTmodelTransactions()[timer][SYMBOL_07].setTbvTransaction(getTbvTransaction_T01_Op07());
-
-            //*-*-* Op_08
-            getLblSymbol_T01_Op08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
-            getLblQtdCall_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_08].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_08]));
-            getLblQtdPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_08].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_08]));
-            getLblQtdCallOrPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_08].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_08].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op08().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_08].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_08]));
-            getTmodelTransactions()[timer][SYMBOL_08].setTbvTransaction(getTbvTransaction_T01_Op08());
-
-            //*-*-* Op_09
-            getLblSymbol_T01_Op09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
-            getLblQtdCall_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_09].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_09]));
-            getLblQtdPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_09].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_09]));
-            getLblQtdCallOrPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_09].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_09].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op09().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_09].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_09]));
-            getTmodelTransactions()[timer][SYMBOL_09].setTbvTransaction(getTbvTransaction_T01_Op09());
-
-            //*-*-* Op_10
-            getLblSymbol_T01_Op10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
-            getLblQtdCall_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_10].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_10]));
-            getLblQtdPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_10].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_10]));
-            getLblQtdCallOrPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_10].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_10].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op10().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_10].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_10]));
-            getTmodelTransactions()[timer][SYMBOL_10].setTbvTransaction(getTbvTransaction_T01_Op10());
-
-            //*-*-* Op_11
-            getLblSymbol_T01_Op11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
-            getLblQtdCall_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_11].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_11]));
-            getLblQtdPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_11].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_11]));
-            getLblQtdCallOrPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_11].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_11].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op11().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_11].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_11]));
-            getTmodelTransactions()[timer][SYMBOL_11].setTbvTransaction(getTbvTransaction_T01_Op11());
-
-            //*-*-* Op_12
-            getLblSymbol_T01_Op12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
-            getLblQtdCall_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdCall()[timer][SYMBOL_12].getValue().toString(),
-                    getQtdCall()[timer][SYMBOL_12]));
-            getLblQtdPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
-                            getQtdPut()[timer][SYMBOL_12].getValue().toString(),
-                    getQtdPut()[timer][SYMBOL_12]));
-            getLblQtdCallOrPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() -> {
-                if (getQtdCallOrPut()[timer][SYMBOL_12].getValue().compareTo(1) >= 0)
-                    getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                else if (getQtdCallOrPut()[timer][SYMBOL_12].getValue().compareTo(-1) <= 0)
-                    getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                else
-                    getImgCallOrPut_T01_Op12().setImage(null);
-                return String.valueOf(Math.abs(getQtdCallOrPut()[timer][SYMBOL_12].getValue()));
-            }, getQtdCallOrPut()[timer][SYMBOL_12]));
-            getTmodelTransactions()[timer][SYMBOL_12].setTbvTransaction(getTbvTransaction_T01_Op12());
-
-        } else if (timer == TIME_2M) {
-//                getTpn_T02().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_2M)));
-//                getLblSymbol_T02_Op01().setText(getSymbolObservableList().get(SYMBOL_01).getSymbol());
-//                getLblSymbol_T02_Op02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
-//                getLblSymbol_T02_Op03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
-//                getLblSymbol_T02_Op04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
-//                getLblSymbol_T02_Op05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
-//                getLblSymbol_T02_Op06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
-//                getLblSymbol_T02_Op07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
-//                getLblSymbol_T02_Op08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
-//                getLblSymbol_T02_Op09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
-//                getLblSymbol_T02_Op10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
-//                getLblSymbol_T02_Op11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
-//                getLblSymbol_T02_Op12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
-        } else if (timer == TIME_3M) {
-//                getTpn_T03().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_3M)));
-//                getLblSymbol_T03_Op01().setText(getSymbolObservableList().get(SYMBOL_01).getSymbol());
-//                getLblSymbol_T03_Op02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
-//                getLblSymbol_T03_Op03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
-//                getLblSymbol_T03_Op04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
-//                getLblSymbol_T03_Op05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
-//                getLblSymbol_T03_Op06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
-//                getLblSymbol_T03_Op07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
-//                getLblSymbol_T03_Op08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
-//                getLblSymbol_T03_Op09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
-//                getLblSymbol_T03_Op10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
-//                getLblSymbol_T03_Op11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
-//                getLblSymbol_T03_Op12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
-        } else if (timer == TIME_5M) {
-//                getTpn_T04().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_5M)));
-//                getLblSymbol_T04_Op01().setText(getSymbolObservableList().get(SYMBOL_01).getSymbol());
-//                getLblSymbol_T04_Op02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
-//                getLblSymbol_T04_Op03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
-//                getLblSymbol_T04_Op04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
-//                getLblSymbol_T04_Op05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
-//                getLblSymbol_T04_Op06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
-//                getLblSymbol_T04_Op07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
-//                getLblSymbol_T04_Op08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
-//                getLblSymbol_T04_Op09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
-//                getLblSymbol_T04_Op10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
-//                getLblSymbol_T04_Op11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
-//                getLblSymbol_T04_Op12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
-        } else if (timer == TIME_10M) {
-//                getTpn_T05().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_10M)));
-//                getLblSymbol_T05_Op01().setText(getSymbolObservableList().get(SYMBOL_01).getSymbol());
-//                getLblSymbol_T05_Op02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
-//                getLblSymbol_T05_Op03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
-//                getLblSymbol_T05_Op04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
-//                getLblSymbol_T05_Op05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
-//                getLblSymbol_T05_Op06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
-//                getLblSymbol_T05_Op07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
-//                getLblSymbol_T05_Op08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
-//                getLblSymbol_T05_Op09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
-//                getLblSymbol_T05_Op10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
-//                getLblSymbol_T05_Op11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
-//                getLblSymbol_T05_Op12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
-        } else if (timer == TIME_15M) {
-//                getTpn_T06().setText(String.format("T%s - ", TICK_TIME.toEnum(TIME_15M)));
-//                getLblSymbol_T06_Op01().setText(getSymbolObservableList().get(SYMBOL_01).getSymbol());
-//                getLblSymbol_T06_Op02().setText(getSymbolObservableList().get(SYMBOL_02).getSymbol());
-//                getLblSymbol_T06_Op03().setText(getSymbolObservableList().get(SYMBOL_03).getSymbol());
-//                getLblSymbol_T06_Op04().setText(getSymbolObservableList().get(SYMBOL_04).getSymbol());
-//                getLblSymbol_T06_Op05().setText(getSymbolObservableList().get(SYMBOL_05).getSymbol());
-//                getLblSymbol_T06_Op06().setText(getSymbolObservableList().get(SYMBOL_06).getSymbol());
-//                getLblSymbol_T06_Op07().setText(getSymbolObservableList().get(SYMBOL_07).getSymbol());
-//                getLblSymbol_T06_Op08().setText(getSymbolObservableList().get(SYMBOL_08).getSymbol());
-//                getLblSymbol_T06_Op09().setText(getSymbolObservableList().get(SYMBOL_09).getSymbol());
-//                getLblSymbol_T06_Op10().setText(getSymbolObservableList().get(SYMBOL_10).getSymbol());
-//                getLblSymbol_T06_Op11().setText(getSymbolObservableList().get(SYMBOL_11).getSymbol());
-//                getLblSymbol_T06_Op12().setText(getSymbolObservableList().get(SYMBOL_12).getSymbol());
+                for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+                    int finalS_id = s_id;
+                    //*-*-* Op_01
+                    if (s_id == SYMBOL_01) {
+                        getLblSymbol_T02_Op01().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op01().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                }
+            }
         }
 
     }
@@ -1356,24 +1385,64 @@ public class Operacoes implements Initializable {
     private void conectarTimesAtivos() {
 
         getTimeAtivo()[TIME_1M].bind(getChkTpn01_TimeAtivo().selectedProperty());
-//        getTimeAtivo()[TIME_2M].bind(getChkTpn02_TimeAtivo().selectedProperty());
-//        getTimeAtivo()[TIME_3M].bind(getChkTpn03_TimeAtivo().selectedProperty());
-//        getTimeAtivo()[TIME_5M].bind(getChkTpn04_TimeAtivo().selectedProperty());
-//        getTimeAtivo()[TIME_10M].bind(getChkTpn05_TimeAtivo().selectedProperty());
-//        getTimeAtivo()[TIME_15M].bind(getChkTpn06_TimeAtivo().selectedProperty());
+        getTimeAtivo()[TIME_2M].bind(getChkTpn02_TimeAtivo().selectedProperty());
 
         getChkTpn01_TimeAtivo().setSelected(true);
-//        getChkTpn02_TimeAtivo().setSelected(true);
-//        getChkTpn03_TimeAtivo().setSelected(true);
-//        getChkTpn04_TimeAtivo().setSelected(true);
-//        getChkTpn05_TimeAtivo().setSelected(true);
-//        getChkTpn06_TimeAtivo().setSelected(true);
+        getChkTpn02_TimeAtivo().setSelected(true);
 
     }
 
-    private String getDataFromInteger(Integer epoch) {
-        return LocalDateTime.ofInstant(Instant.ofEpochSecond(epoch),
-                TimeZone.getDefault().toZoneId()).format(DTF_HORA_MINUTOS);
+    private void contectarTabelaEmLista(int t_id, int s_id) {
+        if (t_id == TIME_1M) {
+            if (s_id == SYMBOL_01) {
+                getTmodelTransactions()[t_id][SYMBOL_01].setTbvTransaction(getTbvTransaction_T01_Op01());
+                getTmodelTransactions()[t_id][SYMBOL_01].tabela_preencher();
+            }
+//            if (s_id == SYMBOL_02) {
+//                getTmodelTransactions()[t_id][SYMBOL_02].setTbvTransaction(getTbvTransaction_T01_Op02());
+//                getTmodelTransactions()[t_id][SYMBOL_02].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_03) {
+//                getTmodelTransactions()[t_id][SYMBOL_03].setTbvTransaction(getTbvTransaction_T01_Op03());
+//                getTmodelTransactions()[t_id][SYMBOL_03].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_04) {
+//                getTmodelTransactions()[t_id][SYMBOL_04].setTbvTransaction(getTbvTransaction_T01_Op04());
+//                getTmodelTransactions()[t_id][SYMBOL_04].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_05) {
+//                getTmodelTransactions()[t_id][SYMBOL_05].setTbvTransaction(getTbvTransaction_T01_Op05());
+//                getTmodelTransactions()[t_id][SYMBOL_05].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_06) {
+//                getTmodelTransactions()[t_id][SYMBOL_06].setTbvTransaction(getTbvTransaction_T01_Op06());
+//                getTmodelTransactions()[t_id][SYMBOL_06].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_07) {
+//                getTmodelTransactions()[t_id][SYMBOL_07].setTbvTransaction(getTbvTransaction_T01_Op07());
+//                getTmodelTransactions()[t_id][SYMBOL_07].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_08) {
+//                getTmodelTransactions()[t_id][SYMBOL_08].setTbvTransaction(getTbvTransaction_T01_Op08());
+//                getTmodelTransactions()[t_id][SYMBOL_08].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_09) {
+//                getTmodelTransactions()[t_id][SYMBOL_09].setTbvTransaction(getTbvTransaction_T01_Op09());
+//                getTmodelTransactions()[t_id][SYMBOL_09].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_10) {
+//                getTmodelTransactions()[t_id][SYMBOL_10].setTbvTransaction(getTbvTransaction_T01_Op10());
+//                getTmodelTransactions()[t_id][SYMBOL_10].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_11) {
+//                getTmodelTransactions()[t_id][SYMBOL_11].setTbvTransaction(getTbvTransaction_T01_Op11());
+//                getTmodelTransactions()[t_id][SYMBOL_11].tabela_preencher();
+//            }
+//            if (s_id == SYMBOL_12) {
+//                getTmodelTransactions()[t_id][SYMBOL_12].setTbvTransaction(getTbvTransaction_T01_Op12());
+//                getTmodelTransactions()[t_id][SYMBOL_12].tabela_preencher();
+//            }
+        }
     }
 
     /**
@@ -1519,50 +1588,6 @@ public class Operacoes implements Initializable {
         Operacoes.parametrosUtilizadosRobo.set(parametrosUtilizadosRobo);
     }
 
-    public static Timeline getRoboRelogio() {
-        return roboRelogio;
-    }
-
-    public static void setRoboRelogio(Timeline roboRelogio) {
-        Operacoes.roboRelogio = roboRelogio;
-    }
-
-    public static long getRoboHoraInicial() {
-        return roboHoraInicial.get();
-    }
-
-    public static LongProperty roboHoraInicialProperty() {
-        return roboHoraInicial;
-    }
-
-    public static void setRoboHoraInicial(long roboHoraInicial) {
-        Operacoes.roboHoraInicial.set(roboHoraInicial);
-    }
-
-    public static long getRoboCronometro() {
-        return roboCronometro.get();
-    }
-
-    public static LongProperty roboCronometroProperty() {
-        return roboCronometro;
-    }
-
-    public static void setRoboCronometro(long roboCronometro) {
-        Operacoes.roboCronometro.set(roboCronometro);
-    }
-
-    public static boolean isRoboCronometroAtivado() {
-        return roboCronometroAtivado.get();
-    }
-
-    public static BooleanProperty roboCronometroAtivadoProperty() {
-        return roboCronometroAtivado;
-    }
-
-    public static void setRoboCronometroAtivado(boolean roboCronometroAtivado) {
-        Operacoes.roboCronometroAtivado.set(roboCronometroAtivado);
-    }
-
     public static BigDecimal getSaldoInicial() {
         return saldoInicial.get();
     }
@@ -1575,28 +1600,12 @@ public class Operacoes implements Initializable {
         Operacoes.saldoInicial.set(saldoInicial);
     }
 
-    public static ObjectProperty<Tick>[][] getUltimoTick() {
-        return ultimoTick;
-    }
-
-    public static void setUltimoTick(ObjectProperty<Tick>[][] ultimoTick) {
-        Operacoes.ultimoTick = ultimoTick;
-    }
-
     public static ObjectProperty<Ohlc>[][] getUltimoOhlc() {
         return ultimoOhlc;
     }
 
     public static void setUltimoOhlc(ObjectProperty<Ohlc>[][] ultimoOhlc) {
         Operacoes.ultimoOhlc = ultimoOhlc;
-    }
-
-    public static StringProperty[] getUltimoTickStr() {
-        return ultimoTickStr;
-    }
-
-    public static void setUltimoTickStr(StringProperty[] ultimoTickStr) {
-        Operacoes.ultimoTickStr = ultimoTickStr;
     }
 
     public static StringProperty[] getUltimoOhlcStr() {
@@ -1655,14 +1664,6 @@ public class Operacoes implements Initializable {
         Operacoes.qtdPut = qtdPut;
     }
 
-    public static ObservableList<HistoricoDeTicks>[][] getHistoricoDeTicksObservableList() {
-        return historicoDeTicksObservableList;
-    }
-
-    public static void setHistoricoDeTicksObservableList(ObservableList<HistoricoDeTicks>[][] historicoDeTicksObservableList) {
-        Operacoes.historicoDeTicksObservableList = historicoDeTicksObservableList;
-    }
-
     public static ObservableList<HistoricoDeOhlc>[][] getHistoricoDeOhlcObservableList() {
         return historicoDeOhlcObservableList;
     }
@@ -1693,6 +1694,14 @@ public class Operacoes implements Initializable {
 
     public static void setTransactionFilteredList(FilteredList<Transaction>[][] transactionFilteredList) {
         Operacoes.transactionFilteredList = transactionFilteredList;
+    }
+
+    public static BooleanProperty[][] getResultLastTransiction() {
+        return resultLastTransiction;
+    }
+
+    public static void setResultLastTransiction(BooleanProperty[][] resultLastTransiction) {
+        Operacoes.resultLastTransiction = resultLastTransiction;
     }
 
     public static BooleanProperty[] getTimeAtivo() {
@@ -2411,1075 +2420,187 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op01 = lblVlrDiff_T01_Op01;
     }
 
-    public TableView<Transaction> getTbvTransaction_T01_Op01() {
+    public TableView getTbvTransaction_T01_Op01() {
         return tbvTransaction_T01_Op01;
     }
 
-    public void setTbvTransaction_T01_Op01(TableView<Transaction> tbvTransaction_T01_Op01) {
+    public void setTbvTransaction_T01_Op01(TableView tbvTransaction_T01_Op01) {
         this.tbvTransaction_T01_Op01 = tbvTransaction_T01_Op01;
     }
 
-    public Label getLblSymbol_T01_Op02() {
-        return lblSymbol_T01_Op02;
+    public TitledPane getTpn_T02() {
+        return tpn_T02;
     }
 
-    public void setLblSymbol_T01_Op02(Label lblSymbol_T01_Op02) {
-        this.lblSymbol_T01_Op02 = lblSymbol_T01_Op02;
+    public void setTpn_T02(TitledPane tpn_T02) {
+        this.tpn_T02 = tpn_T02;
     }
 
-    public Label getLblQtdCall_T01_Op02() {
-        return lblQtdCall_T01_Op02;
+    public JFXCheckBox getChkTpn02_TimeAtivo() {
+        return chkTpn02_TimeAtivo;
     }
 
-    public void setLblQtdCall_T01_Op02(Label lblQtdCall_T01_Op02) {
-        this.lblQtdCall_T01_Op02 = lblQtdCall_T01_Op02;
+    public void setChkTpn02_TimeAtivo(JFXCheckBox chkTpn02_TimeAtivo) {
+        this.chkTpn02_TimeAtivo = chkTpn02_TimeAtivo;
     }
 
-    public Label getLblQtdPut_T01_Op02() {
-        return lblQtdPut_T01_Op02;
+    public Label getLblTpnT02_CandleTimeStart() {
+        return lblTpnT02_CandleTimeStart;
     }
 
-    public void setLblQtdPut_T01_Op02(Label lblQtdPut_T01_Op02) {
-        this.lblQtdPut_T01_Op02 = lblQtdPut_T01_Op02;
+    public void setLblTpnT02_CandleTimeStart(Label lblTpnT02_CandleTimeStart) {
+        this.lblTpnT02_CandleTimeStart = lblTpnT02_CandleTimeStart;
     }
 
-    public Label getLblQtdCallOrPut_T01_Op02() {
-        return lblQtdCallOrPut_T01_Op02;
+    public Label getLblTpnT02_TimeEnd() {
+        return lblTpnT02_TimeEnd;
     }
 
-    public void setLblQtdCallOrPut_T01_Op02(Label lblQtdCallOrPut_T01_Op02) {
-        this.lblQtdCallOrPut_T01_Op02 = lblQtdCallOrPut_T01_Op02;
+    public void setLblTpnT02_TimeEnd(Label lblTpnT02_TimeEnd) {
+        this.lblTpnT02_TimeEnd = lblTpnT02_TimeEnd;
     }
 
-    public ImageView getImgCallOrPut_T01_Op02() {
-        return imgCallOrPut_T01_Op02;
+    public Label getLblTpnT02_QtdStakes() {
+        return lblTpnT02_QtdStakes;
     }
 
-    public void setImgCallOrPut_T01_Op02(ImageView imgCallOrPut_T01_Op02) {
-        this.imgCallOrPut_T01_Op02 = imgCallOrPut_T01_Op02;
+    public void setLblTpnT02_QtdStakes(Label lblTpnT02_QtdStakes) {
+        this.lblTpnT02_QtdStakes = lblTpnT02_QtdStakes;
     }
 
-    public Label getLblQtdStakes_T01_Op02() {
-        return lblQtdStakes_T01_Op02;
+    public Label getLblTpnT02_QtdWins() {
+        return lblTpnT02_QtdWins;
     }
 
-    public void setLblQtdStakes_T01_Op02(Label lblQtdStakes_T01_Op02) {
-        this.lblQtdStakes_T01_Op02 = lblQtdStakes_T01_Op02;
+    public void setLblTpnT02_QtdWins(Label lblTpnT02_QtdWins) {
+        this.lblTpnT02_QtdWins = lblTpnT02_QtdWins;
     }
 
-    public Label getLblQtdWins_T01_Op02() {
-        return lblQtdWins_T01_Op02;
+    public Label getLblTpnT02_QtdLoss() {
+        return lblTpnT02_QtdLoss;
     }
 
-    public void setLblQtdWins_T01_Op02(Label lblQtdWins_T01_Op02) {
-        this.lblQtdWins_T01_Op02 = lblQtdWins_T01_Op02;
+    public void setLblTpnT02_QtdLoss(Label lblTpnT02_QtdLoss) {
+        this.lblTpnT02_QtdLoss = lblTpnT02_QtdLoss;
     }
 
-    public Label getLblQtdLoss_T01_Op02() {
-        return lblQtdLoss_T01_Op02;
+    public Label getLblTpnT02_VlrIn() {
+        return lblTpnT02_VlrIn;
     }
 
-    public void setLblQtdLoss_T01_Op02(Label lblQtdLoss_T01_Op02) {
-        this.lblQtdLoss_T01_Op02 = lblQtdLoss_T01_Op02;
+    public void setLblTpnT02_VlrIn(Label lblTpnT02_VlrIn) {
+        this.lblTpnT02_VlrIn = lblTpnT02_VlrIn;
     }
 
-    public Label getLblVlrIn_T01_Op02() {
-        return lblVlrIn_T01_Op02;
+    public Label getLblTpnT02_VlrOut() {
+        return lblTpnT02_VlrOut;
     }
 
-    public void setLblVlrIn_T01_Op02(Label lblVlrIn_T01_Op02) {
-        this.lblVlrIn_T01_Op02 = lblVlrIn_T01_Op02;
+    public void setLblTpnT02_VlrOut(Label lblTpnT02_VlrOut) {
+        this.lblTpnT02_VlrOut = lblTpnT02_VlrOut;
     }
 
-    public Label getLblVlrOut_T01_Op02() {
-        return lblVlrOut_T01_Op02;
+    public Label getLblTpnT02_VlrDiff() {
+        return lblTpnT02_VlrDiff;
     }
 
-    public void setLblVlrOut_T01_Op02(Label lblVlrOut_T01_Op02) {
-        this.lblVlrOut_T01_Op02 = lblVlrOut_T01_Op02;
+    public void setLblTpnT02_VlrDiff(Label lblTpnT02_VlrDiff) {
+        this.lblTpnT02_VlrDiff = lblTpnT02_VlrDiff;
     }
 
-    public Label getLblVlrDiff_T01_Op02() {
-        return lblVlrDiff_T01_Op02;
+    public Label getLblSymbol_T02_Op01() {
+        return lblSymbol_T02_Op01;
     }
 
-    public void setLblVlrDiff_T01_Op02(Label lblVlrDiff_T01_Op02) {
-        this.lblVlrDiff_T01_Op02 = lblVlrDiff_T01_Op02;
+    public void setLblSymbol_T02_Op01(Label lblSymbol_T02_Op01) {
+        this.lblSymbol_T02_Op01 = lblSymbol_T02_Op01;
     }
 
-    public TableView<Transaction> getTbvTransaction_T01_Op02() {
-        return tbvTransaction_T01_Op02;
+    public Label getLblQtdCall_T02_Op01() {
+        return lblQtdCall_T02_Op01;
     }
 
-    public void setTbvTransaction_T01_Op02(TableView<Transaction> tbvTransaction_T01_Op02) {
-        this.tbvTransaction_T01_Op02 = tbvTransaction_T01_Op02;
+    public void setLblQtdCall_T02_Op01(Label lblQtdCall_T02_Op01) {
+        this.lblQtdCall_T02_Op01 = lblQtdCall_T02_Op01;
     }
 
-    public Label getLblSymbol_T01_Op03() {
-        return lblSymbol_T01_Op03;
+    public Label getLblQtdPut_T02_Op01() {
+        return lblQtdPut_T02_Op01;
     }
 
-    public void setLblSymbol_T01_Op03(Label lblSymbol_T01_Op03) {
-        this.lblSymbol_T01_Op03 = lblSymbol_T01_Op03;
+    public void setLblQtdPut_T02_Op01(Label lblQtdPut_T02_Op01) {
+        this.lblQtdPut_T02_Op01 = lblQtdPut_T02_Op01;
     }
 
-    public Label getLblQtdCall_T01_Op03() {
-        return lblQtdCall_T01_Op03;
+    public Label getLblQtdCallOrPut_T02_Op01() {
+        return lblQtdCallOrPut_T02_Op01;
     }
 
-    public void setLblQtdCall_T01_Op03(Label lblQtdCall_T01_Op03) {
-        this.lblQtdCall_T01_Op03 = lblQtdCall_T01_Op03;
+    public void setLblQtdCallOrPut_T02_Op01(Label lblQtdCallOrPut_T02_Op01) {
+        this.lblQtdCallOrPut_T02_Op01 = lblQtdCallOrPut_T02_Op01;
     }
 
-    public Label getLblQtdPut_T01_Op03() {
-        return lblQtdPut_T01_Op03;
+    public ImageView getImgCallOrPut_T02_Op01() {
+        return imgCallOrPut_T02_Op01;
     }
 
-    public void setLblQtdPut_T01_Op03(Label lblQtdPut_T01_Op03) {
-        this.lblQtdPut_T01_Op03 = lblQtdPut_T01_Op03;
+    public void setImgCallOrPut_T02_Op01(ImageView imgCallOrPut_T02_Op01) {
+        this.imgCallOrPut_T02_Op01 = imgCallOrPut_T02_Op01;
     }
 
-    public Label getLblQtdCallOrPut_T01_Op03() {
-        return lblQtdCallOrPut_T01_Op03;
+    public Label getLblQtdStakes_T02_Op01() {
+        return lblQtdStakes_T02_Op01;
     }
 
-    public void setLblQtdCallOrPut_T01_Op03(Label lblQtdCallOrPut_T01_Op03) {
-        this.lblQtdCallOrPut_T01_Op03 = lblQtdCallOrPut_T01_Op03;
+    public void setLblQtdStakes_T02_Op01(Label lblQtdStakes_T02_Op01) {
+        this.lblQtdStakes_T02_Op01 = lblQtdStakes_T02_Op01;
     }
 
-    public ImageView getImgCallOrPut_T01_Op03() {
-        return imgCallOrPut_T01_Op03;
+    public Label getLblQtdWins_T02_Op01() {
+        return lblQtdWins_T02_Op01;
     }
 
-    public void setImgCallOrPut_T01_Op03(ImageView imgCallOrPut_T01_Op03) {
-        this.imgCallOrPut_T01_Op03 = imgCallOrPut_T01_Op03;
+    public void setLblQtdWins_T02_Op01(Label lblQtdWins_T02_Op01) {
+        this.lblQtdWins_T02_Op01 = lblQtdWins_T02_Op01;
     }
 
-    public Label getLblQtdStakes_T01_Op03() {
-        return lblQtdStakes_T01_Op03;
+    public Label getLblQtdLoss_T02_Op01() {
+        return lblQtdLoss_T02_Op01;
     }
 
-    public void setLblQtdStakes_T01_Op03(Label lblQtdStakes_T01_Op03) {
-        this.lblQtdStakes_T01_Op03 = lblQtdStakes_T01_Op03;
+    public void setLblQtdLoss_T02_Op01(Label lblQtdLoss_T02_Op01) {
+        this.lblQtdLoss_T02_Op01 = lblQtdLoss_T02_Op01;
     }
 
-    public Label getLblQtdWins_T01_Op03() {
-        return lblQtdWins_T01_Op03;
+    public Label getLblVlrIn_T02_Op01() {
+        return lblVlrIn_T02_Op01;
     }
 
-    public void setLblQtdWins_T01_Op03(Label lblQtdWins_T01_Op03) {
-        this.lblQtdWins_T01_Op03 = lblQtdWins_T01_Op03;
+    public void setLblVlrIn_T02_Op01(Label lblVlrIn_T02_Op01) {
+        this.lblVlrIn_T02_Op01 = lblVlrIn_T02_Op01;
     }
 
-    public Label getLblQtdLoss_T01_Op03() {
-        return lblQtdLoss_T01_Op03;
+    public Label getLblVlrOut_T02_Op01() {
+        return lblVlrOut_T02_Op01;
     }
 
-    public void setLblQtdLoss_T01_Op03(Label lblQtdLoss_T01_Op03) {
-        this.lblQtdLoss_T01_Op03 = lblQtdLoss_T01_Op03;
+    public void setLblVlrOut_T02_Op01(Label lblVlrOut_T02_Op01) {
+        this.lblVlrOut_T02_Op01 = lblVlrOut_T02_Op01;
     }
 
-    public Label getLblVlrIn_T01_Op03() {
-        return lblVlrIn_T01_Op03;
+    public Label getLblVlrDiff_T02_Op01() {
+        return lblVlrDiff_T02_Op01;
     }
 
-    public void setLblVlrIn_T01_Op03(Label lblVlrIn_T01_Op03) {
-        this.lblVlrIn_T01_Op03 = lblVlrIn_T01_Op03;
+    public void setLblVlrDiff_T02_Op01(Label lblVlrDiff_T02_Op01) {
+        this.lblVlrDiff_T02_Op01 = lblVlrDiff_T02_Op01;
     }
 
-    public Label getLblVlrOut_T01_Op03() {
-        return lblVlrOut_T01_Op03;
+    public TableView getTbvTransaction_T02_Op01() {
+        return tbvTransaction_T02_Op01;
     }
 
-    public void setLblVlrOut_T01_Op03(Label lblVlrOut_T01_Op03) {
-        this.lblVlrOut_T01_Op03 = lblVlrOut_T01_Op03;
-    }
-
-    public Label getLblVlrDiff_T01_Op03() {
-        return lblVlrDiff_T01_Op03;
-    }
-
-    public void setLblVlrDiff_T01_Op03(Label lblVlrDiff_T01_Op03) {
-        this.lblVlrDiff_T01_Op03 = lblVlrDiff_T01_Op03;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op03() {
-        return tbvTransaction_T01_Op03;
-    }
-
-    public void setTbvTransaction_T01_Op03(TableView<Transaction> tbvTransaction_T01_Op03) {
-        this.tbvTransaction_T01_Op03 = tbvTransaction_T01_Op03;
-    }
-
-    public Label getLblSymbol_T01_Op04() {
-        return lblSymbol_T01_Op04;
-    }
-
-    public void setLblSymbol_T01_Op04(Label lblSymbol_T01_Op04) {
-        this.lblSymbol_T01_Op04 = lblSymbol_T01_Op04;
-    }
-
-    public Label getLblQtdCall_T01_Op04() {
-        return lblQtdCall_T01_Op04;
-    }
-
-    public void setLblQtdCall_T01_Op04(Label lblQtdCall_T01_Op04) {
-        this.lblQtdCall_T01_Op04 = lblQtdCall_T01_Op04;
-    }
-
-    public Label getLblQtdPut_T01_Op04() {
-        return lblQtdPut_T01_Op04;
-    }
-
-    public void setLblQtdPut_T01_Op04(Label lblQtdPut_T01_Op04) {
-        this.lblQtdPut_T01_Op04 = lblQtdPut_T01_Op04;
-    }
-
-    public Label getLblQtdCallOrPut_T01_Op04() {
-        return lblQtdCallOrPut_T01_Op04;
-    }
-
-    public void setLblQtdCallOrPut_T01_Op04(Label lblQtdCallOrPut_T01_Op04) {
-        this.lblQtdCallOrPut_T01_Op04 = lblQtdCallOrPut_T01_Op04;
-    }
-
-    public ImageView getImgCallOrPut_T01_Op04() {
-        return imgCallOrPut_T01_Op04;
-    }
-
-    public void setImgCallOrPut_T01_Op04(ImageView imgCallOrPut_T01_Op04) {
-        this.imgCallOrPut_T01_Op04 = imgCallOrPut_T01_Op04;
-    }
-
-    public Label getLblQtdStakes_T01_Op04() {
-        return lblQtdStakes_T01_Op04;
-    }
-
-    public void setLblQtdStakes_T01_Op04(Label lblQtdStakes_T01_Op04) {
-        this.lblQtdStakes_T01_Op04 = lblQtdStakes_T01_Op04;
-    }
-
-    public Label getLblQtdWins_T01_Op04() {
-        return lblQtdWins_T01_Op04;
-    }
-
-    public void setLblQtdWins_T01_Op04(Label lblQtdWins_T01_Op04) {
-        this.lblQtdWins_T01_Op04 = lblQtdWins_T01_Op04;
-    }
-
-    public Label getLblQtdLoss_T01_Op04() {
-        return lblQtdLoss_T01_Op04;
-    }
-
-    public void setLblQtdLoss_T01_Op04(Label lblQtdLoss_T01_Op04) {
-        this.lblQtdLoss_T01_Op04 = lblQtdLoss_T01_Op04;
-    }
-
-    public Label getLblVlrIn_T01_Op04() {
-        return lblVlrIn_T01_Op04;
-    }
-
-    public void setLblVlrIn_T01_Op04(Label lblVlrIn_T01_Op04) {
-        this.lblVlrIn_T01_Op04 = lblVlrIn_T01_Op04;
-    }
-
-    public Label getLblVlrOut_T01_Op04() {
-        return lblVlrOut_T01_Op04;
-    }
-
-    public void setLblVlrOut_T01_Op04(Label lblVlrOut_T01_Op04) {
-        this.lblVlrOut_T01_Op04 = lblVlrOut_T01_Op04;
-    }
-
-    public Label getLblVlrDiff_T01_Op04() {
-        return lblVlrDiff_T01_Op04;
-    }
-
-    public void setLblVlrDiff_T01_Op04(Label lblVlrDiff_T01_Op04) {
-        this.lblVlrDiff_T01_Op04 = lblVlrDiff_T01_Op04;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op04() {
-        return tbvTransaction_T01_Op04;
-    }
-
-    public void setTbvTransaction_T01_Op04(TableView<Transaction> tbvTransaction_T01_Op04) {
-        this.tbvTransaction_T01_Op04 = tbvTransaction_T01_Op04;
-    }
-
-    public Label getLblSymbol_T01_Op05() {
-        return lblSymbol_T01_Op05;
-    }
-
-    public void setLblSymbol_T01_Op05(Label lblSymbol_T01_Op05) {
-        this.lblSymbol_T01_Op05 = lblSymbol_T01_Op05;
-    }
-
-    public Label getLblQtdCall_T01_Op05() {
-        return lblQtdCall_T01_Op05;
-    }
-
-    public void setLblQtdCall_T01_Op05(Label lblQtdCall_T01_Op05) {
-        this.lblQtdCall_T01_Op05 = lblQtdCall_T01_Op05;
-    }
-
-    public Label getLblQtdPut_T01_Op05() {
-        return lblQtdPut_T01_Op05;
-    }
-
-    public void setLblQtdPut_T01_Op05(Label lblQtdPut_T01_Op05) {
-        this.lblQtdPut_T01_Op05 = lblQtdPut_T01_Op05;
-    }
-
-    public Label getLblQtdCallOrPut_T01_Op05() {
-        return lblQtdCallOrPut_T01_Op05;
-    }
-
-    public void setLblQtdCallOrPut_T01_Op05(Label lblQtdCallOrPut_T01_Op05) {
-        this.lblQtdCallOrPut_T01_Op05 = lblQtdCallOrPut_T01_Op05;
-    }
-
-    public ImageView getImgCallOrPut_T01_Op05() {
-        return imgCallOrPut_T01_Op05;
-    }
-
-    public void setImgCallOrPut_T01_Op05(ImageView imgCallOrPut_T01_Op05) {
-        this.imgCallOrPut_T01_Op05 = imgCallOrPut_T01_Op05;
-    }
-
-    public Label getLblQtdStakes_T01_Op05() {
-        return lblQtdStakes_T01_Op05;
-    }
-
-    public void setLblQtdStakes_T01_Op05(Label lblQtdStakes_T01_Op05) {
-        this.lblQtdStakes_T01_Op05 = lblQtdStakes_T01_Op05;
-    }
-
-    public Label getLblQtdWins_T01_Op05() {
-        return lblQtdWins_T01_Op05;
-    }
-
-    public void setLblQtdWins_T01_Op05(Label lblQtdWins_T01_Op05) {
-        this.lblQtdWins_T01_Op05 = lblQtdWins_T01_Op05;
-    }
-
-    public Label getLblQtdLoss_T01_Op05() {
-        return lblQtdLoss_T01_Op05;
-    }
-
-    public void setLblQtdLoss_T01_Op05(Label lblQtdLoss_T01_Op05) {
-        this.lblQtdLoss_T01_Op05 = lblQtdLoss_T01_Op05;
-    }
-
-    public Label getLblVlrIn_T01_Op05() {
-        return lblVlrIn_T01_Op05;
-    }
-
-    public void setLblVlrIn_T01_Op05(Label lblVlrIn_T01_Op05) {
-        this.lblVlrIn_T01_Op05 = lblVlrIn_T01_Op05;
-    }
-
-    public Label getLblVlrOut_T01_Op05() {
-        return lblVlrOut_T01_Op05;
-    }
-
-    public void setLblVlrOut_T01_Op05(Label lblVlrOut_T01_Op05) {
-        this.lblVlrOut_T01_Op05 = lblVlrOut_T01_Op05;
-    }
-
-    public Label getLblVlrDiff_T01_Op05() {
-        return lblVlrDiff_T01_Op05;
-    }
-
-    public void setLblVlrDiff_T01_Op05(Label lblVlrDiff_T01_Op05) {
-        this.lblVlrDiff_T01_Op05 = lblVlrDiff_T01_Op05;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op05() {
-        return tbvTransaction_T01_Op05;
-    }
-
-    public void setTbvTransaction_T01_Op05(TableView<Transaction> tbvTransaction_T01_Op05) {
-        this.tbvTransaction_T01_Op05 = tbvTransaction_T01_Op05;
-    }
-
-    public Label getLblSymbol_T01_Op06() {
-        return lblSymbol_T01_Op06;
-    }
-
-    public void setLblSymbol_T01_Op06(Label lblSymbol_T01_Op06) {
-        this.lblSymbol_T01_Op06 = lblSymbol_T01_Op06;
-    }
-
-    public Label getLblQtdCall_T01_Op06() {
-        return lblQtdCall_T01_Op06;
-    }
-
-    public void setLblQtdCall_T01_Op06(Label lblQtdCall_T01_Op06) {
-        this.lblQtdCall_T01_Op06 = lblQtdCall_T01_Op06;
-    }
-
-    public Label getLblQtdPut_T01_Op06() {
-        return lblQtdPut_T01_Op06;
-    }
-
-    public void setLblQtdPut_T01_Op06(Label lblQtdPut_T01_Op06) {
-        this.lblQtdPut_T01_Op06 = lblQtdPut_T01_Op06;
-    }
-
-    public Label getLblQtdCallOrPut_T01_Op06() {
-        return lblQtdCallOrPut_T01_Op06;
-    }
-
-    public void setLblQtdCallOrPut_T01_Op06(Label lblQtdCallOrPut_T01_Op06) {
-        this.lblQtdCallOrPut_T01_Op06 = lblQtdCallOrPut_T01_Op06;
-    }
-
-    public ImageView getImgCallOrPut_T01_Op06() {
-        return imgCallOrPut_T01_Op06;
-    }
-
-    public void setImgCallOrPut_T01_Op06(ImageView imgCallOrPut_T01_Op06) {
-        this.imgCallOrPut_T01_Op06 = imgCallOrPut_T01_Op06;
-    }
-
-    public Label getLblQtdStakes_T01_Op06() {
-        return lblQtdStakes_T01_Op06;
-    }
-
-    public void setLblQtdStakes_T01_Op06(Label lblQtdStakes_T01_Op06) {
-        this.lblQtdStakes_T01_Op06 = lblQtdStakes_T01_Op06;
-    }
-
-    public Label getLblQtdWins_T01_Op06() {
-        return lblQtdWins_T01_Op06;
-    }
-
-    public void setLblQtdWins_T01_Op06(Label lblQtdWins_T01_Op06) {
-        this.lblQtdWins_T01_Op06 = lblQtdWins_T01_Op06;
-    }
-
-    public Label getLblQtdLoss_T01_Op06() {
-        return lblQtdLoss_T01_Op06;
-    }
-
-    public void setLblQtdLoss_T01_Op06(Label lblQtdLoss_T01_Op06) {
-        this.lblQtdLoss_T01_Op06 = lblQtdLoss_T01_Op06;
-    }
-
-    public Label getLblVlrIn_T01_Op06() {
-        return lblVlrIn_T01_Op06;
-    }
-
-    public void setLblVlrIn_T01_Op06(Label lblVlrIn_T01_Op06) {
-        this.lblVlrIn_T01_Op06 = lblVlrIn_T01_Op06;
-    }
-
-    public Label getLblVlrOut_T01_Op06() {
-        return lblVlrOut_T01_Op06;
-    }
-
-    public void setLblVlrOut_T01_Op06(Label lblVlrOut_T01_Op06) {
-        this.lblVlrOut_T01_Op06 = lblVlrOut_T01_Op06;
-    }
-
-    public Label getLblVlrDiff_T01_Op06() {
-        return lblVlrDiff_T01_Op06;
-    }
-
-    public void setLblVlrDiff_T01_Op06(Label lblVlrDiff_T01_Op06) {
-        this.lblVlrDiff_T01_Op06 = lblVlrDiff_T01_Op06;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op06() {
-        return tbvTransaction_T01_Op06;
-    }
-
-    public void setTbvTransaction_T01_Op06(TableView<Transaction> tbvTransaction_T01_Op06) {
-        this.tbvTransaction_T01_Op06 = tbvTransaction_T01_Op06;
-    }
-
-    public Label getLblSymbol_T01_Op07() {
-        return lblSymbol_T01_Op07;
-    }
-
-    public void setLblSymbol_T01_Op07(Label lblSymbol_T01_Op07) {
-        this.lblSymbol_T01_Op07 = lblSymbol_T01_Op07;
-    }
-
-    public Label getLblQtdCall_T01_Op07() {
-        return lblQtdCall_T01_Op07;
-    }
-
-    public void setLblQtdCall_T01_Op07(Label lblQtdCall_T01_Op07) {
-        this.lblQtdCall_T01_Op07 = lblQtdCall_T01_Op07;
-    }
-
-    public Label getLblQtdPut_T01_Op07() {
-        return lblQtdPut_T01_Op07;
-    }
-
-    public void setLblQtdPut_T01_Op07(Label lblQtdPut_T01_Op07) {
-        this.lblQtdPut_T01_Op07 = lblQtdPut_T01_Op07;
-    }
-
-    public Label getLblQtdCallOrPut_T01_Op07() {
-        return lblQtdCallOrPut_T01_Op07;
-    }
-
-    public void setLblQtdCallOrPut_T01_Op07(Label lblQtdCallOrPut_T01_Op07) {
-        this.lblQtdCallOrPut_T01_Op07 = lblQtdCallOrPut_T01_Op07;
-    }
-
-    public ImageView getImgCallOrPut_T01_Op07() {
-        return imgCallOrPut_T01_Op07;
-    }
-
-    public void setImgCallOrPut_T01_Op07(ImageView imgCallOrPut_T01_Op07) {
-        this.imgCallOrPut_T01_Op07 = imgCallOrPut_T01_Op07;
-    }
-
-    public Label getLblQtdStakes_T01_Op07() {
-        return lblQtdStakes_T01_Op07;
-    }
-
-    public void setLblQtdStakes_T01_Op07(Label lblQtdStakes_T01_Op07) {
-        this.lblQtdStakes_T01_Op07 = lblQtdStakes_T01_Op07;
-    }
-
-    public Label getLblQtdWins_T01_Op07() {
-        return lblQtdWins_T01_Op07;
-    }
-
-    public void setLblQtdWins_T01_Op07(Label lblQtdWins_T01_Op07) {
-        this.lblQtdWins_T01_Op07 = lblQtdWins_T01_Op07;
-    }
-
-    public Label getLblQtdLoss_T01_Op07() {
-        return lblQtdLoss_T01_Op07;
-    }
-
-    public void setLblQtdLoss_T01_Op07(Label lblQtdLoss_T01_Op07) {
-        this.lblQtdLoss_T01_Op07 = lblQtdLoss_T01_Op07;
-    }
-
-    public Label getLblVlrIn_T01_Op07() {
-        return lblVlrIn_T01_Op07;
-    }
-
-    public void setLblVlrIn_T01_Op07(Label lblVlrIn_T01_Op07) {
-        this.lblVlrIn_T01_Op07 = lblVlrIn_T01_Op07;
-    }
-
-    public Label getLblVlrOut_T01_Op07() {
-        return lblVlrOut_T01_Op07;
-    }
-
-    public void setLblVlrOut_T01_Op07(Label lblVlrOut_T01_Op07) {
-        this.lblVlrOut_T01_Op07 = lblVlrOut_T01_Op07;
-    }
-
-    public Label getLblVlrDiff_T01_Op07() {
-        return lblVlrDiff_T01_Op07;
-    }
-
-    public void setLblVlrDiff_T01_Op07(Label lblVlrDiff_T01_Op07) {
-        this.lblVlrDiff_T01_Op07 = lblVlrDiff_T01_Op07;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op07() {
-        return tbvTransaction_T01_Op07;
-    }
-
-    public void setTbvTransaction_T01_Op07(TableView<Transaction> tbvTransaction_T01_Op07) {
-        this.tbvTransaction_T01_Op07 = tbvTransaction_T01_Op07;
-    }
-
-    public Label getLblSymbol_T01_Op08() {
-        return lblSymbol_T01_Op08;
-    }
-
-    public void setLblSymbol_T01_Op08(Label lblSymbol_T01_Op08) {
-        this.lblSymbol_T01_Op08 = lblSymbol_T01_Op08;
-    }
-
-    public Label getLblQtdCall_T01_Op08() {
-        return lblQtdCall_T01_Op08;
-    }
-
-    public void setLblQtdCall_T01_Op08(Label lblQtdCall_T01_Op08) {
-        this.lblQtdCall_T01_Op08 = lblQtdCall_T01_Op08;
-    }
-
-    public Label getLblQtdPut_T01_Op08() {
-        return lblQtdPut_T01_Op08;
-    }
-
-    public void setLblQtdPut_T01_Op08(Label lblQtdPut_T01_Op08) {
-        this.lblQtdPut_T01_Op08 = lblQtdPut_T01_Op08;
-    }
-
-    public Label getLblQtdCallOrPut_T01_Op08() {
-        return lblQtdCallOrPut_T01_Op08;
-    }
-
-    public void setLblQtdCallOrPut_T01_Op08(Label lblQtdCallOrPut_T01_Op08) {
-        this.lblQtdCallOrPut_T01_Op08 = lblQtdCallOrPut_T01_Op08;
-    }
-
-    public ImageView getImgCallOrPut_T01_Op08() {
-        return imgCallOrPut_T01_Op08;
-    }
-
-    public void setImgCallOrPut_T01_Op08(ImageView imgCallOrPut_T01_Op08) {
-        this.imgCallOrPut_T01_Op08 = imgCallOrPut_T01_Op08;
-    }
-
-    public Label getLblQtdStakes_T01_Op08() {
-        return lblQtdStakes_T01_Op08;
-    }
-
-    public void setLblQtdStakes_T01_Op08(Label lblQtdStakes_T01_Op08) {
-        this.lblQtdStakes_T01_Op08 = lblQtdStakes_T01_Op08;
-    }
-
-    public Label getLblQtdWins_T01_Op08() {
-        return lblQtdWins_T01_Op08;
-    }
-
-    public void setLblQtdWins_T01_Op08(Label lblQtdWins_T01_Op08) {
-        this.lblQtdWins_T01_Op08 = lblQtdWins_T01_Op08;
-    }
-
-    public Label getLblQtdLoss_T01_Op08() {
-        return lblQtdLoss_T01_Op08;
-    }
-
-    public void setLblQtdLoss_T01_Op08(Label lblQtdLoss_T01_Op08) {
-        this.lblQtdLoss_T01_Op08 = lblQtdLoss_T01_Op08;
-    }
-
-    public Label getLblVlrIn_T01_Op08() {
-        return lblVlrIn_T01_Op08;
-    }
-
-    public void setLblVlrIn_T01_Op08(Label lblVlrIn_T01_Op08) {
-        this.lblVlrIn_T01_Op08 = lblVlrIn_T01_Op08;
-    }
-
-    public Label getLblVlrOut_T01_Op08() {
-        return lblVlrOut_T01_Op08;
-    }
-
-    public void setLblVlrOut_T01_Op08(Label lblVlrOut_T01_Op08) {
-        this.lblVlrOut_T01_Op08 = lblVlrOut_T01_Op08;
-    }
-
-    public Label getLblVlrDiff_T01_Op08() {
-        return lblVlrDiff_T01_Op08;
-    }
-
-    public void setLblVlrDiff_T01_Op08(Label lblVlrDiff_T01_Op08) {
-        this.lblVlrDiff_T01_Op08 = lblVlrDiff_T01_Op08;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op08() {
-        return tbvTransaction_T01_Op08;
-    }
-
-    public void setTbvTransaction_T01_Op08(TableView<Transaction> tbvTransaction_T01_Op08) {
-        this.tbvTransaction_T01_Op08 = tbvTransaction_T01_Op08;
-    }
-
-    public Label getLblSymbol_T01_Op09() {
-        return lblSymbol_T01_Op09;
-    }
-
-    public void setLblSymbol_T01_Op09(Label lblSymbol_T01_Op09) {
-        this.lblSymbol_T01_Op09 = lblSymbol_T01_Op09;
-    }
-
-    public Label getLblQtdCall_T01_Op09() {
-        return lblQtdCall_T01_Op09;
-    }
-
-    public void setLblQtdCall_T01_Op09(Label lblQtdCall_T01_Op09) {
-        this.lblQtdCall_T01_Op09 = lblQtdCall_T01_Op09;
-    }
-
-    public Label getLblQtdPut_T01_Op09() {
-        return lblQtdPut_T01_Op09;
-    }
-
-    public void setLblQtdPut_T01_Op09(Label lblQtdPut_T01_Op09) {
-        this.lblQtdPut_T01_Op09 = lblQtdPut_T01_Op09;
-    }
-
-    public Label getLblQtdCallOrPut_T01_Op09() {
-        return lblQtdCallOrPut_T01_Op09;
-    }
-
-    public void setLblQtdCallOrPut_T01_Op09(Label lblQtdCallOrPut_T01_Op09) {
-        this.lblQtdCallOrPut_T01_Op09 = lblQtdCallOrPut_T01_Op09;
-    }
-
-    public ImageView getImgCallOrPut_T01_Op09() {
-        return imgCallOrPut_T01_Op09;
-    }
-
-    public void setImgCallOrPut_T01_Op09(ImageView imgCallOrPut_T01_Op09) {
-        this.imgCallOrPut_T01_Op09 = imgCallOrPut_T01_Op09;
-    }
-
-    public Label getLblQtdStakes_T01_Op09() {
-        return lblQtdStakes_T01_Op09;
-    }
-
-    public void setLblQtdStakes_T01_Op09(Label lblQtdStakes_T01_Op09) {
-        this.lblQtdStakes_T01_Op09 = lblQtdStakes_T01_Op09;
-    }
-
-    public Label getLblQtdWins_T01_Op09() {
-        return lblQtdWins_T01_Op09;
-    }
-
-    public void setLblQtdWins_T01_Op09(Label lblQtdWins_T01_Op09) {
-        this.lblQtdWins_T01_Op09 = lblQtdWins_T01_Op09;
-    }
-
-    public Label getLblQtdLoss_T01_Op09() {
-        return lblQtdLoss_T01_Op09;
-    }
-
-    public void setLblQtdLoss_T01_Op09(Label lblQtdLoss_T01_Op09) {
-        this.lblQtdLoss_T01_Op09 = lblQtdLoss_T01_Op09;
-    }
-
-    public Label getLblVlrIn_T01_Op09() {
-        return lblVlrIn_T01_Op09;
-    }
-
-    public void setLblVlrIn_T01_Op09(Label lblVlrIn_T01_Op09) {
-        this.lblVlrIn_T01_Op09 = lblVlrIn_T01_Op09;
-    }
-
-    public Label getLblVlrOut_T01_Op09() {
-        return lblVlrOut_T01_Op09;
-    }
-
-    public void setLblVlrOut_T01_Op09(Label lblVlrOut_T01_Op09) {
-        this.lblVlrOut_T01_Op09 = lblVlrOut_T01_Op09;
-    }
-
-    public Label getLblVlrDiff_T01_Op09() {
-        return lblVlrDiff_T01_Op09;
-    }
-
-    public void setLblVlrDiff_T01_Op09(Label lblVlrDiff_T01_Op09) {
-        this.lblVlrDiff_T01_Op09 = lblVlrDiff_T01_Op09;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op09() {
-        return tbvTransaction_T01_Op09;
-    }
-
-    public void setTbvTransaction_T01_Op09(TableView<Transaction> tbvTransaction_T01_Op09) {
-        this.tbvTransaction_T01_Op09 = tbvTransaction_T01_Op09;
-    }
-
-    public Label getLblSymbol_T01_Op10() {
-        return lblSymbol_T01_Op10;
-    }
-
-    public void setLblSymbol_T01_Op10(Label lblSymbol_T01_Op10) {
-        this.lblSymbol_T01_Op10 = lblSymbol_T01_Op10;
-    }
-
-    public Label getLblQtdCall_T01_Op10() {
-        return lblQtdCall_T01_Op10;
-    }
-
-    public void setLblQtdCall_T01_Op10(Label lblQtdCall_T01_Op10) {
-        this.lblQtdCall_T01_Op10 = lblQtdCall_T01_Op10;
-    }
-
-    public Label getLblQtdPut_T01_Op10() {
-        return lblQtdPut_T01_Op10;
-    }
-
-    public void setLblQtdPut_T01_Op10(Label lblQtdPut_T01_Op10) {
-        this.lblQtdPut_T01_Op10 = lblQtdPut_T01_Op10;
-    }
-
-    public Label getLblQtdCallOrPut_T01_Op10() {
-        return lblQtdCallOrPut_T01_Op10;
-    }
-
-    public void setLblQtdCallOrPut_T01_Op10(Label lblQtdCallOrPut_T01_Op10) {
-        this.lblQtdCallOrPut_T01_Op10 = lblQtdCallOrPut_T01_Op10;
-    }
-
-    public ImageView getImgCallOrPut_T01_Op10() {
-        return imgCallOrPut_T01_Op10;
-    }
-
-    public void setImgCallOrPut_T01_Op10(ImageView imgCallOrPut_T01_Op10) {
-        this.imgCallOrPut_T01_Op10 = imgCallOrPut_T01_Op10;
-    }
-
-    public Label getLblQtdStakes_T01_Op10() {
-        return lblQtdStakes_T01_Op10;
-    }
-
-    public void setLblQtdStakes_T01_Op10(Label lblQtdStakes_T01_Op10) {
-        this.lblQtdStakes_T01_Op10 = lblQtdStakes_T01_Op10;
-    }
-
-    public Label getLblQtdWins_T01_Op10() {
-        return lblQtdWins_T01_Op10;
-    }
-
-    public void setLblQtdWins_T01_Op10(Label lblQtdWins_T01_Op10) {
-        this.lblQtdWins_T01_Op10 = lblQtdWins_T01_Op10;
-    }
-
-    public Label getLblQtdLoss_T01_Op10() {
-        return lblQtdLoss_T01_Op10;
-    }
-
-    public void setLblQtdLoss_T01_Op10(Label lblQtdLoss_T01_Op10) {
-        this.lblQtdLoss_T01_Op10 = lblQtdLoss_T01_Op10;
-    }
-
-    public Label getLblVlrIn_T01_Op10() {
-        return lblVlrIn_T01_Op10;
-    }
-
-    public void setLblVlrIn_T01_Op10(Label lblVlrIn_T01_Op10) {
-        this.lblVlrIn_T01_Op10 = lblVlrIn_T01_Op10;
-    }
-
-    public Label getLblVlrOut_T01_Op10() {
-        return lblVlrOut_T01_Op10;
-    }
-
-    public void setLblVlrOut_T01_Op10(Label lblVlrOut_T01_Op10) {
-        this.lblVlrOut_T01_Op10 = lblVlrOut_T01_Op10;
-    }
-
-    public Label getLblVlrDiff_T01_Op10() {
-        return lblVlrDiff_T01_Op10;
-    }
-
-    public void setLblVlrDiff_T01_Op10(Label lblVlrDiff_T01_Op10) {
-        this.lblVlrDiff_T01_Op10 = lblVlrDiff_T01_Op10;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op10() {
-        return tbvTransaction_T01_Op10;
-    }
-
-    public void setTbvTransaction_T01_Op10(TableView<Transaction> tbvTransaction_T01_Op10) {
-        this.tbvTransaction_T01_Op10 = tbvTransaction_T01_Op10;
-    }
-
-    public Label getLblSymbol_T01_Op11() {
-        return lblSymbol_T01_Op11;
-    }
-
-    public void setLblSymbol_T01_Op11(Label lblSymbol_T01_Op11) {
-        this.lblSymbol_T01_Op11 = lblSymbol_T01_Op11;
-    }
-
-    public Label getLblQtdCall_T01_Op11() {
-        return lblQtdCall_T01_Op11;
-    }
-
-    public void setLblQtdCall_T01_Op11(Label lblQtdCall_T01_Op11) {
-        this.lblQtdCall_T01_Op11 = lblQtdCall_T01_Op11;
-    }
-
-    public Label getLblQtdPut_T01_Op11() {
-        return lblQtdPut_T01_Op11;
-    }
-
-    public void setLblQtdPut_T01_Op11(Label lblQtdPut_T01_Op11) {
-        this.lblQtdPut_T01_Op11 = lblQtdPut_T01_Op11;
-    }
-
-    public Label getLblQtdCallOrPut_T01_Op11() {
-        return lblQtdCallOrPut_T01_Op11;
-    }
-
-    public void setLblQtdCallOrPut_T01_Op11(Label lblQtdCallOrPut_T01_Op11) {
-        this.lblQtdCallOrPut_T01_Op11 = lblQtdCallOrPut_T01_Op11;
-    }
-
-    public ImageView getImgCallOrPut_T01_Op11() {
-        return imgCallOrPut_T01_Op11;
-    }
-
-    public void setImgCallOrPut_T01_Op11(ImageView imgCallOrPut_T01_Op11) {
-        this.imgCallOrPut_T01_Op11 = imgCallOrPut_T01_Op11;
-    }
-
-    public Label getLblQtdStakes_T01_Op11() {
-        return lblQtdStakes_T01_Op11;
-    }
-
-    public void setLblQtdStakes_T01_Op11(Label lblQtdStakes_T01_Op11) {
-        this.lblQtdStakes_T01_Op11 = lblQtdStakes_T01_Op11;
-    }
-
-    public Label getLblQtdWins_T01_Op11() {
-        return lblQtdWins_T01_Op11;
-    }
-
-    public void setLblQtdWins_T01_Op11(Label lblQtdWins_T01_Op11) {
-        this.lblQtdWins_T01_Op11 = lblQtdWins_T01_Op11;
-    }
-
-    public Label getLblQtdLoss_T01_Op11() {
-        return lblQtdLoss_T01_Op11;
-    }
-
-    public void setLblQtdLoss_T01_Op11(Label lblQtdLoss_T01_Op11) {
-        this.lblQtdLoss_T01_Op11 = lblQtdLoss_T01_Op11;
-    }
-
-    public Label getLblVlrIn_T01_Op11() {
-        return lblVlrIn_T01_Op11;
-    }
-
-    public void setLblVlrIn_T01_Op11(Label lblVlrIn_T01_Op11) {
-        this.lblVlrIn_T01_Op11 = lblVlrIn_T01_Op11;
-    }
-
-    public Label getLblVlrOut_T01_Op11() {
-        return lblVlrOut_T01_Op11;
-    }
-
-    public void setLblVlrOut_T01_Op11(Label lblVlrOut_T01_Op11) {
-        this.lblVlrOut_T01_Op11 = lblVlrOut_T01_Op11;
-    }
-
-    public Label getLblVlrDiff_T01_Op11() {
-        return lblVlrDiff_T01_Op11;
-    }
-
-    public void setLblVlrDiff_T01_Op11(Label lblVlrDiff_T01_Op11) {
-        this.lblVlrDiff_T01_Op11 = lblVlrDiff_T01_Op11;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op11() {
-        return tbvTransaction_T01_Op11;
-    }
-
-    public void setTbvTransaction_T01_Op11(TableView<Transaction> tbvTransaction_T01_Op11) {
-        this.tbvTransaction_T01_Op11 = tbvTransaction_T01_Op11;
-    }
-
-    public Label getLblSymbol_T01_Op12() {
-        return lblSymbol_T01_Op12;
-    }
-
-    public void setLblSymbol_T01_Op12(Label lblSymbol_T01_Op12) {
-        this.lblSymbol_T01_Op12 = lblSymbol_T01_Op12;
-    }
-
-    public Label getLblQtdCall_T01_Op12() {
-        return lblQtdCall_T01_Op12;
-    }
-
-    public void setLblQtdCall_T01_Op12(Label lblQtdCall_T01_Op12) {
-        this.lblQtdCall_T01_Op12 = lblQtdCall_T01_Op12;
-    }
-
-    public Label getLblQtdPut_T01_Op12() {
-        return lblQtdPut_T01_Op12;
-    }
-
-    public void setLblQtdPut_T01_Op12(Label lblQtdPut_T01_Op12) {
-        this.lblQtdPut_T01_Op12 = lblQtdPut_T01_Op12;
-    }
-
-    public Label getLblQtdCallOrPut_T01_Op12() {
-        return lblQtdCallOrPut_T01_Op12;
-    }
-
-    public void setLblQtdCallOrPut_T01_Op12(Label lblQtdCallOrPut_T01_Op12) {
-        this.lblQtdCallOrPut_T01_Op12 = lblQtdCallOrPut_T01_Op12;
-    }
-
-    public ImageView getImgCallOrPut_T01_Op12() {
-        return imgCallOrPut_T01_Op12;
-    }
-
-    public void setImgCallOrPut_T01_Op12(ImageView imgCallOrPut_T01_Op12) {
-        this.imgCallOrPut_T01_Op12 = imgCallOrPut_T01_Op12;
-    }
-
-    public Label getLblQtdStakes_T01_Op12() {
-        return lblQtdStakes_T01_Op12;
-    }
-
-    public void setLblQtdStakes_T01_Op12(Label lblQtdStakes_T01_Op12) {
-        this.lblQtdStakes_T01_Op12 = lblQtdStakes_T01_Op12;
-    }
-
-    public Label getLblQtdWins_T01_Op12() {
-        return lblQtdWins_T01_Op12;
-    }
-
-    public void setLblQtdWins_T01_Op12(Label lblQtdWins_T01_Op12) {
-        this.lblQtdWins_T01_Op12 = lblQtdWins_T01_Op12;
-    }
-
-    public Label getLblQtdLoss_T01_Op12() {
-        return lblQtdLoss_T01_Op12;
-    }
-
-    public void setLblQtdLoss_T01_Op12(Label lblQtdLoss_T01_Op12) {
-        this.lblQtdLoss_T01_Op12 = lblQtdLoss_T01_Op12;
-    }
-
-    public Label getLblVlrIn_T01_Op12() {
-        return lblVlrIn_T01_Op12;
-    }
-
-    public void setLblVlrIn_T01_Op12(Label lblVlrIn_T01_Op12) {
-        this.lblVlrIn_T01_Op12 = lblVlrIn_T01_Op12;
-    }
-
-    public Label getLblVlrOut_T01_Op12() {
-        return lblVlrOut_T01_Op12;
-    }
-
-    public void setLblVlrOut_T01_Op12(Label lblVlrOut_T01_Op12) {
-        this.lblVlrOut_T01_Op12 = lblVlrOut_T01_Op12;
-    }
-
-    public Label getLblVlrDiff_T01_Op12() {
-        return lblVlrDiff_T01_Op12;
-    }
-
-    public void setLblVlrDiff_T01_Op12(Label lblVlrDiff_T01_Op12) {
-        this.lblVlrDiff_T01_Op12 = lblVlrDiff_T01_Op12;
-    }
-
-    public TableView<Transaction> getTbvTransaction_T01_Op12() {
-        return tbvTransaction_T01_Op12;
-    }
-
-    public void setTbvTransaction_T01_Op12(TableView<Transaction> tbvTransaction_T01_Op12) {
-        this.tbvTransaction_T01_Op12 = tbvTransaction_T01_Op12;
-    }
-
-    public static BooleanProperty[][] getResultLastTransiction() {
-        return resultLastTransiction;
-    }
-
-    public static void setResultLastTransiction(BooleanProperty[][] resultLastTransiction) {
-        Operacoes.resultLastTransiction = resultLastTransiction;
+    public void setTbvTransaction_T02_Op01(TableView tbvTransaction_T02_Op01) {
+        this.tbvTransaction_T02_Op01 = tbvTransaction_T02_Op01;
     }
 }

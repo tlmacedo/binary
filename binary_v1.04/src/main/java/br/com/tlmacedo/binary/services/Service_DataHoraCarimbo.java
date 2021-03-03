@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
+import static br.com.tlmacedo.binary.interfaces.Constants.DTF_HORA_MINUTOS;
+
 public class Service_DataHoraCarimbo {
 
     public static StringProperty getCarimboStrProperty(LocalDateTime localDateTime, DateTimeFormatter dtf) {

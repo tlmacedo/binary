@@ -146,7 +146,7 @@ public class Symbol implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s", getDisplay_name());
+        return String.format("%s", getDisplay_name().replace(" Index", ""));
     }
 
     public String transictionToString() {
