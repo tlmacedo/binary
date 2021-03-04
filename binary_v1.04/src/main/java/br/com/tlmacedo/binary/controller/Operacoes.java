@@ -107,7 +107,7 @@ public class Operacoes implements Initializable {
 
     //** Listas **
     static ObservableList<HistoricoDeCandles> historicoDeCandlesObservableList = FXCollections.observableArrayList();
-    static ObservableList<Transaction> transactionObservableList;
+    static ObservableList<Transaction> transactionObservableList = FXCollections.observableArrayList();
     static TmodelTransactions[][] tmodelTransactions = new TmodelTransactions[TICK_TIME.values().length][getSymbolObservableList().size()];
     static FilteredList<Transaction>[][] transactionFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static FilteredList<HistoricoDeCandles>[][] historicoDeCandlesFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
@@ -512,7 +512,12 @@ public class Operacoes implements Initializable {
 //                getTmodelTransactions()[t_id][s_id] = new TmodelTransactions();
 //                getTmodelTransactions()[t_id][s_id].criar_tabela();
 //
-//                getTransactionFilteredList()[t_id][s_id] = new FilteredList<>(getTransactionObservableList());
+
+                getTransactionFilteredList()[t_id][s_id] = new FilteredList<>(getTransactionObservableList());
+//                getTransactionFilteredList()[t_id][s_id].setPredicate(transaction ->
+//                        transaction.get);
+//******************
+
 //                getTmodelTransactions()[t_id][s_id].setTransactionFilteredList(getTransactionFilteredList()[t_id][s_id]);
 //                contectarTabelaEmLista(t_id, s_id);
 //
@@ -616,38 +621,8 @@ public class Operacoes implements Initializable {
                             for (HistoricoDeCandles candle : getHistoricoDeCandlesFilteredList()[finalT_id][finalS_id])
                                 contarCallAndPut(candle, finalT_id, finalS_id);
                         }
-//                        for (HistoricoDeCandles candle : c.wasRemoved().getRemoved()) {
-//                            if (candle.getClose().compareTo(candle.getOpen()) > 0) {
-//                                getQtdCall()[finalT_id][finalS_id].setValue(
-//                                        getQtdCall()[finalT_id][finalS_id].getValue() - 1);
-//                                if (getQtdCallOrPut()[finalT_id][finalS_id].getValue()>1)
-//                                    getQtdCallOrPut()[finalT_id][finalS_id].setValue(
-//                                            getQtdCallOrPut()[finalT_id][finalS_id].getValue()-1
-//                                    );
-//                            } else if (candle.getClose().compareTo(candle.getOpen()) < 0) {
-//                                getQtdPut()[finalT_id][finalS_id].setValue(
-//                                        getQtdPut()[finalT_id][finalS_id].getValue() + 1);
-//                            }
-//                        }
                         for (HistoricoDeCandles candle : c.getAddedSubList()) {
                             contarCallAndPut(candle, finalT_id, finalS_id);
-//                            if (candle.getClose().compareTo(candle.getOpen()) > 0) {
-//                                getQtdCall()[finalT_id][finalS_id].setValue(
-//                                        getQtdCall()[finalT_id][finalS_id].getValue() + 1);
-//                                getQtdCallOrPut()[finalT_id][finalS_id].setValue(
-//                                        getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(0) > 0
-//                                                ? getQtdCallOrPut()[finalT_id][finalS_id].getValue() + 1
-//                                                : 1);
-//                            } else if (candle.getClose().compareTo(candle.getOpen()) < 0) {
-//                                getQtdPut()[finalT_id][finalS_id].setValue(
-//                                        getQtdPut()[finalT_id][finalS_id].getValue() + 1);
-//                                getQtdCallOrPut()[finalT_id][finalS_id].setValue(
-//                                        getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(0) < 0
-//                                                ? getQtdCallOrPut()[finalT_id][finalS_id].getValue() - 1
-//                                                : -1);
-//                            } else {
-//                                getQtdCallOrPut()[finalT_id][finalS_id].setValue(0);
-//                            }
                         }
                     }
                 });
@@ -2541,4 +2516,6 @@ public class Operacoes implements Initializable {
     public static void setTestaLastCandle(ObjectProperty<Ohlc>[][] testaLastCandle) {
         Operacoes.testaLastCandle = testaLastCandle;
     }
+
+
 }

@@ -46,10 +46,10 @@ public interface Constants {
     //    Boolean CONSOLE_BINARY_ACTIVE_SYMBOL = true;
     Boolean CONSOLE_BINARY_AUTHORIZE = false;
     Boolean CONSOLE_BINARY_ERROR = false;
-    Boolean CONSOLE_BINARY_TICK = true;
+    Boolean CONSOLE_BINARY_TICK = false;
     Boolean CONSOLE_BINARY_PROPOSAL = true;
     Boolean CONSOLE_BINARY_BUY = false;
     Boolean CONSOLE_BINARY_TRANSACTION = true;
-    Boolean CONSOLE_BINARY_HISTORY = true;
+    Boolean CONSOLE_BINARY_HISTORY = false;
 
 }
