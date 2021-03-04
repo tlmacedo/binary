@@ -1,6 +1,7 @@
 package br.com.tlmacedo.binary.model.vo;
 
 import br.com.tlmacedo.binary.services.Service_Mascara;
+import javafx.beans.property.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -8,18 +9,42 @@ import java.math.BigDecimal;
 public class Ohlc implements Serializable {
     public static final long serialVersionUID = 1L;
 
+    String id;
+    String symbol;
+    Integer granularity;
     BigDecimal close;
     Integer epoch;
-    Integer granularity;
     BigDecimal high;
-    String id;
     BigDecimal low;
     BigDecimal open;
     Integer open_time;
     Integer pip_size;
-    String symbol;
 
     public Ohlc() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public Integer getGranularity() {
+        return granularity;
+    }
+
+    public void setGranularity(Integer granularity) {
+        this.granularity = granularity;
     }
 
     public BigDecimal getClose() {
@@ -38,28 +63,12 @@ public class Ohlc implements Serializable {
         this.epoch = epoch;
     }
 
-    public Integer getGranularity() {
-        return granularity;
-    }
-
-    public void setGranularity(Integer granularity) {
-        this.granularity = granularity;
-    }
-
     public BigDecimal getHigh() {
         return high;
     }
 
     public void setHigh(BigDecimal high) {
         this.high = high;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public BigDecimal getLow() {
@@ -92,14 +101,6 @@ public class Ohlc implements Serializable {
 
     public void setPip_size(Integer pip_size) {
         this.pip_size = pip_size;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
     }
 
     public String getQuoteCompleto() {

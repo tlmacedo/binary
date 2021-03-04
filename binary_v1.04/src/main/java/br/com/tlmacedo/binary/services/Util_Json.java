@@ -1,13 +1,19 @@
 package br.com.tlmacedo.binary.services;
 
+import br.com.tlmacedo.binary.controller.Operacoes;
+import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.model.vo.Error;
-import br.com.tlmacedo.binary.model.vo.Msg_type;
-import br.com.tlmacedo.binary.model.vo.Symbols;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Comparator;
+import java.util.stream.Collector;
 
 public class Util_Json {
 
@@ -95,6 +101,24 @@ public class Util_Json {
 //        Operacoes.getHistoricoDeTicksAnaliseObservableList()[symbolId]
 //                .setAll(historicoDeTicksList.sorted(Comparator.comparing(HistoricoDeTicks::getTime)));
 
+    }
+
+    public static void getCandles_from_String(Passthrough passthrough, String strJson) {
+        try {
+            JSONArray array = new JSONObject(strJson).getJSONArray("candles");
+            ObservableList<HistoricoDeCandles> historicoDeOhlcList = FXCollections.observableArrayList();
+            int timeCandle = Integer.parseInt(passthrough.getTickTime().getDescricao().replaceAll("\\D", ""));
+            for (int i = 0; i < Operacoes.getQtdCandlesAnalise(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+                int granularity = timeCandle * 60;
+                historicoDeOhlcList.add(0, new HistoricoDeCandles(obj, passthrough.getSymbol(), granularity));
+                if (Operacoes.getTimeCandleStart()[timeCandle - 1].getValue().compareTo(0) == 0)
+                    Operacoes.getTimeCandleStart()[timeCandle - 1].setValue(obj.getInt("epoch"));
+            }
+            Operacoes.getHistoricoDeCandlesObservableList().addAll(historicoDeOhlcList.sorted(Comparator.comparing(HistoricoDeCandles::getEpoch)));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static ObjectMapper getMapper() {

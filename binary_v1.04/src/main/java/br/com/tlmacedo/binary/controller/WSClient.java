@@ -4,7 +4,6 @@ import br.com.tlmacedo.binary.controller.estrategias.Abr;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.model.enums.MSG_TYPE;
 import br.com.tlmacedo.binary.model.enums.ROBOS;
-import br.com.tlmacedo.binary.model.vo.Error;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Util_Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,10 +11,7 @@ import javafx.application.Platform;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static br.com.tlmacedo.binary.interfaces.Constants.*;
 
@@ -28,6 +24,7 @@ public class WSClient extends WebSocketListener {
 
     private Msg_type msgType;
     private Passthrough passthrough;
+    private Candles candles;
     private History history;
     private Ohlc ohlc;
     private Tick tick;
@@ -36,15 +33,6 @@ public class WSClient extends WebSocketListener {
     private Proposal proposal;
     private Buy buy;
     private Transaction transaction;
-
-
-//    private Symbols symbols;
-////    private Error error;
-////    private Candle candle;
-////    private Proposal proposal;
-////    private Authorize authorize;
-////    private Buy buy;
-////    private Transaction transaction;
 
     public WSClient() {
     }
@@ -84,6 +72,9 @@ public class WSClient extends WebSocketListener {
                 case AUTHORIZE -> {
                     setAuthorize((Authorize) Util_Json.getObject_from_String(text, Authorize.class));
                     refreshAuthorize(getAuthorize());
+                }
+                case CANDLES -> {
+                    refreshCandles(getPassthrough(), text);
                 }
                 case HISTORY -> {
                     setHistory((History) Util_Json.getObject_from_String(text, History.class));
@@ -151,55 +142,36 @@ public class WSClient extends WebSocketListener {
 
         Platform.runLater(() -> {
 
-            Symbol symbol = Operacoes.getSymbolObservableList().stream()
+            Symbol symbol = Operacoes.getSymbolList().stream()
                     .filter(symbol1 -> symbol1.getSymbol().equals(ohlc.getSymbol()))
                     .findFirst().orElse(null);
             int s_id = symbol.getId().intValue() - 1;
             int t_id = passthrough.getTickTime().getCod();
 
-            HistoricoDeOhlc hOhlc = new HistoricoDeOhlc(
-                    symbol, ohlc.getOpen(), ohlc.getHigh(), ohlc.getLow(), ohlc.getClose(),
-                    ohlc.getPip_size(), ohlc.getEpoch()
-            );
+            if (t_id == 0)
+                Operacoes.getUltimoOhlcStr()[s_id].setValue(ohlc);
 
-            Operacoes.getUltimoOhlc()[t_id][s_id].setValue(ohlc);
-            Operacoes.getHistoricoDeOhlcObservableList()[t_id][s_id].add(0, hOhlc);
+            try {
+                boolean symbolAtivo = Operacoes.getSymbolObservableList().get(s_id) != null;
 
-            if (t_id == 0) {
-                Operacoes.getUltimoOhlcStr()[s_id].setValue(ohlc.getQuoteCompleto());
-                if (Operacoes.getHistoricoDeOhlcObservableList()[t_id][s_id].size() > 1)
-                    Operacoes.getTickSubindo()[s_id].setValue(
-                            Operacoes.getHistoricoDeOhlcObservableList()[t_id][s_id].get(0).getClose()
-                                    .compareTo(Operacoes.getHistoricoDeOhlcObservableList()[t_id][s_id].get(1).getClose()) > 0);
-            }
-            if (Operacoes.getTimeCandleStart()[t_id].getValue().compareTo(0) == 0)
-                Operacoes.getTimeCandleStart()[t_id].setValue(ohlc.getOpen_time());
-//                Operacoes.getTimeCandleToClose()[t_id].setValue((ohlc.getEpoch() + symbol.getTickTime())
-//                        - (ohlc.getOpen_time() + ohlc.getGranularity()));
-            Operacoes.getTimeCandleToClose()[t_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
+                if (Operacoes.getTestaLastCandle()[t_id][s_id].getValue() == null) {
+                    Operacoes.getTestaLastCandle()[t_id][s_id].setValue(ohlc);
 
-            if (Operacoes.getTimeCandleToClose()[t_id].getValue().compareTo(symbol.getTickTime()) == 0) {
-                if (ohlc.getClose().compareTo(ohlc.getOpen()) > 0) {
-                    Operacoes.getQtdCall()[t_id][s_id].setValue(
-                            Operacoes.getQtdCall()[t_id][s_id].getValue() + 1);
-                    if (Operacoes.getQtdCallOrPut()[t_id][s_id].getValue().compareTo(0) > 0)
-                        Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(
-                                Operacoes.getQtdCallOrPut()[t_id][s_id].getValue() + 1);
-                    else
-                        Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(1);
-                } else if (ohlc.getClose().compareTo(ohlc.getOpen()) < 0) {
-                    Operacoes.getQtdPut()[t_id][s_id].setValue(
-                            Operacoes.getQtdPut()[t_id][s_id].getValue() + 1);
-                    if (Operacoes.getQtdCallOrPut()[t_id][s_id].getValue().compareTo(0) < 0)
-                        Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(
-                                Operacoes.getQtdCallOrPut()[t_id][s_id].getValue() - 1);
-                    else
-                        Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(-1);
-                } else {
-                    Operacoes.getQtdCallOrPut()[t_id][s_id].setValue(0);
+                    HistoricoDeCandles hCandle = Operacoes.getHistoricoDeCandlesFilteredList()[t_id][s_id]
+                            .sorted(Comparator.comparing(HistoricoDeCandles::getEpoch).reversed()).get(0);
+                    if (hCandle.getEpoch() == ohlc.getOpen_time())
+                        Operacoes.getHistoricoDeCandlesObservableList().remove(hCandle);
                 }
-            }
 
+                Operacoes.getTimeCandleToClose()[t_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
+
+                if (Operacoes.getTimeCandleToClose()[t_id].getValue().compareTo(symbol.getTickTime()) == 0)
+                    Operacoes.getHistoricoDeCandlesObservableList().add(0, new HistoricoDeCandles(ohlc));
+
+            } catch (Exception ex) {
+                if (!(ex instanceof IndexOutOfBoundsException))
+                    ex.printStackTrace();
+            }
 
         });
 
@@ -213,19 +185,10 @@ public class WSClient extends WebSocketListener {
 
             switch (ROBOS.valueOf(Operacoes.getRobo().getClass().getSimpleName().toUpperCase())) {
                 case ABR -> {
-                    if (proposal.getAsk_price().compareTo(Operacoes.getVlrStkPadrao()[t_id].getValue()) <= 0)
-                        Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][0] = proposal;
-                    else
-                        Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][1] = proposal;
+                    Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1] = proposal;
                 }
             }
         });
-
-    }
-
-    private void refreshTransactionAutorizacao(Transaction transaction) {
-
-        System.out.printf("transaction: %s\n", transaction);
 
     }
 
@@ -236,6 +199,14 @@ public class WSClient extends WebSocketListener {
             if (transaction.getAction() != null)
                 Operacoes.getTransactionObservableList().add(0, transaction);
 
+        });
+
+    }
+
+    private void refreshCandles(Passthrough passthrough, String candles) {
+
+        Platform.runLater(() -> {
+            Util_Json.getCandles_from_String(getPassthrough(), candles);
         });
 
     }
@@ -269,7 +240,7 @@ public class WSClient extends WebSocketListener {
                 case PROPOSAL -> print = CONSOLE_BINARY_PROPOSAL;
                 case BUY -> print = CONSOLE_BINARY_BUY;
                 case TRANSACTION -> print = CONSOLE_BINARY_TRANSACTION;
-                case HISTORY -> print = CONSOLE_BINARY_HISTORY;
+                case HISTORY, CANDLES -> print = CONSOLE_BINARY_HISTORY;
                 default -> print = (CONSOLE_BINARY_ALL || CONSOLE_BINARY_ALL_SEM_TICKS);
             }
             if (print)
@@ -391,5 +362,13 @@ public class WSClient extends WebSocketListener {
 
     public void setTransaction(Transaction transaction) {
         this.transaction = transaction;
+    }
+
+    public Candles getCandles() {
+        return candles;
+    }
+
+    public void setCandles(Candles candles) {
+        this.candles = candles;
     }
 }

@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 
 public class Abr extends Operacoes implements Robo {
 
-    static Proposal[][][][] proposal = new Proposal[TICK_TIME.values().length][getSymbolObservableList().size()][2][2];
+    static Proposal[][][] proposal = new Proposal[TICK_TIME.values().length][getSymbolObservableList().size()][2];
 
     @Override
     public void definicaoDeContrato() throws Exception {
@@ -40,10 +40,8 @@ public class Abr extends Operacoes implements Robo {
                 getVlrStkContrato()[tick_time.getCod()][i]
                         .setValue(getVlrStkPadrao()[tick_time.getCod()].getValue());
                 for (int contractType = 0; contractType < 2; contractType++) {
-                    for (int win = 0; win < 2; win++) {
-                        getProposal()[tick_time.getCod()][i][contractType][win] = new Proposal();
-                        gerarContrato(tick_time, getSymbolObservableList().get(i), CONTRACT_TYPE.toEnum(contractType), win == 0);
-                    }
+                    getProposal()[tick_time.getCod()][i][contractType] = new Proposal();
+                    gerarContrato(tick_time, getSymbolObservableList().get(i), CONTRACT_TYPE.toEnum(contractType));
                 }
             }
         }
@@ -66,15 +64,11 @@ public class Abr extends Operacoes implements Robo {
                 getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
                     if (isRoboMonitorandoPausado()) return;
                     if (Math.abs(n.intValue()) >= getQtdCandlesEntrada()[t_id].getValue()) {
-                        if ((getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1][0] != null)
-                                && (getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1][1] != null)) {
-                            int getProposalWinLoss = getResultLastTransiction()[t_id][finalS_id1].getValue() ? 0 : 1;
-                            solicitarCompraContrato(getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1][getProposalWinLoss]);
+                        if (getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1] != null) {
+                            solicitarCompraContrato(getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1]);
                             try {
-                                for (int win = 0; win < 2; win++) {
-                                    getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1][win] = null;
-                                    gerarContrato(tickTime, getSymbolObservableList().get(finalS_id), CONTRACT_TYPE.toEnum(n.intValue() < 0 ? 0 : 1), win == 0);
-                                }
+                                getProposal()[t_id][finalS_id][n.intValue() < 0 ? 0 : 1] = null;
+                                gerarContrato(tickTime, getSymbolObservableList().get(finalS_id), CONTRACT_TYPE.toEnum(n.intValue() < 0 ? 0 : 1));
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -110,11 +104,11 @@ public class Abr extends Operacoes implements Robo {
      * <p>
      */
 
-    public static Proposal[][][][] getProposal() {
+    public static Proposal[][][] getProposal() {
         return proposal;
     }
 
-    public static void setProposal(Proposal[][][][] proposal) {
+    public static void setProposal(Proposal[][][] proposal) {
         Abr.proposal = proposal;
     }
 }
