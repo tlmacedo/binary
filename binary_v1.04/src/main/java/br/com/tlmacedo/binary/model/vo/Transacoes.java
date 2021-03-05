@@ -12,6 +12,7 @@ public class Transacoes implements Serializable {
 
     ObjectProperty<ContaToken> contaToken = new SimpleObjectProperty<>();
     ObjectProperty<Symbol> activeSymbol = new SimpleObjectProperty<>();
+    IntegerProperty timeFrame = new SimpleIntegerProperty();
     LongProperty transaction_id = new SimpleLongProperty();
     LongProperty contract_id = new SimpleLongProperty();
     IntegerProperty dataHoraCompra = new SimpleIntegerProperty();
@@ -25,22 +26,12 @@ public class Transacoes implements Serializable {
     ObjectProperty<BigDecimal> stakeVenda = new SimpleObjectProperty<>();
     BooleanProperty consolidado = new SimpleBooleanProperty(false);
 
-    Integer activeSymbolId;
-    CONTRACT_TYPE contractTypeLastPriceProposal;
-    String lastBarrier;
-    StringBuilder stbContract_Type = new StringBuilder();
+//    Integer activeSymbolId;
+//    CONTRACT_TYPE contractTypeLastPriceProposal;
+//    String lastBarrier;
+//    StringBuilder stbContract_Type = new StringBuilder();
 
     public Transacoes() {
-
-    }
-
-    public Transacoes(Symbol symbol) {
-
-//        setSymbol(symbol);
-//        setSymbolId((int) (getSymbol().getId() - 1));
-//
-//        setContractTypeLastPriceProposal(CONTRACT_TYPE.valueOf(Operacoes.getLastPriceProposal()[getSymbolId()].getValue().getContract_type().getDescricao().toUpperCase()));
-//        setLastBarrier(Operacoes.getLastPriceProposal()[getSymbolId()].getValue().getBarrier());
 
     }
 
@@ -304,47 +295,12 @@ public class Transacoes implements Serializable {
         this.consolidado.set(consolidado);
     }
 
-    @Transient
-    public Integer getActiveSymbolId() {
-        return activeSymbolId;
-    }
-
-    public void setActiveSymbolId(Integer activeSymbolId) {
-        this.activeSymbolId = activeSymbolId;
-    }
-
-    @Transient
-    public CONTRACT_TYPE getContractTypeLastPriceProposal() {
-        return contractTypeLastPriceProposal;
-    }
-
-    public void setContractTypeLastPriceProposal(CONTRACT_TYPE contractTypeLastPriceProposal) {
-        this.contractTypeLastPriceProposal = contractTypeLastPriceProposal;
-    }
-
-    @Transient
-    public String getLastBarrier() {
-        return lastBarrier;
-    }
-
-    public void setLastBarrier(String lastBarrier) {
-        this.lastBarrier = lastBarrier;
-    }
-
-    @Transient
-    public StringBuilder getStbContract_Type() {
-        return stbContract_Type;
-    }
-
-    public void setStbContract_Type(StringBuilder stbContract_Type) {
-        this.stbContract_Type = stbContract_Type;
-    }
-
     @Override
     public String toString() {
         return "Transacoes{" +
                 "contaToken=" + contaToken +
                 ", activeSymbol=" + activeSymbol +
+                ", timeFrame=" + timeFrame +
                 ", transaction_id=" + transaction_id +
                 ", contract_id=" + contract_id +
                 ", dataHoraCompra=" + dataHoraCompra +
@@ -357,10 +313,6 @@ public class Transacoes implements Serializable {
                 ", stakeCompra=" + stakeCompra +
                 ", stakeVenda=" + stakeVenda +
                 ", consolidado=" + consolidado +
-                ", activeSymbolId=" + activeSymbolId +
-                ", contractTypeLastPriceProposal=" + contractTypeLastPriceProposal +
-                ", lastBarrier='" + lastBarrier + '\'' +
-                ", stbContract_Type=" + stbContract_Type +
                 '}';
     }
 }

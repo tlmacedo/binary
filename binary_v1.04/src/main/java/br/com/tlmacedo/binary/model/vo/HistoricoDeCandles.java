@@ -12,27 +12,27 @@ import java.math.BigDecimal;
 public class HistoricoDeCandles implements Serializable {
     public static final long serialVersionUID = 1L;
 
-    LongProperty id;// = new SimpleLongProperty();
-    ObjectProperty<Symbol> symbol;// = new SimpleObjectProperty<>();
-    IntegerProperty granularity;// = new SimpleIntegerProperty();
-    ObjectProperty<BigDecimal> close;// = new SimpleObjectProperty<>();
-    IntegerProperty epoch;// = new SimpleIntegerProperty();
-    ObjectProperty<BigDecimal> high;// = new SimpleObjectProperty<>();
-    ObjectProperty<BigDecimal> low;// = new SimpleObjectProperty<>();
-    ObjectProperty<BigDecimal> open;// = new SimpleObjectProperty<>();
-    IntegerProperty pip_size;// = new SimpleIntegerProperty();
+    LongProperty id = new SimpleLongProperty();
+    ObjectProperty<Symbol> symbol = new SimpleObjectProperty<>();
+    IntegerProperty granularity = new SimpleIntegerProperty();
+    ObjectProperty<BigDecimal> close = new SimpleObjectProperty<>();
+    IntegerProperty epoch = new SimpleIntegerProperty();
+    ObjectProperty<BigDecimal> high = new SimpleObjectProperty<>();
+    ObjectProperty<BigDecimal> low = new SimpleObjectProperty<>();
+    ObjectProperty<BigDecimal> open = new SimpleObjectProperty<>();
+    IntegerProperty pip_size = new SimpleIntegerProperty();
 
-    public HistoricoDeCandles(JSONObject obj, Symbol symbol, Integer granularity) {
+    public HistoricoDeCandles(JSONObject o, int symbol_id, int granularity) {
 
         try {
-            this.symbol = new SimpleObjectProperty<>(symbol);
+            this.symbol = new SimpleObjectProperty<>(Operacoes.getSymbolObservableList().get(symbol_id));
             this.granularity = new SimpleIntegerProperty(granularity);
-            this.close = new SimpleObjectProperty<>(obj.getBigDecimal("close"));
-            this.epoch = new SimpleIntegerProperty(obj.getInt("epoch"));
-            this.high = new SimpleObjectProperty<>(obj.getBigDecimal("high"));
-            this.low = new SimpleObjectProperty<>(obj.getBigDecimal("low"));
-            this.open = new SimpleObjectProperty<>(obj.getBigDecimal("open"));
-            this.pip_size = new SimpleIntegerProperty(symbol.getPip().intValue());
+            this.close = new SimpleObjectProperty<>(o.getBigDecimal("close"));
+            this.epoch = new SimpleIntegerProperty(o.getInt("epoch"));
+            this.high = new SimpleObjectProperty<>(o.getBigDecimal("high"));
+            this.low = new SimpleObjectProperty<>(o.getBigDecimal("low"));
+            this.open = new SimpleObjectProperty<>(o.getBigDecimal("open"));
+            this.pip_size = new SimpleIntegerProperty(getSymbol().getPip().intValue());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

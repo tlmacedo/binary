@@ -7,15 +7,16 @@ import br.com.tlmacedo.binary.model.dao.SymbolDAO;
 import br.com.tlmacedo.binary.model.dao.TransacoesDAO;
 import br.com.tlmacedo.binary.model.dao.TransactionDAO;
 import br.com.tlmacedo.binary.model.enums.*;
-import br.com.tlmacedo.binary.model.tableModel.TmodelTransactions;
+import br.com.tlmacedo.binary.model.tableModel.TmodelTransacoes;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Service_Alert;
-import br.com.tlmacedo.binary.services.Service_DataHoraCarimbo;
+import br.com.tlmacedo.binary.services.Service_DataTime;
 import br.com.tlmacedo.binary.services.Service_Mascara;
 import br.com.tlmacedo.binary.services.Util_Json;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -54,10 +55,10 @@ public class Operacoes implements Initializable {
      * Identificação de volatilidades
      */
     //** Variaveis de identificacoes das volatilidades
-    static final List<Symbol> SYMBOL_LIST = getSymbolDAO().getAll(Symbol.class, "id=1", null);
+    static final List<Symbol> SYMBOL_LIST = getSymbolDAO().getAll(Symbol.class, null, null);
     static final ObservableList<Symbol> SYMBOL_OBSERVABLE_LIST =
             FXCollections.observableArrayList(
-                    getSymbolDAO().getAll(Symbol.class, "id=1", null)
+                    getSymbolDAO().getAll(Symbol.class, null, null)
             );
 
     /**
@@ -107,10 +108,10 @@ public class Operacoes implements Initializable {
 
     //** Listas **
     static ObservableList<HistoricoDeCandles> historicoDeCandlesObservableList = FXCollections.observableArrayList();
-    static ObservableList<Transaction> transactionObservableList = FXCollections.observableArrayList();
-    static TmodelTransactions[][] tmodelTransactions = new TmodelTransactions[TICK_TIME.values().length][getSymbolObservableList().size()];
-    static FilteredList<Transaction>[][] transactionFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
     static FilteredList<HistoricoDeCandles>[][] historicoDeCandlesFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static FilteredList<Transacoes>[][] transacoesFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static TmodelTransacoes[][] tmodelTransacoes = new TmodelTransacoes[TICK_TIME.values().length][getSymbolObservableList().size()];
 
 
     //** Operações com Robos **
@@ -228,7 +229,7 @@ public class Operacoes implements Initializable {
 
     // Time_01 *-*-*
     public TitledPane tpn_T01;
-    public JFXCheckBox chkTpn01_TimeAtivo;
+    public JFXCheckBox chkTpn_T01_TimeAtivo;
     public Label lblTpn_T01_CandleTimeStart;
     public Label lblTpn_T01_TimeEnd;
     public Label lblTpn_T01_QtdStakes;
@@ -249,154 +250,154 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T01_Op01;
     public Label lblVlrOut_T01_Op01;
     public Label lblVlrDiff_T01_Op01;
-    public TableView tbvTransaction_T01_Op01;
-//    // Time_01 *-*-* Symbol_02
-//    public Label lblSymbol_T01_Op02;
-//    public Label lblQtdCall_T01_Op02;
-//    public Label lblQtdPut_T01_Op02;
-//    public Label lblQtdCallOrPut_T01_Op02;
-//    public ImageView imgCallOrPut_T01_Op02;
-//    public Label lblQtdStakes_T01_Op02;
-//    public Label lblQtdWins_T01_Op02;
-//    public Label lblQtdLoss_T01_Op02;
-//    public Label lblVlrIn_T01_Op02;
-//    public Label lblVlrOut_T01_Op02;
-//    public Label lblVlrDiff_T01_Op02;
-//    public TableView tbvTransaction_T01_Op02;
-//    // Time_01 *-*-* Symbol_03
-//    public Label lblSymbol_T01_Op03;
-//    public Label lblQtdCall_T01_Op03;
-//    public Label lblQtdPut_T01_Op03;
-//    public Label lblQtdCallOrPut_T01_Op03;
-//    public ImageView imgCallOrPut_T01_Op03;
-//    public Label lblQtdStakes_T01_Op03;
-//    public Label lblQtdWins_T01_Op03;
-//    public Label lblQtdLoss_T01_Op03;
-//    public Label lblVlrIn_T01_Op03;
-//    public Label lblVlrOut_T01_Op03;
-//    public Label lblVlrDiff_T01_Op03;
-//    public TableView tbvTransaction_T01_Op03;
-//    // Time_01 *-*-* Symbol_04
-//    public Label lblSymbol_T01_Op04;
-//    public Label lblQtdCall_T01_Op04;
-//    public Label lblQtdPut_T01_Op04;
-//    public Label lblQtdCallOrPut_T01_Op04;
-//    public ImageView imgCallOrPut_T01_Op04;
-//    public Label lblQtdStakes_T01_Op04;
-//    public Label lblQtdWins_T01_Op04;
-//    public Label lblQtdLoss_T01_Op04;
-//    public Label lblVlrIn_T01_Op04;
-//    public Label lblVlrOut_T01_Op04;
-//    public Label lblVlrDiff_T01_Op04;
-//    public TableView tbvTransaction_T01_Op04;
-//    // Time_01 *-*-* Symbol_05
-//    public Label lblSymbol_T01_Op05;
-//    public Label lblQtdCall_T01_Op05;
-//    public Label lblQtdPut_T01_Op05;
-//    public Label lblQtdCallOrPut_T01_Op05;
-//    public ImageView imgCallOrPut_T01_Op05;
-//    public Label lblQtdStakes_T01_Op05;
-//    public Label lblQtdWins_T01_Op05;
-//    public Label lblQtdLoss_T01_Op05;
-//    public Label lblVlrIn_T01_Op05;
-//    public Label lblVlrOut_T01_Op05;
-//    public Label lblVlrDiff_T01_Op05;
-//    public TableView tbvTransaction_T01_Op05;
-//    // Time_01 *-*-* Symbol_06
-//    public Label lblSymbol_T01_Op06;
-//    public Label lblQtdCall_T01_Op06;
-//    public Label lblQtdPut_T01_Op06;
-//    public Label lblQtdCallOrPut_T01_Op06;
-//    public ImageView imgCallOrPut_T01_Op06;
-//    public Label lblQtdStakes_T01_Op06;
-//    public Label lblQtdWins_T01_Op06;
-//    public Label lblQtdLoss_T01_Op06;
-//    public Label lblVlrIn_T01_Op06;
-//    public Label lblVlrOut_T01_Op06;
-//    public Label lblVlrDiff_T01_Op06;
-//    public TableView tbvTransaction_T01_Op06;
-//    // Time_01 *-*-* Symbol_07
-//    public Label lblSymbol_T01_Op07;
-//    public Label lblQtdCall_T01_Op07;
-//    public Label lblQtdPut_T01_Op07;
-//    public Label lblQtdCallOrPut_T01_Op07;
-//    public ImageView imgCallOrPut_T01_Op07;
-//    public Label lblQtdStakes_T01_Op07;
-//    public Label lblQtdWins_T01_Op07;
-//    public Label lblQtdLoss_T01_Op07;
-//    public Label lblVlrIn_T01_Op07;
-//    public Label lblVlrOut_T01_Op07;
-//    public Label lblVlrDiff_T01_Op07;
-//    public TableView tbvTransaction_T01_Op07;
-//    // Time_01 *-*-* Symbol_08
-//    public Label lblSymbol_T01_Op08;
-//    public Label lblQtdCall_T01_Op08;
-//    public Label lblQtdPut_T01_Op08;
-//    public Label lblQtdCallOrPut_T01_Op08;
-//    public ImageView imgCallOrPut_T01_Op08;
-//    public Label lblQtdStakes_T01_Op08;
-//    public Label lblQtdWins_T01_Op08;
-//    public Label lblQtdLoss_T01_Op08;
-//    public Label lblVlrIn_T01_Op08;
-//    public Label lblVlrOut_T01_Op08;
-//    public Label lblVlrDiff_T01_Op08;
-//    public TableView tbvTransaction_T01_Op08;
-//    // Time_01 *-*-* Symbol_09
-//    public Label lblSymbol_T01_Op09;
-//    public Label lblQtdCall_T01_Op09;
-//    public Label lblQtdPut_T01_Op09;
-//    public Label lblQtdCallOrPut_T01_Op09;
-//    public ImageView imgCallOrPut_T01_Op09;
-//    public Label lblQtdStakes_T01_Op09;
-//    public Label lblQtdWins_T01_Op09;
-//    public Label lblQtdLoss_T01_Op09;
-//    public Label lblVlrIn_T01_Op09;
-//    public Label lblVlrOut_T01_Op09;
-//    public Label lblVlrDiff_T01_Op09;
-//    public TableView tbvTransaction_T01_Op09;
-//    // Time_01 *-*-* Symbol_10
-//    public Label lblSymbol_T01_Op10;
-//    public Label lblQtdCall_T01_Op10;
-//    public Label lblQtdPut_T01_Op10;
-//    public Label lblQtdCallOrPut_T01_Op10;
-//    public ImageView imgCallOrPut_T01_Op10;
-//    public Label lblQtdStakes_T01_Op10;
-//    public Label lblQtdWins_T01_Op10;
-//    public Label lblQtdLoss_T01_Op10;
-//    public Label lblVlrIn_T01_Op10;
-//    public Label lblVlrOut_T01_Op10;
-//    public Label lblVlrDiff_T01_Op10;
-//    public TableView tbvTransaction_T01_Op10;
-//    // Time_01 *-*-* Symbol_11
-//    public Label lblSymbol_T01_Op11;
-//    public Label lblQtdCall_T01_Op11;
-//    public Label lblQtdPut_T01_Op11;
-//    public Label lblQtdCallOrPut_T01_Op11;
-//    public ImageView imgCallOrPut_T01_Op11;
-//    public Label lblQtdStakes_T01_Op11;
-//    public Label lblQtdWins_T01_Op11;
-//    public Label lblQtdLoss_T01_Op11;
-//    public Label lblVlrIn_T01_Op11;
-//    public Label lblVlrOut_T01_Op11;
-//    public Label lblVlrDiff_T01_Op11;
-//    public TableView tbvTransaction_T01_Op11;
-//    // Time_01 *-*-* Symbol_12
-//    public Label lblSymbol_T01_Op12;
-//    public Label lblQtdCall_T01_Op12;
-//    public Label lblQtdPut_T01_Op12;
-//    public Label lblQtdCallOrPut_T01_Op12;
-//    public ImageView imgCallOrPut_T01_Op12;
-//    public Label lblQtdStakes_T01_Op12;
-//    public Label lblQtdWins_T01_Op12;
-//    public Label lblQtdLoss_T01_Op12;
-//    public Label lblVlrIn_T01_Op12;
-//    public Label lblVlrOut_T01_Op12;
-//    public Label lblVlrDiff_T01_Op12;
-//    public TableView tbvTransaction_T01_Op12;
+    public TableView tbvTransacoes_T01_Op01;
+    // Time_01 *-*-* Symbol_02
+    public Label lblSymbol_T01_Op02;
+    public Label lblQtdCall_T01_Op02;
+    public Label lblQtdPut_T01_Op02;
+    public Label lblQtdCallOrPut_T01_Op02;
+    public ImageView imgCallOrPut_T01_Op02;
+    public Label lblQtdStakes_T01_Op02;
+    public Label lblQtdWins_T01_Op02;
+    public Label lblQtdLoss_T01_Op02;
+    public Label lblVlrIn_T01_Op02;
+    public Label lblVlrOut_T01_Op02;
+    public Label lblVlrDiff_T01_Op02;
+    public TableView tbvTransacoes_T01_Op02;
+    // Time_01 *-*-* Symbol_03
+    public Label lblSymbol_T01_Op03;
+    public Label lblQtdCall_T01_Op03;
+    public Label lblQtdPut_T01_Op03;
+    public Label lblQtdCallOrPut_T01_Op03;
+    public ImageView imgCallOrPut_T01_Op03;
+    public Label lblQtdStakes_T01_Op03;
+    public Label lblQtdWins_T01_Op03;
+    public Label lblQtdLoss_T01_Op03;
+    public Label lblVlrIn_T01_Op03;
+    public Label lblVlrOut_T01_Op03;
+    public Label lblVlrDiff_T01_Op03;
+    public TableView tbvTransacoes_T01_Op03;
+    // Time_01 *-*-* Symbol_04
+    public Label lblSymbol_T01_Op04;
+    public Label lblQtdCall_T01_Op04;
+    public Label lblQtdPut_T01_Op04;
+    public Label lblQtdCallOrPut_T01_Op04;
+    public ImageView imgCallOrPut_T01_Op04;
+    public Label lblQtdStakes_T01_Op04;
+    public Label lblQtdWins_T01_Op04;
+    public Label lblQtdLoss_T01_Op04;
+    public Label lblVlrIn_T01_Op04;
+    public Label lblVlrOut_T01_Op04;
+    public Label lblVlrDiff_T01_Op04;
+    public TableView tbvTransacoes_T01_Op04;
+    // Time_01 *-*-* Symbol_05
+    public Label lblSymbol_T01_Op05;
+    public Label lblQtdCall_T01_Op05;
+    public Label lblQtdPut_T01_Op05;
+    public Label lblQtdCallOrPut_T01_Op05;
+    public ImageView imgCallOrPut_T01_Op05;
+    public Label lblQtdStakes_T01_Op05;
+    public Label lblQtdWins_T01_Op05;
+    public Label lblQtdLoss_T01_Op05;
+    public Label lblVlrIn_T01_Op05;
+    public Label lblVlrOut_T01_Op05;
+    public Label lblVlrDiff_T01_Op05;
+    public TableView tbvTransacoes_T01_Op05;
+    // Time_01 *-*-* Symbol_06
+    public Label lblSymbol_T01_Op06;
+    public Label lblQtdCall_T01_Op06;
+    public Label lblQtdPut_T01_Op06;
+    public Label lblQtdCallOrPut_T01_Op06;
+    public ImageView imgCallOrPut_T01_Op06;
+    public Label lblQtdStakes_T01_Op06;
+    public Label lblQtdWins_T01_Op06;
+    public Label lblQtdLoss_T01_Op06;
+    public Label lblVlrIn_T01_Op06;
+    public Label lblVlrOut_T01_Op06;
+    public Label lblVlrDiff_T01_Op06;
+    public TableView tbvTransacoes_T01_Op06;
+    // Time_01 *-*-* Symbol_07
+    public Label lblSymbol_T01_Op07;
+    public Label lblQtdCall_T01_Op07;
+    public Label lblQtdPut_T01_Op07;
+    public Label lblQtdCallOrPut_T01_Op07;
+    public ImageView imgCallOrPut_T01_Op07;
+    public Label lblQtdStakes_T01_Op07;
+    public Label lblQtdWins_T01_Op07;
+    public Label lblQtdLoss_T01_Op07;
+    public Label lblVlrIn_T01_Op07;
+    public Label lblVlrOut_T01_Op07;
+    public Label lblVlrDiff_T01_Op07;
+    public TableView tbvTransacoes_T01_Op07;
+    // Time_01 *-*-* Symbol_08
+    public Label lblSymbol_T01_Op08;
+    public Label lblQtdCall_T01_Op08;
+    public Label lblQtdPut_T01_Op08;
+    public Label lblQtdCallOrPut_T01_Op08;
+    public ImageView imgCallOrPut_T01_Op08;
+    public Label lblQtdStakes_T01_Op08;
+    public Label lblQtdWins_T01_Op08;
+    public Label lblQtdLoss_T01_Op08;
+    public Label lblVlrIn_T01_Op08;
+    public Label lblVlrOut_T01_Op08;
+    public Label lblVlrDiff_T01_Op08;
+    public TableView tbvTransacoes_T01_Op08;
+    // Time_01 *-*-* Symbol_09
+    public Label lblSymbol_T01_Op09;
+    public Label lblQtdCall_T01_Op09;
+    public Label lblQtdPut_T01_Op09;
+    public Label lblQtdCallOrPut_T01_Op09;
+    public ImageView imgCallOrPut_T01_Op09;
+    public Label lblQtdStakes_T01_Op09;
+    public Label lblQtdWins_T01_Op09;
+    public Label lblQtdLoss_T01_Op09;
+    public Label lblVlrIn_T01_Op09;
+    public Label lblVlrOut_T01_Op09;
+    public Label lblVlrDiff_T01_Op09;
+    public TableView tbvTransacoes_T01_Op09;
+    // Time_01 *-*-* Symbol_10
+    public Label lblSymbol_T01_Op10;
+    public Label lblQtdCall_T01_Op10;
+    public Label lblQtdPut_T01_Op10;
+    public Label lblQtdCallOrPut_T01_Op10;
+    public ImageView imgCallOrPut_T01_Op10;
+    public Label lblQtdStakes_T01_Op10;
+    public Label lblQtdWins_T01_Op10;
+    public Label lblQtdLoss_T01_Op10;
+    public Label lblVlrIn_T01_Op10;
+    public Label lblVlrOut_T01_Op10;
+    public Label lblVlrDiff_T01_Op10;
+    public TableView tbvTransacoes_T01_Op10;
+    // Time_01 *-*-* Symbol_11
+    public Label lblSymbol_T01_Op11;
+    public Label lblQtdCall_T01_Op11;
+    public Label lblQtdPut_T01_Op11;
+    public Label lblQtdCallOrPut_T01_Op11;
+    public ImageView imgCallOrPut_T01_Op11;
+    public Label lblQtdStakes_T01_Op11;
+    public Label lblQtdWins_T01_Op11;
+    public Label lblQtdLoss_T01_Op11;
+    public Label lblVlrIn_T01_Op11;
+    public Label lblVlrOut_T01_Op11;
+    public Label lblVlrDiff_T01_Op11;
+    public TableView tbvTransacoes_T01_Op11;
+    // Time_01 *-*-* Symbol_12
+    public Label lblSymbol_T01_Op12;
+    public Label lblQtdCall_T01_Op12;
+    public Label lblQtdPut_T01_Op12;
+    public Label lblQtdCallOrPut_T01_Op12;
+    public ImageView imgCallOrPut_T01_Op12;
+    public Label lblQtdStakes_T01_Op12;
+    public Label lblQtdWins_T01_Op12;
+    public Label lblQtdLoss_T01_Op12;
+    public Label lblVlrIn_T01_Op12;
+    public Label lblVlrOut_T01_Op12;
+    public Label lblVlrDiff_T01_Op12;
+    public TableView tbvTransacoes_T01_Op12;
 
     // Time_02 *-*-*
     public TitledPane tpn_T02;
-    public JFXCheckBox chkTpn02_TimeAtivo;
+    public JFXCheckBox chkTpn_T02_TimeAtivo;
     public Label lblTpn_T02_CandleTimeStart;
     public Label lblTpn_T02_TimeEnd;
     public Label lblTpn_T02_QtdStakes;
@@ -417,7 +418,150 @@ public class Operacoes implements Initializable {
     public Label lblVlrIn_T02_Op01;
     public Label lblVlrOut_T02_Op01;
     public Label lblVlrDiff_T02_Op01;
-    public TableView tbvTransaction_T02_Op01;
+    public TableView tbvTransacoes_T02_Op01;
+    // Time_02 *-*-* Symbol_02
+    public Label lblSymbol_T02_Op02;
+    public Label lblQtdCall_T02_Op02;
+    public Label lblQtdPut_T02_Op02;
+    public Label lblQtdCallOrPut_T02_Op02;
+    public ImageView imgCallOrPut_T02_Op02;
+    public Label lblQtdStakes_T02_Op02;
+    public Label lblQtdWins_T02_Op02;
+    public Label lblQtdLoss_T02_Op02;
+    public Label lblVlrIn_T02_Op02;
+    public Label lblVlrOut_T02_Op02;
+    public Label lblVlrDiff_T02_Op02;
+    public TableView tbvTransacoes_T02_Op02;
+    // Time_02 *-*-* Symbol_03
+    public Label lblSymbol_T02_Op03;
+    public Label lblQtdCall_T02_Op03;
+    public Label lblQtdPut_T02_Op03;
+    public Label lblQtdCallOrPut_T02_Op03;
+    public ImageView imgCallOrPut_T02_Op03;
+    public Label lblQtdStakes_T02_Op03;
+    public Label lblQtdWins_T02_Op03;
+    public Label lblQtdLoss_T02_Op03;
+    public Label lblVlrIn_T02_Op03;
+    public Label lblVlrOut_T02_Op03;
+    public Label lblVlrDiff_T02_Op03;
+    public TableView tbvTransacoes_T02_Op03;
+    // Time_02 *-*-* Symbol_04
+    public Label lblSymbol_T02_Op04;
+    public Label lblQtdCall_T02_Op04;
+    public Label lblQtdPut_T02_Op04;
+    public Label lblQtdCallOrPut_T02_Op04;
+    public ImageView imgCallOrPut_T02_Op04;
+    public Label lblQtdStakes_T02_Op04;
+    public Label lblQtdWins_T02_Op04;
+    public Label lblQtdLoss_T02_Op04;
+    public Label lblVlrIn_T02_Op04;
+    public Label lblVlrOut_T02_Op04;
+    public Label lblVlrDiff_T02_Op04;
+    public TableView tbvTransacoes_T02_Op04;
+    // Time_02 *-*-* Symbol_05
+    public Label lblSymbol_T02_Op05;
+    public Label lblQtdCall_T02_Op05;
+    public Label lblQtdPut_T02_Op05;
+    public Label lblQtdCallOrPut_T02_Op05;
+    public ImageView imgCallOrPut_T02_Op05;
+    public Label lblQtdStakes_T02_Op05;
+    public Label lblQtdWins_T02_Op05;
+    public Label lblQtdLoss_T02_Op05;
+    public Label lblVlrIn_T02_Op05;
+    public Label lblVlrOut_T02_Op05;
+    public Label lblVlrDiff_T02_Op05;
+    public TableView tbvTransacoes_T02_Op05;
+    // Time_02 *-*-* Symbol_06
+    public Label lblSymbol_T02_Op06;
+    public Label lblQtdCall_T02_Op06;
+    public Label lblQtdPut_T02_Op06;
+    public Label lblQtdCallOrPut_T02_Op06;
+    public ImageView imgCallOrPut_T02_Op06;
+    public Label lblQtdStakes_T02_Op06;
+    public Label lblQtdWins_T02_Op06;
+    public Label lblQtdLoss_T02_Op06;
+    public Label lblVlrIn_T02_Op06;
+    public Label lblVlrOut_T02_Op06;
+    public Label lblVlrDiff_T02_Op06;
+    public TableView tbvTransacoes_T02_Op06;
+    // Time_02 *-*-* Symbol_07
+    public Label lblSymbol_T02_Op07;
+    public Label lblQtdCall_T02_Op07;
+    public Label lblQtdPut_T02_Op07;
+    public Label lblQtdCallOrPut_T02_Op07;
+    public ImageView imgCallOrPut_T02_Op07;
+    public Label lblQtdStakes_T02_Op07;
+    public Label lblQtdWins_T02_Op07;
+    public Label lblQtdLoss_T02_Op07;
+    public Label lblVlrIn_T02_Op07;
+    public Label lblVlrOut_T02_Op07;
+    public Label lblVlrDiff_T02_Op07;
+    public TableView tbvTransacoes_T02_Op07;
+    // Time_02 *-*-* Symbol_08
+    public Label lblSymbol_T02_Op08;
+    public Label lblQtdCall_T02_Op08;
+    public Label lblQtdPut_T02_Op08;
+    public Label lblQtdCallOrPut_T02_Op08;
+    public ImageView imgCallOrPut_T02_Op08;
+    public Label lblQtdStakes_T02_Op08;
+    public Label lblQtdWins_T02_Op08;
+    public Label lblQtdLoss_T02_Op08;
+    public Label lblVlrIn_T02_Op08;
+    public Label lblVlrOut_T02_Op08;
+    public Label lblVlrDiff_T02_Op08;
+    public TableView tbvTransacoes_T02_Op08;
+    // Time_02 *-*-* Symbol_09
+    public Label lblSymbol_T02_Op09;
+    public Label lblQtdCall_T02_Op09;
+    public Label lblQtdPut_T02_Op09;
+    public Label lblQtdCallOrPut_T02_Op09;
+    public ImageView imgCallOrPut_T02_Op09;
+    public Label lblQtdStakes_T02_Op09;
+    public Label lblQtdWins_T02_Op09;
+    public Label lblQtdLoss_T02_Op09;
+    public Label lblVlrIn_T02_Op09;
+    public Label lblVlrOut_T02_Op09;
+    public Label lblVlrDiff_T02_Op09;
+    public TableView tbvTransacoes_T02_Op09;
+    // Time_02 *-*-* Symbol_10
+    public Label lblSymbol_T02_Op10;
+    public Label lblQtdCall_T02_Op10;
+    public Label lblQtdPut_T02_Op10;
+    public Label lblQtdCallOrPut_T02_Op10;
+    public ImageView imgCallOrPut_T02_Op10;
+    public Label lblQtdStakes_T02_Op10;
+    public Label lblQtdWins_T02_Op10;
+    public Label lblQtdLoss_T02_Op10;
+    public Label lblVlrIn_T02_Op10;
+    public Label lblVlrOut_T02_Op10;
+    public Label lblVlrDiff_T02_Op10;
+    public TableView tbvTransacoes_T02_Op10;
+    // Time_02 *-*-* Symbol_11
+    public Label lblSymbol_T02_Op11;
+    public Label lblQtdCall_T02_Op11;
+    public Label lblQtdPut_T02_Op11;
+    public Label lblQtdCallOrPut_T02_Op11;
+    public ImageView imgCallOrPut_T02_Op11;
+    public Label lblQtdStakes_T02_Op11;
+    public Label lblQtdWins_T02_Op11;
+    public Label lblQtdLoss_T02_Op11;
+    public Label lblVlrIn_T02_Op11;
+    public Label lblVlrOut_T02_Op11;
+    public Label lblVlrDiff_T02_Op11;
+    public TableView tbvTransacoes_T02_Op11;
+    // Time_02 *-*-* Symbol_12
+    public Label lblSymbol_T02_Op12;
+    public Label lblQtdCall_T02_Op12;
+    public Label lblQtdPut_T02_Op12;
+    public Label lblQtdCallOrPut_T02_Op12;
+    public ImageView imgCallOrPut_T02_Op12;
+    public Label lblQtdStakes_T02_Op12;
+    public Label lblQtdWins_T02_Op12;
+    public Label lblQtdLoss_T02_Op12;
+    public Label lblVlrIn_T02_Op12;
+    public Label lblVlrOut_T02_Op12;
+    public Label lblVlrDiff_T02_Op12;
+    public TableView tbvTransacoes_T02_Op12;
 
 
     /**
@@ -505,24 +649,23 @@ public class Operacoes implements Initializable {
                 getTestaLastCandle()[t_id][s_id] = new SimpleObjectProperty<>();
                 getHistoricoDeCandlesFilteredList()[t_id][s_id] = new FilteredList<>(getHistoricoDeCandlesObservableList());
                 getHistoricoDeCandlesFilteredList()[t_id][s_id].setPredicate(historicoDeCandles ->
-                        historicoDeCandles.getGranularity() == ((finalT_id + 1) * 60)
+                        historicoDeCandles.getGranularity() == TICK_TIME.getTimeSeconds(finalT_id)
                                 && historicoDeCandles.getSymbol().getId() - 1 == finalS_id);
 
+//******************
 
+//                getTransacoesFilteredList()[t_id][s_id] = new FilteredList<>(getTransacoesObservableList());
+//                getTransacoesFilteredList()[t_id][s_id].setPredicate(transaction ->
+//                        Service_DataTime.getTimeCandle_id(transaction.getLongcode()) == finalT_id
+//                                && transaction.getSymbol().getId().intValue() - 1 == finalS_id);
+//
+//
 //                getTmodelTransactions()[t_id][s_id] = new TmodelTransactions();
 //                getTmodelTransactions()[t_id][s_id].criar_tabela();
 //
-
-                getTransactionFilteredList()[t_id][s_id] = new FilteredList<>(getTransactionObservableList());
-//                getTransactionFilteredList()[t_id][s_id].setPredicate(transaction ->
-//                        transaction.get);
-//******************
-
 //                getTmodelTransactions()[t_id][s_id].setTransactionFilteredList(getTransactionFilteredList()[t_id][s_id]);
 //                contectarTabelaEmLista(t_id, s_id);
 //
-//                getTmodelTransactions()[t_id][s_id].setTransactionObservableList(getTransactionObservableList());
-//                //getTmodelTransactions()[t_id][s_id].escutarTransactions();
 //                getTmodelTransactions()[t_id][s_id].tabela_preencher();
             }
         }
@@ -607,6 +750,15 @@ public class Operacoes implements Initializable {
 
         });
 
+//        getTransactionObservableList().addListener((ListChangeListener<? super Transaction>) c -> {
+//            while (c.next()) {
+//                System.out.printf("***TransactionObservableList(): teve alteração");
+//                for (Transaction transaction : c.getAddedSubList()) {
+//                    System.out.printf("***TransactionObservableList()===>>> %s\n", transaction);
+//                }
+//            }
+//        });
+
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
             if (!getTimeAtivo()[t_id].getValue()) continue;
             int finalT_id = t_id;
@@ -621,11 +773,17 @@ public class Operacoes implements Initializable {
                             for (HistoricoDeCandles candle : getHistoricoDeCandlesFilteredList()[finalT_id][finalS_id])
                                 contarCallAndPut(candle, finalT_id, finalS_id);
                         }
-                        for (HistoricoDeCandles candle : c.getAddedSubList()) {
+                        for (HistoricoDeCandles candle : c.getAddedSubList())
                             contarCallAndPut(candle, finalT_id, finalS_id);
-                        }
                     }
                 });
+//                getTransactionFilteredList()[t_id][s_id].addListener((ListChangeListener<? super Transaction>) c -> {
+//                    while (c.next()) {
+//                        for (Transaction transaction : c.getAddedSubList()) {
+//                            System.out.printf("***TransactionFilteredList()[%s][%s]===>>> %s\n", finalT_id, finalS_id, transaction);
+//                        }
+//                    }
+//                });
             }
         }
 
@@ -699,34 +857,6 @@ public class Operacoes implements Initializable {
             }
         });
 
-//        getTransactionObservableList().addListener((ListChangeListener<? super Transaction>) c -> {
-//            while (c.next()) {
-//                for (Transaction transaction : c.getAddedSubList()) {
-//                    if (transaction.getAction() == null) return;
-//                    int t_id = TIME_1M,
-//                            s_id = getSymbolObservableList().stream().filter(symbol -> symbol.getSymbol()
-//                                    .equals(transaction.getSymbol().getSymbol()))
-//                                    .findFirst().get().getId().intValue() - 1;
-//                    System.out.printf("\t\t[%s-%s:%s]\t\ttransaction[%s-%s][%s-%s]: %s\n",
-//                            transaction.getDate_expiry(), transaction.getTransaction_time(), transaction.getDate_expiry() - transaction.getTransaction_time(),
-//                            t_id, TICK_TIME.toEnum(t_id),
-//                            s_id, getSymbolObservableList().get(s_id), transaction);
-//                    switch (ACTION.valueOf(transaction.getAction().toUpperCase())) {
-//                        case BUY -> {
-//                        }
-//                        case SELL -> {
-//                            getResultLastTransiction()[t_id][s_id].setValue(transaction.getAmount().compareTo(BigDecimal.ZERO) > 0);
-//                            if (getResultLastTransiction()[t_id][s_id].getValue())
-//                                getVlrStkContrato()[t_id][s_id].setValue(getVlrStkPadrao()[t_id].getValue());
-//                            else
-//                                getVlrStkContrato()[t_id][s_id].setValue(
-//                                        getVlrStkContrato()[t_id][s_id].getValue().multiply(new BigDecimal("2.")));
-//                        }
-//                    }
-//                }
-//            }
-//        });
-
     }
 
     private void objetos_Comandos() {
@@ -758,29 +888,6 @@ public class Operacoes implements Initializable {
         getBtnTpnNegociacao_Stop().setOnAction(event -> {
             getCboNegociacaoRobos().getSelectionModel().select(0);
         });
-
-    }
-
-    private void preencherTabelas() {
-
-        Platform.runLater(() -> {
-            for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
-                if (!getTimeAtivo()[t_id].getValue()) continue;
-                for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
-                    int finalT_id = t_id, finalS_id = s_id;
-                    getTmodelTransactions()[t_id][s_id].getTransactionFilteredList()
-                            .setPredicate(transaction ->
-//                                    (((transaction.getDate_expiry()
-//                                            - transaction.getTransaction_time()) / 60) - 1 == finalT_id) &&
-                                    transaction.getSymbol().equals(getSymbolObservableList().get(finalS_id).getSymbol()));
-
-                    getTmodelTransactions()[t_id][s_id].criar_tabela();
-                    getTmodelTransactions()[t_id][s_id].tabela_preencher();
-                }
-
-            }
-        });
-
 
     }
 
@@ -839,7 +946,7 @@ public class Operacoes implements Initializable {
         getPriceProposal()[t_id][s_id].setBasis(PRICE_PROPOSAL_BASIS);
         getPriceProposal()[t_id][s_id].setContract_type(cType);
         getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
-        int timeDuration = (Integer.parseInt(time.getDescricao().replaceAll("\\D", "")) * 60) - symbol.getTickTime();
+        int timeDuration = (Integer.parseInt(time.getDescricao().replaceAll("\\D", "")) * 60);// - symbol.getTickTime();
         getPriceProposal()[t_id][s_id].setDuration(timeDuration);
         getPriceProposal()[t_id][s_id].setDuration_unit(DURATION_UNIT.s);
         getPriceProposal()[t_id][s_id].setSymbol(symbol.getSymbol());
@@ -904,6 +1011,7 @@ public class Operacoes implements Initializable {
                         getCboTpnNegociacaoQtdCandlesAnalise().getValue() + 1, getTickStyle(), tempoVela, passthrough));
                 if (tempoVela == null) jsonHistory = jsonHistory.replace(",\"granularity\":null", "");
                 if (passthrough == null) jsonHistory = jsonHistory.replace(",\"passthrough\":null", "");
+//                System.out.printf("jsonHistory: %s\n", jsonHistory);
                 getWsClientObjectProperty().getMyWebSocket().send(jsonHistory);
             }
         }
@@ -1065,6 +1173,7 @@ public class Operacoes implements Initializable {
     }
 
     private void conectarObjetosEmVariaveis_Timers() {
+
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
             if (t_id == TIME_1M)
                 getTpn_T01().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
@@ -1083,9 +1192,10 @@ public class Operacoes implements Initializable {
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
             if (!getTimeAtivo()[t_id].getValue()) continue;
             int finalT_id = t_id;
+            //*-*-* Timer_01
             if (t_id == TIME_1M) {
                 getLblTpn_T01_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
-                                Service_DataHoraCarimbo.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
+                                Service_DataTime.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
                         getTimeCandleStart()[t_id]));
                 getLblTpn_T01_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
                                 String.format("-%s s", getTimeCandleToClose()[finalT_id].getValue()),
@@ -1093,7 +1203,7 @@ public class Operacoes implements Initializable {
 
                 for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                     int finalS_id = s_id;
-                    //*-*-* Op_01
+                    //*-*-* *-*-* Timer_01_Op_01
                     if (s_id == SYMBOL_01) {
                         getLblSymbol_T01_Op01().setText(getSymbolObservableList().get(s_id).getSymbol());
                         getLblQtdCall_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
@@ -1112,11 +1222,221 @@ public class Operacoes implements Initializable {
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
                     }
+                    //*-*-* *-*-* Timer_01_Op_02
+                    if (s_id == SYMBOL_02) {
+                        getLblSymbol_T01_Op02().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op02().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_03
+                    if (s_id == SYMBOL_03) {
+                        getLblSymbol_T01_Op03().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op03().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_04
+                    if (s_id == SYMBOL_04) {
+                        getLblSymbol_T01_Op04().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op04().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_05
+                    if (s_id == SYMBOL_05) {
+                        getLblSymbol_T01_Op05().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op05().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_06
+                    if (s_id == SYMBOL_06) {
+                        getLblSymbol_T01_Op06().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op06().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_07
+                    if (s_id == SYMBOL_07) {
+                        getLblSymbol_T01_Op07().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op07().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_08
+                    if (s_id == SYMBOL_08) {
+                        getLblSymbol_T01_Op08().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op08().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_09
+                    if (s_id == SYMBOL_09) {
+                        getLblSymbol_T01_Op09().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op09().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_10
+                    if (s_id == SYMBOL_10) {
+                        getLblSymbol_T01_Op10().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op10().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_11
+                    if (s_id == SYMBOL_11) {
+                        getLblSymbol_T01_Op11().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op11().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_01_Op_12
+                    if (s_id == SYMBOL_12) {
+                        getLblSymbol_T01_Op12().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T01_Op12().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
                 }
             }
+            //*-*-* Timer_02
             if (t_id == TIME_2M) {
                 getLblTpn_T02_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
-                                Service_DataHoraCarimbo.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
+                                Service_DataTime.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
                         getTimeCandleStart()[t_id]));
                 getLblTpn_T02_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
                                 String.format("-%s s", getTimeCandleToClose()[finalT_id].getValue()),
@@ -1124,7 +1444,7 @@ public class Operacoes implements Initializable {
 
                 for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                     int finalS_id = s_id;
-                    //*-*-* Op_01
+                    //*-*-* *-*-* Timer_02_Op_01
                     if (s_id == SYMBOL_01) {
                         getLblSymbol_T02_Op01().setText(getSymbolObservableList().get(s_id).getSymbol());
                         getLblQtdCall_T02_Op01().textProperty().bind(Bindings.createStringBinding(() ->
@@ -1143,6 +1463,215 @@ public class Operacoes implements Initializable {
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
                     }
+                    //*-*-* *-*-* Timer_02_Op_02
+                    if (s_id == SYMBOL_02) {
+                        getLblSymbol_T02_Op02().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op02().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_03
+                    if (s_id == SYMBOL_03) {
+                        getLblSymbol_T02_Op03().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op03().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_04
+                    if (s_id == SYMBOL_04) {
+                        getLblSymbol_T02_Op04().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op04().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op04().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_05
+                    if (s_id == SYMBOL_05) {
+                        getLblSymbol_T02_Op05().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op05().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op05().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_06
+                    if (s_id == SYMBOL_06) {
+                        getLblSymbol_T02_Op06().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op06().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op06().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op06().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_07
+                    if (s_id == SYMBOL_07) {
+                        getLblSymbol_T02_Op07().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op07().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op07().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op07().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_08
+                    if (s_id == SYMBOL_08) {
+                        getLblSymbol_T02_Op08().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op08().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op08().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op08().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_09
+                    if (s_id == SYMBOL_09) {
+                        getLblSymbol_T02_Op09().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op09().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op09().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op09().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_10
+                    if (s_id == SYMBOL_10) {
+                        getLblSymbol_T02_Op10().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op10().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op10().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op10().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_11
+                    if (s_id == SYMBOL_11) {
+                        getLblSymbol_T02_Op11().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op11().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op11().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op11().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
+                    //*-*-* *-*-* Timer_02_Op_12
+                    if (s_id == SYMBOL_12) {
+                        getLblSymbol_T02_Op12().setText(getSymbolObservableList().get(s_id).getSymbol());
+                        getLblQtdCall_T02_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdCall()[t_id][s_id]));
+                        getLblQtdPut_T02_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                getQtdPut()[t_id][s_id]));
+                        getLblQtdCallOrPut_T02_Op12().textProperty().bind(Bindings.createStringBinding(() -> {
+                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                getImgCallOrPut_T02_Op12().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                getImgCallOrPut_T02_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                            else
+                                getImgCallOrPut_T02_Op12().setImage(null);
+                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                        }, getQtdCallOrPut()[t_id][s_id]));
+                    }
                 }
             }
         }
@@ -1151,115 +1680,122 @@ public class Operacoes implements Initializable {
 
     private void conectarTimesAtivos() {
 
-        getTimeAtivo()[TIME_1M].bind(getChkTpn01_TimeAtivo().selectedProperty());
-        getTimeAtivo()[TIME_2M].bind(getChkTpn02_TimeAtivo().selectedProperty());
+        getTimeAtivo()[TIME_1M].bind(getChkTpn_T01_TimeAtivo().selectedProperty());
+        getTimeAtivo()[TIME_2M].bind(getChkTpn_T02_TimeAtivo().selectedProperty());
 
-        getChkTpn01_TimeAtivo().setSelected(true);
-        getChkTpn02_TimeAtivo().setSelected(true);
+        getChkTpn_T01_TimeAtivo().setSelected(true);
+        getChkTpn_T02_TimeAtivo().setSelected(true);
+
+//        getTpn_T01().expandedProperty().addListener((ov, o, n) -> {
+//            if (!n){
+//                getTpn_T
+//            }
+//        });
 
     }
 
     private void contectarTabelaEmLista(int t_id, int s_id) {
         if (t_id == TIME_1M) {
             if (s_id == SYMBOL_01) {
-                getTmodelTransactions()[t_id][s_id].setTbvTransaction(getTbvTransaction_T01_Op01());
-                getTmodelTransactions()[t_id][s_id].tabela_preencher();
+                getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op01());
+                getTmodelTransacoes()[t_id][s_id].tabela_preencher();
             }
-//            if (s_id == SYMBOL_02) {
-//                getTmodelTransactions()[t_id][SYMBOL_02].setTbvTransaction(getTbvTransaction_T01_Op02());
-//                getTmodelTransactions()[t_id][SYMBOL_02].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_03) {
-//                getTmodelTransactions()[t_id][SYMBOL_03].setTbvTransaction(getTbvTransaction_T01_Op03());
-//                getTmodelTransactions()[t_id][SYMBOL_03].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_04) {
-//                getTmodelTransactions()[t_id][SYMBOL_04].setTbvTransaction(getTbvTransaction_T01_Op04());
-//                getTmodelTransactions()[t_id][SYMBOL_04].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_05) {
-//                getTmodelTransactions()[t_id][SYMBOL_05].setTbvTransaction(getTbvTransaction_T01_Op05());
-//                getTmodelTransactions()[t_id][SYMBOL_05].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_06) {
-//                getTmodelTransactions()[t_id][SYMBOL_06].setTbvTransaction(getTbvTransaction_T01_Op06());
-//                getTmodelTransactions()[t_id][SYMBOL_06].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_07) {
-//                getTmodelTransactions()[t_id][SYMBOL_07].setTbvTransaction(getTbvTransaction_T01_Op07());
-//                getTmodelTransactions()[t_id][SYMBOL_07].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_08) {
-//                getTmodelTransactions()[t_id][SYMBOL_08].setTbvTransaction(getTbvTransaction_T01_Op08());
-//                getTmodelTransactions()[t_id][SYMBOL_08].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_09) {
-//                getTmodelTransactions()[t_id][SYMBOL_09].setTbvTransaction(getTbvTransaction_T01_Op09());
-//                getTmodelTransactions()[t_id][SYMBOL_09].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_10) {
-//                getTmodelTransactions()[t_id][SYMBOL_10].setTbvTransaction(getTbvTransaction_T01_Op10());
-//                getTmodelTransactions()[t_id][SYMBOL_10].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_11) {
-//                getTmodelTransactions()[t_id][SYMBOL_11].setTbvTransaction(getTbvTransaction_T01_Op11());
-//                getTmodelTransactions()[t_id][SYMBOL_11].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_12) {
-//                getTmodelTransactions()[t_id][SYMBOL_12].setTbvTransaction(getTbvTransaction_T01_Op12());
-//                getTmodelTransactions()[t_id][SYMBOL_12].tabela_preencher();
-//            }
+            if (s_id == SYMBOL_02) {
+                getTmodelTransacoes()[t_id][SYMBOL_02].setTbvTransacoes(getTbvTransacoes_T01_Op02());
+                getTmodelTransacoes()[t_id][SYMBOL_02].tabela_preencher();
+            }
+            if (s_id == SYMBOL_03) {
+                getTmodelTransacoes()[t_id][SYMBOL_03].setTbvTransacoes(getTbvTransacoes_T01_Op03());
+                getTmodelTransacoes()[t_id][SYMBOL_03].tabela_preencher();
+            }
+            if (s_id == SYMBOL_04) {
+                getTmodelTransacoes()[t_id][SYMBOL_04].setTbvTransacoes(getTbvTransacoes_T01_Op04());
+                getTmodelTransacoes()[t_id][SYMBOL_04].tabela_preencher();
+            }
+            if (s_id == SYMBOL_05) {
+                getTmodelTransacoes()[t_id][SYMBOL_05].setTbvTransacoes(getTbvTransacoes_T01_Op05());
+                getTmodelTransacoes()[t_id][SYMBOL_05].tabela_preencher();
+            }
+            if (s_id == SYMBOL_06) {
+                getTmodelTransacoes()[t_id][SYMBOL_06].setTbvTransacoes(getTbvTransacoes_T01_Op06());
+                getTmodelTransacoes()[t_id][SYMBOL_06].tabela_preencher();
+            }
+            if (s_id == SYMBOL_07) {
+                getTmodelTransacoes()[t_id][SYMBOL_07].setTbvTransacoes(getTbvTransacoes_T01_Op07());
+                getTmodelTransacoes()[t_id][SYMBOL_07].tabela_preencher();
+            }
+            if (s_id == SYMBOL_08) {
+                getTmodelTransacoes()[t_id][SYMBOL_08].setTbvTransacoes(getTbvTransacoes_T01_Op08());
+                getTmodelTransacoes()[t_id][SYMBOL_08].tabela_preencher();
+            }
+            if (s_id == SYMBOL_09) {
+                getTmodelTransacoes()[t_id][SYMBOL_09].setTbvTransacoes(getTbvTransacoes_T01_Op09());
+                getTmodelTransacoes()[t_id][SYMBOL_09].tabela_preencher();
+            }
+            if (s_id == SYMBOL_10) {
+                getTmodelTransacoes()[t_id][SYMBOL_10].setTbvTransacoes(getTbvTransacoes_T01_Op10());
+                getTmodelTransacoes()[t_id][SYMBOL_10].tabela_preencher();
+            }
+            if (s_id == SYMBOL_11) {
+                getTmodelTransacoes()[t_id][SYMBOL_11].setTbvTransacoes(getTbvTransacoes_T01_Op11());
+                getTmodelTransacoes()[t_id][SYMBOL_11].tabela_preencher();
+            }
+            if (s_id == SYMBOL_12) {
+                getTmodelTransacoes()[t_id][SYMBOL_12].setTbvTransacoes(getTbvTransacoes_T01_Op12());
+                getTmodelTransacoes()[t_id][SYMBOL_12].tabela_preencher();
+            }
         }
         if (t_id == TIME_2M) {
-            if (s_id == SYMBOL_02) {
-                getTmodelTransactions()[t_id][s_id].setTbvTransaction(getTbvTransaction_T02_Op01());
-                getTmodelTransactions()[t_id][s_id].tabela_preencher();
+            if (s_id == SYMBOL_01) {
+                getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op01());
+                getTmodelTransacoes()[t_id][s_id].tabela_preencher();
             }
-//            if (s_id == SYMBOL_02) {
-//                getTmodelTransactions()[t_id][SYMBOL_02].setTbvTransaction(getTbvTransaction_T01_Op02());
-//                getTmodelTransactions()[t_id][SYMBOL_02].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_03) {
-//                getTmodelTransactions()[t_id][SYMBOL_03].setTbvTransaction(getTbvTransaction_T01_Op03());
-//                getTmodelTransactions()[t_id][SYMBOL_03].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_04) {
-//                getTmodelTransactions()[t_id][SYMBOL_04].setTbvTransaction(getTbvTransaction_T01_Op04());
-//                getTmodelTransactions()[t_id][SYMBOL_04].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_05) {
-//                getTmodelTransactions()[t_id][SYMBOL_05].setTbvTransaction(getTbvTransaction_T01_Op05());
-//                getTmodelTransactions()[t_id][SYMBOL_05].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_06) {
-//                getTmodelTransactions()[t_id][SYMBOL_06].setTbvTransaction(getTbvTransaction_T01_Op06());
-//                getTmodelTransactions()[t_id][SYMBOL_06].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_07) {
-//                getTmodelTransactions()[t_id][SYMBOL_07].setTbvTransaction(getTbvTransaction_T01_Op07());
-//                getTmodelTransactions()[t_id][SYMBOL_07].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_08) {
-//                getTmodelTransactions()[t_id][SYMBOL_08].setTbvTransaction(getTbvTransaction_T01_Op08());
-//                getTmodelTransactions()[t_id][SYMBOL_08].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_09) {
-//                getTmodelTransactions()[t_id][SYMBOL_09].setTbvTransaction(getTbvTransaction_T01_Op09());
-//                getTmodelTransactions()[t_id][SYMBOL_09].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_10) {
-//                getTmodelTransactions()[t_id][SYMBOL_10].setTbvTransaction(getTbvTransaction_T01_Op10());
-//                getTmodelTransactions()[t_id][SYMBOL_10].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_11) {
-//                getTmodelTransactions()[t_id][SYMBOL_11].setTbvTransaction(getTbvTransaction_T01_Op11());
-//                getTmodelTransactions()[t_id][SYMBOL_11].tabela_preencher();
-//            }
-//            if (s_id == SYMBOL_12) {
-//                getTmodelTransactions()[t_id][SYMBOL_12].setTbvTransaction(getTbvTransaction_T01_Op12());
-//                getTmodelTransactions()[t_id][SYMBOL_12].tabela_preencher();
-//            }
+            if (s_id == SYMBOL_02) {
+                getTmodelTransacoes()[t_id][SYMBOL_02].setTbvTransacoes(getTbvTransacoes_T02_Op02());
+                getTmodelTransacoes()[t_id][SYMBOL_02].tabela_preencher();
+            }
+            if (s_id == SYMBOL_03) {
+                getTmodelTransacoes()[t_id][SYMBOL_03].setTbvTransacoes(getTbvTransacoes_T02_Op03());
+                getTmodelTransacoes()[t_id][SYMBOL_03].tabela_preencher();
+            }
+            if (s_id == SYMBOL_04) {
+                getTmodelTransacoes()[t_id][SYMBOL_04].setTbvTransacoes(getTbvTransacoes_T02_Op04());
+                getTmodelTransacoes()[t_id][SYMBOL_04].tabela_preencher();
+            }
+            if (s_id == SYMBOL_05) {
+                getTmodelTransacoes()[t_id][SYMBOL_05].setTbvTransacoes(getTbvTransacoes_T02_Op05());
+                getTmodelTransacoes()[t_id][SYMBOL_05].tabela_preencher();
+            }
+            if (s_id == SYMBOL_06) {
+                getTmodelTransacoes()[t_id][SYMBOL_06].setTbvTransacoes(getTbvTransacoes_T02_Op06());
+                getTmodelTransacoes()[t_id][SYMBOL_06].tabela_preencher();
+            }
+            if (s_id == SYMBOL_07) {
+                getTmodelTransacoes()[t_id][SYMBOL_07].setTbvTransacoes(getTbvTransacoes_T02_Op07());
+                getTmodelTransacoes()[t_id][SYMBOL_07].tabela_preencher();
+            }
+            if (s_id == SYMBOL_08) {
+                getTmodelTransacoes()[t_id][SYMBOL_08].setTbvTransacoes(getTbvTransacoes_T02_Op08());
+                getTmodelTransacoes()[t_id][SYMBOL_08].tabela_preencher();
+            }
+            if (s_id == SYMBOL_09) {
+                getTmodelTransacoes()[t_id][SYMBOL_09].setTbvTransacoes(getTbvTransacoes_T02_Op09());
+                getTmodelTransacoes()[t_id][SYMBOL_09].tabela_preencher();
+            }
+            if (s_id == SYMBOL_10) {
+                getTmodelTransacoes()[t_id][SYMBOL_10].setTbvTransacoes(getTbvTransacoes_T02_Op10());
+                getTmodelTransacoes()[t_id][SYMBOL_10].tabela_preencher();
+            }
+            if (s_id == SYMBOL_11) {
+                getTmodelTransacoes()[t_id][SYMBOL_11].setTbvTransacoes(getTbvTransacoes_T02_Op11());
+                getTmodelTransacoes()[t_id][SYMBOL_11].tabela_preencher();
+            }
+            if (s_id == SYMBOL_12) {
+                getTmodelTransacoes()[t_id][SYMBOL_12].setTbvTransacoes(getTbvTransacoes_T02_Op12());
+                getTmodelTransacoes()[t_id][SYMBOL_12].tabela_preencher();
+            }
         }
+
     }
 
     /**
@@ -1319,6 +1855,10 @@ public class Operacoes implements Initializable {
 
     public static void setTransactionDAO(TransactionDAO transactionDAO) {
         Operacoes.transactionDAO = transactionDAO;
+    }
+
+    public static List<Symbol> getSymbolList() {
+        return SYMBOL_LIST;
     }
 
     public static ObservableList<Symbol> getSymbolObservableList() {
@@ -1417,12 +1957,32 @@ public class Operacoes implements Initializable {
         Operacoes.saldoInicial.set(saldoInicial);
     }
 
+    public static int getQtdCandlesAnalise() {
+        return qtdCandlesAnalise.get();
+    }
+
+    public static IntegerProperty qtdCandlesAnaliseProperty() {
+        return qtdCandlesAnalise;
+    }
+
+    public static void setQtdCandlesAnalise(int qtdCandlesAnalise) {
+        Operacoes.qtdCandlesAnalise.set(qtdCandlesAnalise);
+    }
+
     public static ObjectProperty<Ohlc>[] getUltimoOhlcStr() {
         return ultimoOhlcStr;
     }
 
     public static void setUltimoOhlcStr(ObjectProperty<Ohlc>[] ultimoOhlcStr) {
         Operacoes.ultimoOhlcStr = ultimoOhlcStr;
+    }
+
+    public static ObjectProperty<Ohlc>[][] getTestaLastCandle() {
+        return testaLastCandle;
+    }
+
+    public static void setTestaLastCandle(ObjectProperty<Ohlc>[][] testaLastCandle) {
+        Operacoes.testaLastCandle = testaLastCandle;
     }
 
     public static BooleanProperty[] getTickSubindo() {
@@ -1481,28 +2041,36 @@ public class Operacoes implements Initializable {
         Operacoes.historicoDeCandlesObservableList = historicoDeCandlesObservableList;
     }
 
-    public static ObservableList<Transaction> getTransactionObservableList() {
-        return transactionObservableList;
+    public static ObservableList<Transacoes> getTransacoesObservableList() {
+        return transacoesObservableList;
     }
 
-    public static void setTransactionObservableList(ObservableList<Transaction> transactionObservableList) {
-        Operacoes.transactionObservableList = transactionObservableList;
+    public static void setTransacoesObservableList(ObservableList<Transacoes> transacoesObservableList) {
+        Operacoes.transacoesObservableList = transacoesObservableList;
     }
 
-    public static TmodelTransactions[][] getTmodelTransactions() {
-        return tmodelTransactions;
+    public static FilteredList<HistoricoDeCandles>[][] getHistoricoDeCandlesFilteredList() {
+        return historicoDeCandlesFilteredList;
     }
 
-    public static void setTmodelTransactions(TmodelTransactions[][] tmodelTransactions) {
-        Operacoes.tmodelTransactions = tmodelTransactions;
+    public static void setHistoricoDeCandlesFilteredList(FilteredList<HistoricoDeCandles>[][] historicoDeCandlesFilteredList) {
+        Operacoes.historicoDeCandlesFilteredList = historicoDeCandlesFilteredList;
     }
 
-    public static FilteredList<Transaction>[][] getTransactionFilteredList() {
-        return transactionFilteredList;
+    public static FilteredList<Transacoes>[][] getTransacoesFilteredList() {
+        return transacoesFilteredList;
     }
 
-    public static void setTransactionFilteredList(FilteredList<Transaction>[][] transactionFilteredList) {
-        Operacoes.transactionFilteredList = transactionFilteredList;
+    public static void setTransacoesFilteredList(FilteredList<Transacoes>[][] transacoesFilteredList) {
+        Operacoes.transacoesFilteredList = transacoesFilteredList;
+    }
+
+    public static TmodelTransacoes[][] getTmodelTransacoes() {
+        return tmodelTransacoes;
+    }
+
+    public static void setTmodelTransacoes(TmodelTransacoes[][] tmodelTransacoes) {
+        Operacoes.tmodelTransacoes = tmodelTransacoes;
     }
 
     public static BooleanProperty[][] getResultLastTransiction() {
@@ -2141,12 +2709,12 @@ public class Operacoes implements Initializable {
         this.tpn_T01 = tpn_T01;
     }
 
-    public JFXCheckBox getChkTpn01_TimeAtivo() {
-        return chkTpn01_TimeAtivo;
+    public JFXCheckBox getChkTpn_T01_TimeAtivo() {
+        return chkTpn_T01_TimeAtivo;
     }
 
-    public void setChkTpn01_TimeAtivo(JFXCheckBox chkTpn01_TimeAtivo) {
-        this.chkTpn01_TimeAtivo = chkTpn01_TimeAtivo;
+    public void setChkTpn_T01_TimeAtivo(JFXCheckBox chkTpn_T01_TimeAtivo) {
+        this.chkTpn_T01_TimeAtivo = chkTpn_T01_TimeAtivo;
     }
 
     public Label getLblTpn_T01_CandleTimeStart() {
@@ -2301,12 +2869,1068 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T01_Op01 = lblVlrDiff_T01_Op01;
     }
 
-    public TableView getTbvTransaction_T01_Op01() {
-        return tbvTransaction_T01_Op01;
+    public TableView getTbvTransacoes_T01_Op01() {
+        return tbvTransacoes_T01_Op01;
     }
 
-    public void setTbvTransaction_T01_Op01(TableView tbvTransaction_T01_Op01) {
-        this.tbvTransaction_T01_Op01 = tbvTransaction_T01_Op01;
+    public void setTbvTransacoes_T01_Op01(TableView tbvTransacoes_T01_Op01) {
+        this.tbvTransacoes_T01_Op01 = tbvTransacoes_T01_Op01;
+    }
+
+    public Label getLblSymbol_T01_Op02() {
+        return lblSymbol_T01_Op02;
+    }
+
+    public void setLblSymbol_T01_Op02(Label lblSymbol_T01_Op02) {
+        this.lblSymbol_T01_Op02 = lblSymbol_T01_Op02;
+    }
+
+    public Label getLblQtdCall_T01_Op02() {
+        return lblQtdCall_T01_Op02;
+    }
+
+    public void setLblQtdCall_T01_Op02(Label lblQtdCall_T01_Op02) {
+        this.lblQtdCall_T01_Op02 = lblQtdCall_T01_Op02;
+    }
+
+    public Label getLblQtdPut_T01_Op02() {
+        return lblQtdPut_T01_Op02;
+    }
+
+    public void setLblQtdPut_T01_Op02(Label lblQtdPut_T01_Op02) {
+        this.lblQtdPut_T01_Op02 = lblQtdPut_T01_Op02;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op02() {
+        return lblQtdCallOrPut_T01_Op02;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op02(Label lblQtdCallOrPut_T01_Op02) {
+        this.lblQtdCallOrPut_T01_Op02 = lblQtdCallOrPut_T01_Op02;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op02() {
+        return imgCallOrPut_T01_Op02;
+    }
+
+    public void setImgCallOrPut_T01_Op02(ImageView imgCallOrPut_T01_Op02) {
+        this.imgCallOrPut_T01_Op02 = imgCallOrPut_T01_Op02;
+    }
+
+    public Label getLblQtdStakes_T01_Op02() {
+        return lblQtdStakes_T01_Op02;
+    }
+
+    public void setLblQtdStakes_T01_Op02(Label lblQtdStakes_T01_Op02) {
+        this.lblQtdStakes_T01_Op02 = lblQtdStakes_T01_Op02;
+    }
+
+    public Label getLblQtdWins_T01_Op02() {
+        return lblQtdWins_T01_Op02;
+    }
+
+    public void setLblQtdWins_T01_Op02(Label lblQtdWins_T01_Op02) {
+        this.lblQtdWins_T01_Op02 = lblQtdWins_T01_Op02;
+    }
+
+    public Label getLblQtdLoss_T01_Op02() {
+        return lblQtdLoss_T01_Op02;
+    }
+
+    public void setLblQtdLoss_T01_Op02(Label lblQtdLoss_T01_Op02) {
+        this.lblQtdLoss_T01_Op02 = lblQtdLoss_T01_Op02;
+    }
+
+    public Label getLblVlrIn_T01_Op02() {
+        return lblVlrIn_T01_Op02;
+    }
+
+    public void setLblVlrIn_T01_Op02(Label lblVlrIn_T01_Op02) {
+        this.lblVlrIn_T01_Op02 = lblVlrIn_T01_Op02;
+    }
+
+    public Label getLblVlrOut_T01_Op02() {
+        return lblVlrOut_T01_Op02;
+    }
+
+    public void setLblVlrOut_T01_Op02(Label lblVlrOut_T01_Op02) {
+        this.lblVlrOut_T01_Op02 = lblVlrOut_T01_Op02;
+    }
+
+    public Label getLblVlrDiff_T01_Op02() {
+        return lblVlrDiff_T01_Op02;
+    }
+
+    public void setLblVlrDiff_T01_Op02(Label lblVlrDiff_T01_Op02) {
+        this.lblVlrDiff_T01_Op02 = lblVlrDiff_T01_Op02;
+    }
+
+    public TableView getTbvTransacoes_T01_Op02() {
+        return tbvTransacoes_T01_Op02;
+    }
+
+    public void setTbvTransacoes_T01_Op02(TableView tbvTransacoes_T01_Op02) {
+        this.tbvTransacoes_T01_Op02 = tbvTransacoes_T01_Op02;
+    }
+
+    public Label getLblSymbol_T01_Op03() {
+        return lblSymbol_T01_Op03;
+    }
+
+    public void setLblSymbol_T01_Op03(Label lblSymbol_T01_Op03) {
+        this.lblSymbol_T01_Op03 = lblSymbol_T01_Op03;
+    }
+
+    public Label getLblQtdCall_T01_Op03() {
+        return lblQtdCall_T01_Op03;
+    }
+
+    public void setLblQtdCall_T01_Op03(Label lblQtdCall_T01_Op03) {
+        this.lblQtdCall_T01_Op03 = lblQtdCall_T01_Op03;
+    }
+
+    public Label getLblQtdPut_T01_Op03() {
+        return lblQtdPut_T01_Op03;
+    }
+
+    public void setLblQtdPut_T01_Op03(Label lblQtdPut_T01_Op03) {
+        this.lblQtdPut_T01_Op03 = lblQtdPut_T01_Op03;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op03() {
+        return lblQtdCallOrPut_T01_Op03;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op03(Label lblQtdCallOrPut_T01_Op03) {
+        this.lblQtdCallOrPut_T01_Op03 = lblQtdCallOrPut_T01_Op03;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op03() {
+        return imgCallOrPut_T01_Op03;
+    }
+
+    public void setImgCallOrPut_T01_Op03(ImageView imgCallOrPut_T01_Op03) {
+        this.imgCallOrPut_T01_Op03 = imgCallOrPut_T01_Op03;
+    }
+
+    public Label getLblQtdStakes_T01_Op03() {
+        return lblQtdStakes_T01_Op03;
+    }
+
+    public void setLblQtdStakes_T01_Op03(Label lblQtdStakes_T01_Op03) {
+        this.lblQtdStakes_T01_Op03 = lblQtdStakes_T01_Op03;
+    }
+
+    public Label getLblQtdWins_T01_Op03() {
+        return lblQtdWins_T01_Op03;
+    }
+
+    public void setLblQtdWins_T01_Op03(Label lblQtdWins_T01_Op03) {
+        this.lblQtdWins_T01_Op03 = lblQtdWins_T01_Op03;
+    }
+
+    public Label getLblQtdLoss_T01_Op03() {
+        return lblQtdLoss_T01_Op03;
+    }
+
+    public void setLblQtdLoss_T01_Op03(Label lblQtdLoss_T01_Op03) {
+        this.lblQtdLoss_T01_Op03 = lblQtdLoss_T01_Op03;
+    }
+
+    public Label getLblVlrIn_T01_Op03() {
+        return lblVlrIn_T01_Op03;
+    }
+
+    public void setLblVlrIn_T01_Op03(Label lblVlrIn_T01_Op03) {
+        this.lblVlrIn_T01_Op03 = lblVlrIn_T01_Op03;
+    }
+
+    public Label getLblVlrOut_T01_Op03() {
+        return lblVlrOut_T01_Op03;
+    }
+
+    public void setLblVlrOut_T01_Op03(Label lblVlrOut_T01_Op03) {
+        this.lblVlrOut_T01_Op03 = lblVlrOut_T01_Op03;
+    }
+
+    public Label getLblVlrDiff_T01_Op03() {
+        return lblVlrDiff_T01_Op03;
+    }
+
+    public void setLblVlrDiff_T01_Op03(Label lblVlrDiff_T01_Op03) {
+        this.lblVlrDiff_T01_Op03 = lblVlrDiff_T01_Op03;
+    }
+
+    public TableView getTbvTransacoes_T01_Op03() {
+        return tbvTransacoes_T01_Op03;
+    }
+
+    public void setTbvTransacoes_T01_Op03(TableView tbvTransacoes_T01_Op03) {
+        this.tbvTransacoes_T01_Op03 = tbvTransacoes_T01_Op03;
+    }
+
+    public Label getLblSymbol_T01_Op04() {
+        return lblSymbol_T01_Op04;
+    }
+
+    public void setLblSymbol_T01_Op04(Label lblSymbol_T01_Op04) {
+        this.lblSymbol_T01_Op04 = lblSymbol_T01_Op04;
+    }
+
+    public Label getLblQtdCall_T01_Op04() {
+        return lblQtdCall_T01_Op04;
+    }
+
+    public void setLblQtdCall_T01_Op04(Label lblQtdCall_T01_Op04) {
+        this.lblQtdCall_T01_Op04 = lblQtdCall_T01_Op04;
+    }
+
+    public Label getLblQtdPut_T01_Op04() {
+        return lblQtdPut_T01_Op04;
+    }
+
+    public void setLblQtdPut_T01_Op04(Label lblQtdPut_T01_Op04) {
+        this.lblQtdPut_T01_Op04 = lblQtdPut_T01_Op04;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op04() {
+        return lblQtdCallOrPut_T01_Op04;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op04(Label lblQtdCallOrPut_T01_Op04) {
+        this.lblQtdCallOrPut_T01_Op04 = lblQtdCallOrPut_T01_Op04;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op04() {
+        return imgCallOrPut_T01_Op04;
+    }
+
+    public void setImgCallOrPut_T01_Op04(ImageView imgCallOrPut_T01_Op04) {
+        this.imgCallOrPut_T01_Op04 = imgCallOrPut_T01_Op04;
+    }
+
+    public Label getLblQtdStakes_T01_Op04() {
+        return lblQtdStakes_T01_Op04;
+    }
+
+    public void setLblQtdStakes_T01_Op04(Label lblQtdStakes_T01_Op04) {
+        this.lblQtdStakes_T01_Op04 = lblQtdStakes_T01_Op04;
+    }
+
+    public Label getLblQtdWins_T01_Op04() {
+        return lblQtdWins_T01_Op04;
+    }
+
+    public void setLblQtdWins_T01_Op04(Label lblQtdWins_T01_Op04) {
+        this.lblQtdWins_T01_Op04 = lblQtdWins_T01_Op04;
+    }
+
+    public Label getLblQtdLoss_T01_Op04() {
+        return lblQtdLoss_T01_Op04;
+    }
+
+    public void setLblQtdLoss_T01_Op04(Label lblQtdLoss_T01_Op04) {
+        this.lblQtdLoss_T01_Op04 = lblQtdLoss_T01_Op04;
+    }
+
+    public Label getLblVlrIn_T01_Op04() {
+        return lblVlrIn_T01_Op04;
+    }
+
+    public void setLblVlrIn_T01_Op04(Label lblVlrIn_T01_Op04) {
+        this.lblVlrIn_T01_Op04 = lblVlrIn_T01_Op04;
+    }
+
+    public Label getLblVlrOut_T01_Op04() {
+        return lblVlrOut_T01_Op04;
+    }
+
+    public void setLblVlrOut_T01_Op04(Label lblVlrOut_T01_Op04) {
+        this.lblVlrOut_T01_Op04 = lblVlrOut_T01_Op04;
+    }
+
+    public Label getLblVlrDiff_T01_Op04() {
+        return lblVlrDiff_T01_Op04;
+    }
+
+    public void setLblVlrDiff_T01_Op04(Label lblVlrDiff_T01_Op04) {
+        this.lblVlrDiff_T01_Op04 = lblVlrDiff_T01_Op04;
+    }
+
+    public TableView getTbvTransacoes_T01_Op04() {
+        return tbvTransacoes_T01_Op04;
+    }
+
+    public void setTbvTransacoes_T01_Op04(TableView tbvTransacoes_T01_Op04) {
+        this.tbvTransacoes_T01_Op04 = tbvTransacoes_T01_Op04;
+    }
+
+    public Label getLblSymbol_T01_Op05() {
+        return lblSymbol_T01_Op05;
+    }
+
+    public void setLblSymbol_T01_Op05(Label lblSymbol_T01_Op05) {
+        this.lblSymbol_T01_Op05 = lblSymbol_T01_Op05;
+    }
+
+    public Label getLblQtdCall_T01_Op05() {
+        return lblQtdCall_T01_Op05;
+    }
+
+    public void setLblQtdCall_T01_Op05(Label lblQtdCall_T01_Op05) {
+        this.lblQtdCall_T01_Op05 = lblQtdCall_T01_Op05;
+    }
+
+    public Label getLblQtdPut_T01_Op05() {
+        return lblQtdPut_T01_Op05;
+    }
+
+    public void setLblQtdPut_T01_Op05(Label lblQtdPut_T01_Op05) {
+        this.lblQtdPut_T01_Op05 = lblQtdPut_T01_Op05;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op05() {
+        return lblQtdCallOrPut_T01_Op05;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op05(Label lblQtdCallOrPut_T01_Op05) {
+        this.lblQtdCallOrPut_T01_Op05 = lblQtdCallOrPut_T01_Op05;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op05() {
+        return imgCallOrPut_T01_Op05;
+    }
+
+    public void setImgCallOrPut_T01_Op05(ImageView imgCallOrPut_T01_Op05) {
+        this.imgCallOrPut_T01_Op05 = imgCallOrPut_T01_Op05;
+    }
+
+    public Label getLblQtdStakes_T01_Op05() {
+        return lblQtdStakes_T01_Op05;
+    }
+
+    public void setLblQtdStakes_T01_Op05(Label lblQtdStakes_T01_Op05) {
+        this.lblQtdStakes_T01_Op05 = lblQtdStakes_T01_Op05;
+    }
+
+    public Label getLblQtdWins_T01_Op05() {
+        return lblQtdWins_T01_Op05;
+    }
+
+    public void setLblQtdWins_T01_Op05(Label lblQtdWins_T01_Op05) {
+        this.lblQtdWins_T01_Op05 = lblQtdWins_T01_Op05;
+    }
+
+    public Label getLblQtdLoss_T01_Op05() {
+        return lblQtdLoss_T01_Op05;
+    }
+
+    public void setLblQtdLoss_T01_Op05(Label lblQtdLoss_T01_Op05) {
+        this.lblQtdLoss_T01_Op05 = lblQtdLoss_T01_Op05;
+    }
+
+    public Label getLblVlrIn_T01_Op05() {
+        return lblVlrIn_T01_Op05;
+    }
+
+    public void setLblVlrIn_T01_Op05(Label lblVlrIn_T01_Op05) {
+        this.lblVlrIn_T01_Op05 = lblVlrIn_T01_Op05;
+    }
+
+    public Label getLblVlrOut_T01_Op05() {
+        return lblVlrOut_T01_Op05;
+    }
+
+    public void setLblVlrOut_T01_Op05(Label lblVlrOut_T01_Op05) {
+        this.lblVlrOut_T01_Op05 = lblVlrOut_T01_Op05;
+    }
+
+    public Label getLblVlrDiff_T01_Op05() {
+        return lblVlrDiff_T01_Op05;
+    }
+
+    public void setLblVlrDiff_T01_Op05(Label lblVlrDiff_T01_Op05) {
+        this.lblVlrDiff_T01_Op05 = lblVlrDiff_T01_Op05;
+    }
+
+    public TableView getTbvTransacoes_T01_Op05() {
+        return tbvTransacoes_T01_Op05;
+    }
+
+    public void setTbvTransacoes_T01_Op05(TableView tbvTransacoes_T01_Op05) {
+        this.tbvTransacoes_T01_Op05 = tbvTransacoes_T01_Op05;
+    }
+
+    public Label getLblSymbol_T01_Op06() {
+        return lblSymbol_T01_Op06;
+    }
+
+    public void setLblSymbol_T01_Op06(Label lblSymbol_T01_Op06) {
+        this.lblSymbol_T01_Op06 = lblSymbol_T01_Op06;
+    }
+
+    public Label getLblQtdCall_T01_Op06() {
+        return lblQtdCall_T01_Op06;
+    }
+
+    public void setLblQtdCall_T01_Op06(Label lblQtdCall_T01_Op06) {
+        this.lblQtdCall_T01_Op06 = lblQtdCall_T01_Op06;
+    }
+
+    public Label getLblQtdPut_T01_Op06() {
+        return lblQtdPut_T01_Op06;
+    }
+
+    public void setLblQtdPut_T01_Op06(Label lblQtdPut_T01_Op06) {
+        this.lblQtdPut_T01_Op06 = lblQtdPut_T01_Op06;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op06() {
+        return lblQtdCallOrPut_T01_Op06;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op06(Label lblQtdCallOrPut_T01_Op06) {
+        this.lblQtdCallOrPut_T01_Op06 = lblQtdCallOrPut_T01_Op06;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op06() {
+        return imgCallOrPut_T01_Op06;
+    }
+
+    public void setImgCallOrPut_T01_Op06(ImageView imgCallOrPut_T01_Op06) {
+        this.imgCallOrPut_T01_Op06 = imgCallOrPut_T01_Op06;
+    }
+
+    public Label getLblQtdStakes_T01_Op06() {
+        return lblQtdStakes_T01_Op06;
+    }
+
+    public void setLblQtdStakes_T01_Op06(Label lblQtdStakes_T01_Op06) {
+        this.lblQtdStakes_T01_Op06 = lblQtdStakes_T01_Op06;
+    }
+
+    public Label getLblQtdWins_T01_Op06() {
+        return lblQtdWins_T01_Op06;
+    }
+
+    public void setLblQtdWins_T01_Op06(Label lblQtdWins_T01_Op06) {
+        this.lblQtdWins_T01_Op06 = lblQtdWins_T01_Op06;
+    }
+
+    public Label getLblQtdLoss_T01_Op06() {
+        return lblQtdLoss_T01_Op06;
+    }
+
+    public void setLblQtdLoss_T01_Op06(Label lblQtdLoss_T01_Op06) {
+        this.lblQtdLoss_T01_Op06 = lblQtdLoss_T01_Op06;
+    }
+
+    public Label getLblVlrIn_T01_Op06() {
+        return lblVlrIn_T01_Op06;
+    }
+
+    public void setLblVlrIn_T01_Op06(Label lblVlrIn_T01_Op06) {
+        this.lblVlrIn_T01_Op06 = lblVlrIn_T01_Op06;
+    }
+
+    public Label getLblVlrOut_T01_Op06() {
+        return lblVlrOut_T01_Op06;
+    }
+
+    public void setLblVlrOut_T01_Op06(Label lblVlrOut_T01_Op06) {
+        this.lblVlrOut_T01_Op06 = lblVlrOut_T01_Op06;
+    }
+
+    public Label getLblVlrDiff_T01_Op06() {
+        return lblVlrDiff_T01_Op06;
+    }
+
+    public void setLblVlrDiff_T01_Op06(Label lblVlrDiff_T01_Op06) {
+        this.lblVlrDiff_T01_Op06 = lblVlrDiff_T01_Op06;
+    }
+
+    public TableView getTbvTransacoes_T01_Op06() {
+        return tbvTransacoes_T01_Op06;
+    }
+
+    public void setTbvTransacoes_T01_Op06(TableView tbvTransacoes_T01_Op06) {
+        this.tbvTransacoes_T01_Op06 = tbvTransacoes_T01_Op06;
+    }
+
+    public Label getLblSymbol_T01_Op07() {
+        return lblSymbol_T01_Op07;
+    }
+
+    public void setLblSymbol_T01_Op07(Label lblSymbol_T01_Op07) {
+        this.lblSymbol_T01_Op07 = lblSymbol_T01_Op07;
+    }
+
+    public Label getLblQtdCall_T01_Op07() {
+        return lblQtdCall_T01_Op07;
+    }
+
+    public void setLblQtdCall_T01_Op07(Label lblQtdCall_T01_Op07) {
+        this.lblQtdCall_T01_Op07 = lblQtdCall_T01_Op07;
+    }
+
+    public Label getLblQtdPut_T01_Op07() {
+        return lblQtdPut_T01_Op07;
+    }
+
+    public void setLblQtdPut_T01_Op07(Label lblQtdPut_T01_Op07) {
+        this.lblQtdPut_T01_Op07 = lblQtdPut_T01_Op07;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op07() {
+        return lblQtdCallOrPut_T01_Op07;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op07(Label lblQtdCallOrPut_T01_Op07) {
+        this.lblQtdCallOrPut_T01_Op07 = lblQtdCallOrPut_T01_Op07;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op07() {
+        return imgCallOrPut_T01_Op07;
+    }
+
+    public void setImgCallOrPut_T01_Op07(ImageView imgCallOrPut_T01_Op07) {
+        this.imgCallOrPut_T01_Op07 = imgCallOrPut_T01_Op07;
+    }
+
+    public Label getLblQtdStakes_T01_Op07() {
+        return lblQtdStakes_T01_Op07;
+    }
+
+    public void setLblQtdStakes_T01_Op07(Label lblQtdStakes_T01_Op07) {
+        this.lblQtdStakes_T01_Op07 = lblQtdStakes_T01_Op07;
+    }
+
+    public Label getLblQtdWins_T01_Op07() {
+        return lblQtdWins_T01_Op07;
+    }
+
+    public void setLblQtdWins_T01_Op07(Label lblQtdWins_T01_Op07) {
+        this.lblQtdWins_T01_Op07 = lblQtdWins_T01_Op07;
+    }
+
+    public Label getLblQtdLoss_T01_Op07() {
+        return lblQtdLoss_T01_Op07;
+    }
+
+    public void setLblQtdLoss_T01_Op07(Label lblQtdLoss_T01_Op07) {
+        this.lblQtdLoss_T01_Op07 = lblQtdLoss_T01_Op07;
+    }
+
+    public Label getLblVlrIn_T01_Op07() {
+        return lblVlrIn_T01_Op07;
+    }
+
+    public void setLblVlrIn_T01_Op07(Label lblVlrIn_T01_Op07) {
+        this.lblVlrIn_T01_Op07 = lblVlrIn_T01_Op07;
+    }
+
+    public Label getLblVlrOut_T01_Op07() {
+        return lblVlrOut_T01_Op07;
+    }
+
+    public void setLblVlrOut_T01_Op07(Label lblVlrOut_T01_Op07) {
+        this.lblVlrOut_T01_Op07 = lblVlrOut_T01_Op07;
+    }
+
+    public Label getLblVlrDiff_T01_Op07() {
+        return lblVlrDiff_T01_Op07;
+    }
+
+    public void setLblVlrDiff_T01_Op07(Label lblVlrDiff_T01_Op07) {
+        this.lblVlrDiff_T01_Op07 = lblVlrDiff_T01_Op07;
+    }
+
+    public TableView getTbvTransacoes_T01_Op07() {
+        return tbvTransacoes_T01_Op07;
+    }
+
+    public void setTbvTransacoes_T01_Op07(TableView tbvTransacoes_T01_Op07) {
+        this.tbvTransacoes_T01_Op07 = tbvTransacoes_T01_Op07;
+    }
+
+    public Label getLblSymbol_T01_Op08() {
+        return lblSymbol_T01_Op08;
+    }
+
+    public void setLblSymbol_T01_Op08(Label lblSymbol_T01_Op08) {
+        this.lblSymbol_T01_Op08 = lblSymbol_T01_Op08;
+    }
+
+    public Label getLblQtdCall_T01_Op08() {
+        return lblQtdCall_T01_Op08;
+    }
+
+    public void setLblQtdCall_T01_Op08(Label lblQtdCall_T01_Op08) {
+        this.lblQtdCall_T01_Op08 = lblQtdCall_T01_Op08;
+    }
+
+    public Label getLblQtdPut_T01_Op08() {
+        return lblQtdPut_T01_Op08;
+    }
+
+    public void setLblQtdPut_T01_Op08(Label lblQtdPut_T01_Op08) {
+        this.lblQtdPut_T01_Op08 = lblQtdPut_T01_Op08;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op08() {
+        return lblQtdCallOrPut_T01_Op08;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op08(Label lblQtdCallOrPut_T01_Op08) {
+        this.lblQtdCallOrPut_T01_Op08 = lblQtdCallOrPut_T01_Op08;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op08() {
+        return imgCallOrPut_T01_Op08;
+    }
+
+    public void setImgCallOrPut_T01_Op08(ImageView imgCallOrPut_T01_Op08) {
+        this.imgCallOrPut_T01_Op08 = imgCallOrPut_T01_Op08;
+    }
+
+    public Label getLblQtdStakes_T01_Op08() {
+        return lblQtdStakes_T01_Op08;
+    }
+
+    public void setLblQtdStakes_T01_Op08(Label lblQtdStakes_T01_Op08) {
+        this.lblQtdStakes_T01_Op08 = lblQtdStakes_T01_Op08;
+    }
+
+    public Label getLblQtdWins_T01_Op08() {
+        return lblQtdWins_T01_Op08;
+    }
+
+    public void setLblQtdWins_T01_Op08(Label lblQtdWins_T01_Op08) {
+        this.lblQtdWins_T01_Op08 = lblQtdWins_T01_Op08;
+    }
+
+    public Label getLblQtdLoss_T01_Op08() {
+        return lblQtdLoss_T01_Op08;
+    }
+
+    public void setLblQtdLoss_T01_Op08(Label lblQtdLoss_T01_Op08) {
+        this.lblQtdLoss_T01_Op08 = lblQtdLoss_T01_Op08;
+    }
+
+    public Label getLblVlrIn_T01_Op08() {
+        return lblVlrIn_T01_Op08;
+    }
+
+    public void setLblVlrIn_T01_Op08(Label lblVlrIn_T01_Op08) {
+        this.lblVlrIn_T01_Op08 = lblVlrIn_T01_Op08;
+    }
+
+    public Label getLblVlrOut_T01_Op08() {
+        return lblVlrOut_T01_Op08;
+    }
+
+    public void setLblVlrOut_T01_Op08(Label lblVlrOut_T01_Op08) {
+        this.lblVlrOut_T01_Op08 = lblVlrOut_T01_Op08;
+    }
+
+    public Label getLblVlrDiff_T01_Op08() {
+        return lblVlrDiff_T01_Op08;
+    }
+
+    public void setLblVlrDiff_T01_Op08(Label lblVlrDiff_T01_Op08) {
+        this.lblVlrDiff_T01_Op08 = lblVlrDiff_T01_Op08;
+    }
+
+    public TableView getTbvTransacoes_T01_Op08() {
+        return tbvTransacoes_T01_Op08;
+    }
+
+    public void setTbvTransacoes_T01_Op08(TableView tbvTransacoes_T01_Op08) {
+        this.tbvTransacoes_T01_Op08 = tbvTransacoes_T01_Op08;
+    }
+
+    public Label getLblSymbol_T01_Op09() {
+        return lblSymbol_T01_Op09;
+    }
+
+    public void setLblSymbol_T01_Op09(Label lblSymbol_T01_Op09) {
+        this.lblSymbol_T01_Op09 = lblSymbol_T01_Op09;
+    }
+
+    public Label getLblQtdCall_T01_Op09() {
+        return lblQtdCall_T01_Op09;
+    }
+
+    public void setLblQtdCall_T01_Op09(Label lblQtdCall_T01_Op09) {
+        this.lblQtdCall_T01_Op09 = lblQtdCall_T01_Op09;
+    }
+
+    public Label getLblQtdPut_T01_Op09() {
+        return lblQtdPut_T01_Op09;
+    }
+
+    public void setLblQtdPut_T01_Op09(Label lblQtdPut_T01_Op09) {
+        this.lblQtdPut_T01_Op09 = lblQtdPut_T01_Op09;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op09() {
+        return lblQtdCallOrPut_T01_Op09;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op09(Label lblQtdCallOrPut_T01_Op09) {
+        this.lblQtdCallOrPut_T01_Op09 = lblQtdCallOrPut_T01_Op09;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op09() {
+        return imgCallOrPut_T01_Op09;
+    }
+
+    public void setImgCallOrPut_T01_Op09(ImageView imgCallOrPut_T01_Op09) {
+        this.imgCallOrPut_T01_Op09 = imgCallOrPut_T01_Op09;
+    }
+
+    public Label getLblQtdStakes_T01_Op09() {
+        return lblQtdStakes_T01_Op09;
+    }
+
+    public void setLblQtdStakes_T01_Op09(Label lblQtdStakes_T01_Op09) {
+        this.lblQtdStakes_T01_Op09 = lblQtdStakes_T01_Op09;
+    }
+
+    public Label getLblQtdWins_T01_Op09() {
+        return lblQtdWins_T01_Op09;
+    }
+
+    public void setLblQtdWins_T01_Op09(Label lblQtdWins_T01_Op09) {
+        this.lblQtdWins_T01_Op09 = lblQtdWins_T01_Op09;
+    }
+
+    public Label getLblQtdLoss_T01_Op09() {
+        return lblQtdLoss_T01_Op09;
+    }
+
+    public void setLblQtdLoss_T01_Op09(Label lblQtdLoss_T01_Op09) {
+        this.lblQtdLoss_T01_Op09 = lblQtdLoss_T01_Op09;
+    }
+
+    public Label getLblVlrIn_T01_Op09() {
+        return lblVlrIn_T01_Op09;
+    }
+
+    public void setLblVlrIn_T01_Op09(Label lblVlrIn_T01_Op09) {
+        this.lblVlrIn_T01_Op09 = lblVlrIn_T01_Op09;
+    }
+
+    public Label getLblVlrOut_T01_Op09() {
+        return lblVlrOut_T01_Op09;
+    }
+
+    public void setLblVlrOut_T01_Op09(Label lblVlrOut_T01_Op09) {
+        this.lblVlrOut_T01_Op09 = lblVlrOut_T01_Op09;
+    }
+
+    public Label getLblVlrDiff_T01_Op09() {
+        return lblVlrDiff_T01_Op09;
+    }
+
+    public void setLblVlrDiff_T01_Op09(Label lblVlrDiff_T01_Op09) {
+        this.lblVlrDiff_T01_Op09 = lblVlrDiff_T01_Op09;
+    }
+
+    public TableView getTbvTransacoes_T01_Op09() {
+        return tbvTransacoes_T01_Op09;
+    }
+
+    public void setTbvTransacoes_T01_Op09(TableView tbvTransacoes_T01_Op09) {
+        this.tbvTransacoes_T01_Op09 = tbvTransacoes_T01_Op09;
+    }
+
+    public Label getLblSymbol_T01_Op10() {
+        return lblSymbol_T01_Op10;
+    }
+
+    public void setLblSymbol_T01_Op10(Label lblSymbol_T01_Op10) {
+        this.lblSymbol_T01_Op10 = lblSymbol_T01_Op10;
+    }
+
+    public Label getLblQtdCall_T01_Op10() {
+        return lblQtdCall_T01_Op10;
+    }
+
+    public void setLblQtdCall_T01_Op10(Label lblQtdCall_T01_Op10) {
+        this.lblQtdCall_T01_Op10 = lblQtdCall_T01_Op10;
+    }
+
+    public Label getLblQtdPut_T01_Op10() {
+        return lblQtdPut_T01_Op10;
+    }
+
+    public void setLblQtdPut_T01_Op10(Label lblQtdPut_T01_Op10) {
+        this.lblQtdPut_T01_Op10 = lblQtdPut_T01_Op10;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op10() {
+        return lblQtdCallOrPut_T01_Op10;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op10(Label lblQtdCallOrPut_T01_Op10) {
+        this.lblQtdCallOrPut_T01_Op10 = lblQtdCallOrPut_T01_Op10;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op10() {
+        return imgCallOrPut_T01_Op10;
+    }
+
+    public void setImgCallOrPut_T01_Op10(ImageView imgCallOrPut_T01_Op10) {
+        this.imgCallOrPut_T01_Op10 = imgCallOrPut_T01_Op10;
+    }
+
+    public Label getLblQtdStakes_T01_Op10() {
+        return lblQtdStakes_T01_Op10;
+    }
+
+    public void setLblQtdStakes_T01_Op10(Label lblQtdStakes_T01_Op10) {
+        this.lblQtdStakes_T01_Op10 = lblQtdStakes_T01_Op10;
+    }
+
+    public Label getLblQtdWins_T01_Op10() {
+        return lblQtdWins_T01_Op10;
+    }
+
+    public void setLblQtdWins_T01_Op10(Label lblQtdWins_T01_Op10) {
+        this.lblQtdWins_T01_Op10 = lblQtdWins_T01_Op10;
+    }
+
+    public Label getLblQtdLoss_T01_Op10() {
+        return lblQtdLoss_T01_Op10;
+    }
+
+    public void setLblQtdLoss_T01_Op10(Label lblQtdLoss_T01_Op10) {
+        this.lblQtdLoss_T01_Op10 = lblQtdLoss_T01_Op10;
+    }
+
+    public Label getLblVlrIn_T01_Op10() {
+        return lblVlrIn_T01_Op10;
+    }
+
+    public void setLblVlrIn_T01_Op10(Label lblVlrIn_T01_Op10) {
+        this.lblVlrIn_T01_Op10 = lblVlrIn_T01_Op10;
+    }
+
+    public Label getLblVlrOut_T01_Op10() {
+        return lblVlrOut_T01_Op10;
+    }
+
+    public void setLblVlrOut_T01_Op10(Label lblVlrOut_T01_Op10) {
+        this.lblVlrOut_T01_Op10 = lblVlrOut_T01_Op10;
+    }
+
+    public Label getLblVlrDiff_T01_Op10() {
+        return lblVlrDiff_T01_Op10;
+    }
+
+    public void setLblVlrDiff_T01_Op10(Label lblVlrDiff_T01_Op10) {
+        this.lblVlrDiff_T01_Op10 = lblVlrDiff_T01_Op10;
+    }
+
+    public TableView getTbvTransacoes_T01_Op10() {
+        return tbvTransacoes_T01_Op10;
+    }
+
+    public void setTbvTransacoes_T01_Op10(TableView tbvTransacoes_T01_Op10) {
+        this.tbvTransacoes_T01_Op10 = tbvTransacoes_T01_Op10;
+    }
+
+    public Label getLblSymbol_T01_Op11() {
+        return lblSymbol_T01_Op11;
+    }
+
+    public void setLblSymbol_T01_Op11(Label lblSymbol_T01_Op11) {
+        this.lblSymbol_T01_Op11 = lblSymbol_T01_Op11;
+    }
+
+    public Label getLblQtdCall_T01_Op11() {
+        return lblQtdCall_T01_Op11;
+    }
+
+    public void setLblQtdCall_T01_Op11(Label lblQtdCall_T01_Op11) {
+        this.lblQtdCall_T01_Op11 = lblQtdCall_T01_Op11;
+    }
+
+    public Label getLblQtdPut_T01_Op11() {
+        return lblQtdPut_T01_Op11;
+    }
+
+    public void setLblQtdPut_T01_Op11(Label lblQtdPut_T01_Op11) {
+        this.lblQtdPut_T01_Op11 = lblQtdPut_T01_Op11;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op11() {
+        return lblQtdCallOrPut_T01_Op11;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op11(Label lblQtdCallOrPut_T01_Op11) {
+        this.lblQtdCallOrPut_T01_Op11 = lblQtdCallOrPut_T01_Op11;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op11() {
+        return imgCallOrPut_T01_Op11;
+    }
+
+    public void setImgCallOrPut_T01_Op11(ImageView imgCallOrPut_T01_Op11) {
+        this.imgCallOrPut_T01_Op11 = imgCallOrPut_T01_Op11;
+    }
+
+    public Label getLblQtdStakes_T01_Op11() {
+        return lblQtdStakes_T01_Op11;
+    }
+
+    public void setLblQtdStakes_T01_Op11(Label lblQtdStakes_T01_Op11) {
+        this.lblQtdStakes_T01_Op11 = lblQtdStakes_T01_Op11;
+    }
+
+    public Label getLblQtdWins_T01_Op11() {
+        return lblQtdWins_T01_Op11;
+    }
+
+    public void setLblQtdWins_T01_Op11(Label lblQtdWins_T01_Op11) {
+        this.lblQtdWins_T01_Op11 = lblQtdWins_T01_Op11;
+    }
+
+    public Label getLblQtdLoss_T01_Op11() {
+        return lblQtdLoss_T01_Op11;
+    }
+
+    public void setLblQtdLoss_T01_Op11(Label lblQtdLoss_T01_Op11) {
+        this.lblQtdLoss_T01_Op11 = lblQtdLoss_T01_Op11;
+    }
+
+    public Label getLblVlrIn_T01_Op11() {
+        return lblVlrIn_T01_Op11;
+    }
+
+    public void setLblVlrIn_T01_Op11(Label lblVlrIn_T01_Op11) {
+        this.lblVlrIn_T01_Op11 = lblVlrIn_T01_Op11;
+    }
+
+    public Label getLblVlrOut_T01_Op11() {
+        return lblVlrOut_T01_Op11;
+    }
+
+    public void setLblVlrOut_T01_Op11(Label lblVlrOut_T01_Op11) {
+        this.lblVlrOut_T01_Op11 = lblVlrOut_T01_Op11;
+    }
+
+    public Label getLblVlrDiff_T01_Op11() {
+        return lblVlrDiff_T01_Op11;
+    }
+
+    public void setLblVlrDiff_T01_Op11(Label lblVlrDiff_T01_Op11) {
+        this.lblVlrDiff_T01_Op11 = lblVlrDiff_T01_Op11;
+    }
+
+    public TableView getTbvTransacoes_T01_Op11() {
+        return tbvTransacoes_T01_Op11;
+    }
+
+    public void setTbvTransacoes_T01_Op11(TableView tbvTransacoes_T01_Op11) {
+        this.tbvTransacoes_T01_Op11 = tbvTransacoes_T01_Op11;
+    }
+
+    public Label getLblSymbol_T01_Op12() {
+        return lblSymbol_T01_Op12;
+    }
+
+    public void setLblSymbol_T01_Op12(Label lblSymbol_T01_Op12) {
+        this.lblSymbol_T01_Op12 = lblSymbol_T01_Op12;
+    }
+
+    public Label getLblQtdCall_T01_Op12() {
+        return lblQtdCall_T01_Op12;
+    }
+
+    public void setLblQtdCall_T01_Op12(Label lblQtdCall_T01_Op12) {
+        this.lblQtdCall_T01_Op12 = lblQtdCall_T01_Op12;
+    }
+
+    public Label getLblQtdPut_T01_Op12() {
+        return lblQtdPut_T01_Op12;
+    }
+
+    public void setLblQtdPut_T01_Op12(Label lblQtdPut_T01_Op12) {
+        this.lblQtdPut_T01_Op12 = lblQtdPut_T01_Op12;
+    }
+
+    public Label getLblQtdCallOrPut_T01_Op12() {
+        return lblQtdCallOrPut_T01_Op12;
+    }
+
+    public void setLblQtdCallOrPut_T01_Op12(Label lblQtdCallOrPut_T01_Op12) {
+        this.lblQtdCallOrPut_T01_Op12 = lblQtdCallOrPut_T01_Op12;
+    }
+
+    public ImageView getImgCallOrPut_T01_Op12() {
+        return imgCallOrPut_T01_Op12;
+    }
+
+    public void setImgCallOrPut_T01_Op12(ImageView imgCallOrPut_T01_Op12) {
+        this.imgCallOrPut_T01_Op12 = imgCallOrPut_T01_Op12;
+    }
+
+    public Label getLblQtdStakes_T01_Op12() {
+        return lblQtdStakes_T01_Op12;
+    }
+
+    public void setLblQtdStakes_T01_Op12(Label lblQtdStakes_T01_Op12) {
+        this.lblQtdStakes_T01_Op12 = lblQtdStakes_T01_Op12;
+    }
+
+    public Label getLblQtdWins_T01_Op12() {
+        return lblQtdWins_T01_Op12;
+    }
+
+    public void setLblQtdWins_T01_Op12(Label lblQtdWins_T01_Op12) {
+        this.lblQtdWins_T01_Op12 = lblQtdWins_T01_Op12;
+    }
+
+    public Label getLblQtdLoss_T01_Op12() {
+        return lblQtdLoss_T01_Op12;
+    }
+
+    public void setLblQtdLoss_T01_Op12(Label lblQtdLoss_T01_Op12) {
+        this.lblQtdLoss_T01_Op12 = lblQtdLoss_T01_Op12;
+    }
+
+    public Label getLblVlrIn_T01_Op12() {
+        return lblVlrIn_T01_Op12;
+    }
+
+    public void setLblVlrIn_T01_Op12(Label lblVlrIn_T01_Op12) {
+        this.lblVlrIn_T01_Op12 = lblVlrIn_T01_Op12;
+    }
+
+    public Label getLblVlrOut_T01_Op12() {
+        return lblVlrOut_T01_Op12;
+    }
+
+    public void setLblVlrOut_T01_Op12(Label lblVlrOut_T01_Op12) {
+        this.lblVlrOut_T01_Op12 = lblVlrOut_T01_Op12;
+    }
+
+    public Label getLblVlrDiff_T01_Op12() {
+        return lblVlrDiff_T01_Op12;
+    }
+
+    public void setLblVlrDiff_T01_Op12(Label lblVlrDiff_T01_Op12) {
+        this.lblVlrDiff_T01_Op12 = lblVlrDiff_T01_Op12;
+    }
+
+    public TableView getTbvTransacoes_T01_Op12() {
+        return tbvTransacoes_T01_Op12;
+    }
+
+    public void setTbvTransacoes_T01_Op12(TableView tbvTransacoes_T01_Op12) {
+        this.tbvTransacoes_T01_Op12 = tbvTransacoes_T01_Op12;
     }
 
     public TitledPane getTpn_T02() {
@@ -2317,12 +3941,12 @@ public class Operacoes implements Initializable {
         this.tpn_T02 = tpn_T02;
     }
 
-    public JFXCheckBox getChkTpn02_TimeAtivo() {
-        return chkTpn02_TimeAtivo;
+    public JFXCheckBox getChkTpn_T02_TimeAtivo() {
+        return chkTpn_T02_TimeAtivo;
     }
 
-    public void setChkTpn02_TimeAtivo(JFXCheckBox chkTpn02_TimeAtivo) {
-        this.chkTpn02_TimeAtivo = chkTpn02_TimeAtivo;
+    public void setChkTpn_T02_TimeAtivo(JFXCheckBox chkTpn_T02_TimeAtivo) {
+        this.chkTpn_T02_TimeAtivo = chkTpn_T02_TimeAtivo;
     }
 
     public Label getLblTpn_T02_CandleTimeStart() {
@@ -2477,45 +4101,1067 @@ public class Operacoes implements Initializable {
         this.lblVlrDiff_T02_Op01 = lblVlrDiff_T02_Op01;
     }
 
-    public TableView getTbvTransaction_T02_Op01() {
-        return tbvTransaction_T02_Op01;
+    public TableView getTbvTransacoes_T02_Op01() {
+        return tbvTransacoes_T02_Op01;
     }
 
-    public void setTbvTransaction_T02_Op01(TableView tbvTransaction_T02_Op01) {
-        this.tbvTransaction_T02_Op01 = tbvTransaction_T02_Op01;
+    public void setTbvTransacoes_T02_Op01(TableView tbvTransacoes_T02_Op01) {
+        this.tbvTransacoes_T02_Op01 = tbvTransacoes_T02_Op01;
     }
 
-    public static List<Symbol> getSymbolList() {
-        return SYMBOL_LIST;
+    public Label getLblSymbol_T02_Op02() {
+        return lblSymbol_T02_Op02;
     }
 
-    public static int getQtdCandlesAnalise() {
-        return qtdCandlesAnalise.get();
+    public void setLblSymbol_T02_Op02(Label lblSymbol_T02_Op02) {
+        this.lblSymbol_T02_Op02 = lblSymbol_T02_Op02;
     }
 
-    public static IntegerProperty qtdCandlesAnaliseProperty() {
-        return qtdCandlesAnalise;
+    public Label getLblQtdCall_T02_Op02() {
+        return lblQtdCall_T02_Op02;
     }
 
-    public static void setQtdCandlesAnalise(int qtdCandlesAnalise) {
-        Operacoes.qtdCandlesAnalise.set(qtdCandlesAnalise);
+    public void setLblQtdCall_T02_Op02(Label lblQtdCall_T02_Op02) {
+        this.lblQtdCall_T02_Op02 = lblQtdCall_T02_Op02;
     }
 
-    public static FilteredList<HistoricoDeCandles>[][] getHistoricoDeCandlesFilteredList() {
-        return historicoDeCandlesFilteredList;
+    public Label getLblQtdPut_T02_Op02() {
+        return lblQtdPut_T02_Op02;
     }
 
-    public static void setHistoricoDeCandlesFilteredList(FilteredList<HistoricoDeCandles>[][] historicoDeCandlesFilteredList) {
-        Operacoes.historicoDeCandlesFilteredList = historicoDeCandlesFilteredList;
+    public void setLblQtdPut_T02_Op02(Label lblQtdPut_T02_Op02) {
+        this.lblQtdPut_T02_Op02 = lblQtdPut_T02_Op02;
     }
 
-    public static ObjectProperty<Ohlc>[][] getTestaLastCandle() {
-        return testaLastCandle;
+    public Label getLblQtdCallOrPut_T02_Op02() {
+        return lblQtdCallOrPut_T02_Op02;
     }
 
-    public static void setTestaLastCandle(ObjectProperty<Ohlc>[][] testaLastCandle) {
-        Operacoes.testaLastCandle = testaLastCandle;
+    public void setLblQtdCallOrPut_T02_Op02(Label lblQtdCallOrPut_T02_Op02) {
+        this.lblQtdCallOrPut_T02_Op02 = lblQtdCallOrPut_T02_Op02;
     }
 
+    public ImageView getImgCallOrPut_T02_Op02() {
+        return imgCallOrPut_T02_Op02;
+    }
 
+    public void setImgCallOrPut_T02_Op02(ImageView imgCallOrPut_T02_Op02) {
+        this.imgCallOrPut_T02_Op02 = imgCallOrPut_T02_Op02;
+    }
+
+    public Label getLblQtdStakes_T02_Op02() {
+        return lblQtdStakes_T02_Op02;
+    }
+
+    public void setLblQtdStakes_T02_Op02(Label lblQtdStakes_T02_Op02) {
+        this.lblQtdStakes_T02_Op02 = lblQtdStakes_T02_Op02;
+    }
+
+    public Label getLblQtdWins_T02_Op02() {
+        return lblQtdWins_T02_Op02;
+    }
+
+    public void setLblQtdWins_T02_Op02(Label lblQtdWins_T02_Op02) {
+        this.lblQtdWins_T02_Op02 = lblQtdWins_T02_Op02;
+    }
+
+    public Label getLblQtdLoss_T02_Op02() {
+        return lblQtdLoss_T02_Op02;
+    }
+
+    public void setLblQtdLoss_T02_Op02(Label lblQtdLoss_T02_Op02) {
+        this.lblQtdLoss_T02_Op02 = lblQtdLoss_T02_Op02;
+    }
+
+    public Label getLblVlrIn_T02_Op02() {
+        return lblVlrIn_T02_Op02;
+    }
+
+    public void setLblVlrIn_T02_Op02(Label lblVlrIn_T02_Op02) {
+        this.lblVlrIn_T02_Op02 = lblVlrIn_T02_Op02;
+    }
+
+    public Label getLblVlrOut_T02_Op02() {
+        return lblVlrOut_T02_Op02;
+    }
+
+    public void setLblVlrOut_T02_Op02(Label lblVlrOut_T02_Op02) {
+        this.lblVlrOut_T02_Op02 = lblVlrOut_T02_Op02;
+    }
+
+    public Label getLblVlrDiff_T02_Op02() {
+        return lblVlrDiff_T02_Op02;
+    }
+
+    public void setLblVlrDiff_T02_Op02(Label lblVlrDiff_T02_Op02) {
+        this.lblVlrDiff_T02_Op02 = lblVlrDiff_T02_Op02;
+    }
+
+    public TableView getTbvTransacoes_T02_Op02() {
+        return tbvTransacoes_T02_Op02;
+    }
+
+    public void setTbvTransacoes_T02_Op02(TableView tbvTransacoes_T02_Op02) {
+        this.tbvTransacoes_T02_Op02 = tbvTransacoes_T02_Op02;
+    }
+
+    public Label getLblSymbol_T02_Op03() {
+        return lblSymbol_T02_Op03;
+    }
+
+    public void setLblSymbol_T02_Op03(Label lblSymbol_T02_Op03) {
+        this.lblSymbol_T02_Op03 = lblSymbol_T02_Op03;
+    }
+
+    public Label getLblQtdCall_T02_Op03() {
+        return lblQtdCall_T02_Op03;
+    }
+
+    public void setLblQtdCall_T02_Op03(Label lblQtdCall_T02_Op03) {
+        this.lblQtdCall_T02_Op03 = lblQtdCall_T02_Op03;
+    }
+
+    public Label getLblQtdPut_T02_Op03() {
+        return lblQtdPut_T02_Op03;
+    }
+
+    public void setLblQtdPut_T02_Op03(Label lblQtdPut_T02_Op03) {
+        this.lblQtdPut_T02_Op03 = lblQtdPut_T02_Op03;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op03() {
+        return lblQtdCallOrPut_T02_Op03;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op03(Label lblQtdCallOrPut_T02_Op03) {
+        this.lblQtdCallOrPut_T02_Op03 = lblQtdCallOrPut_T02_Op03;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op03() {
+        return imgCallOrPut_T02_Op03;
+    }
+
+    public void setImgCallOrPut_T02_Op03(ImageView imgCallOrPut_T02_Op03) {
+        this.imgCallOrPut_T02_Op03 = imgCallOrPut_T02_Op03;
+    }
+
+    public Label getLblQtdStakes_T02_Op03() {
+        return lblQtdStakes_T02_Op03;
+    }
+
+    public void setLblQtdStakes_T02_Op03(Label lblQtdStakes_T02_Op03) {
+        this.lblQtdStakes_T02_Op03 = lblQtdStakes_T02_Op03;
+    }
+
+    public Label getLblQtdWins_T02_Op03() {
+        return lblQtdWins_T02_Op03;
+    }
+
+    public void setLblQtdWins_T02_Op03(Label lblQtdWins_T02_Op03) {
+        this.lblQtdWins_T02_Op03 = lblQtdWins_T02_Op03;
+    }
+
+    public Label getLblQtdLoss_T02_Op03() {
+        return lblQtdLoss_T02_Op03;
+    }
+
+    public void setLblQtdLoss_T02_Op03(Label lblQtdLoss_T02_Op03) {
+        this.lblQtdLoss_T02_Op03 = lblQtdLoss_T02_Op03;
+    }
+
+    public Label getLblVlrIn_T02_Op03() {
+        return lblVlrIn_T02_Op03;
+    }
+
+    public void setLblVlrIn_T02_Op03(Label lblVlrIn_T02_Op03) {
+        this.lblVlrIn_T02_Op03 = lblVlrIn_T02_Op03;
+    }
+
+    public Label getLblVlrOut_T02_Op03() {
+        return lblVlrOut_T02_Op03;
+    }
+
+    public void setLblVlrOut_T02_Op03(Label lblVlrOut_T02_Op03) {
+        this.lblVlrOut_T02_Op03 = lblVlrOut_T02_Op03;
+    }
+
+    public Label getLblVlrDiff_T02_Op03() {
+        return lblVlrDiff_T02_Op03;
+    }
+
+    public void setLblVlrDiff_T02_Op03(Label lblVlrDiff_T02_Op03) {
+        this.lblVlrDiff_T02_Op03 = lblVlrDiff_T02_Op03;
+    }
+
+    public TableView getTbvTransacoes_T02_Op03() {
+        return tbvTransacoes_T02_Op03;
+    }
+
+    public void setTbvTransacoes_T02_Op03(TableView tbvTransacoes_T02_Op03) {
+        this.tbvTransacoes_T02_Op03 = tbvTransacoes_T02_Op03;
+    }
+
+    public Label getLblSymbol_T02_Op04() {
+        return lblSymbol_T02_Op04;
+    }
+
+    public void setLblSymbol_T02_Op04(Label lblSymbol_T02_Op04) {
+        this.lblSymbol_T02_Op04 = lblSymbol_T02_Op04;
+    }
+
+    public Label getLblQtdCall_T02_Op04() {
+        return lblQtdCall_T02_Op04;
+    }
+
+    public void setLblQtdCall_T02_Op04(Label lblQtdCall_T02_Op04) {
+        this.lblQtdCall_T02_Op04 = lblQtdCall_T02_Op04;
+    }
+
+    public Label getLblQtdPut_T02_Op04() {
+        return lblQtdPut_T02_Op04;
+    }
+
+    public void setLblQtdPut_T02_Op04(Label lblQtdPut_T02_Op04) {
+        this.lblQtdPut_T02_Op04 = lblQtdPut_T02_Op04;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op04() {
+        return lblQtdCallOrPut_T02_Op04;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op04(Label lblQtdCallOrPut_T02_Op04) {
+        this.lblQtdCallOrPut_T02_Op04 = lblQtdCallOrPut_T02_Op04;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op04() {
+        return imgCallOrPut_T02_Op04;
+    }
+
+    public void setImgCallOrPut_T02_Op04(ImageView imgCallOrPut_T02_Op04) {
+        this.imgCallOrPut_T02_Op04 = imgCallOrPut_T02_Op04;
+    }
+
+    public Label getLblQtdStakes_T02_Op04() {
+        return lblQtdStakes_T02_Op04;
+    }
+
+    public void setLblQtdStakes_T02_Op04(Label lblQtdStakes_T02_Op04) {
+        this.lblQtdStakes_T02_Op04 = lblQtdStakes_T02_Op04;
+    }
+
+    public Label getLblQtdWins_T02_Op04() {
+        return lblQtdWins_T02_Op04;
+    }
+
+    public void setLblQtdWins_T02_Op04(Label lblQtdWins_T02_Op04) {
+        this.lblQtdWins_T02_Op04 = lblQtdWins_T02_Op04;
+    }
+
+    public Label getLblQtdLoss_T02_Op04() {
+        return lblQtdLoss_T02_Op04;
+    }
+
+    public void setLblQtdLoss_T02_Op04(Label lblQtdLoss_T02_Op04) {
+        this.lblQtdLoss_T02_Op04 = lblQtdLoss_T02_Op04;
+    }
+
+    public Label getLblVlrIn_T02_Op04() {
+        return lblVlrIn_T02_Op04;
+    }
+
+    public void setLblVlrIn_T02_Op04(Label lblVlrIn_T02_Op04) {
+        this.lblVlrIn_T02_Op04 = lblVlrIn_T02_Op04;
+    }
+
+    public Label getLblVlrOut_T02_Op04() {
+        return lblVlrOut_T02_Op04;
+    }
+
+    public void setLblVlrOut_T02_Op04(Label lblVlrOut_T02_Op04) {
+        this.lblVlrOut_T02_Op04 = lblVlrOut_T02_Op04;
+    }
+
+    public Label getLblVlrDiff_T02_Op04() {
+        return lblVlrDiff_T02_Op04;
+    }
+
+    public void setLblVlrDiff_T02_Op04(Label lblVlrDiff_T02_Op04) {
+        this.lblVlrDiff_T02_Op04 = lblVlrDiff_T02_Op04;
+    }
+
+    public TableView getTbvTransacoes_T02_Op04() {
+        return tbvTransacoes_T02_Op04;
+    }
+
+    public void setTbvTransacoes_T02_Op04(TableView tbvTransacoes_T02_Op04) {
+        this.tbvTransacoes_T02_Op04 = tbvTransacoes_T02_Op04;
+    }
+
+    public Label getLblSymbol_T02_Op05() {
+        return lblSymbol_T02_Op05;
+    }
+
+    public void setLblSymbol_T02_Op05(Label lblSymbol_T02_Op05) {
+        this.lblSymbol_T02_Op05 = lblSymbol_T02_Op05;
+    }
+
+    public Label getLblQtdCall_T02_Op05() {
+        return lblQtdCall_T02_Op05;
+    }
+
+    public void setLblQtdCall_T02_Op05(Label lblQtdCall_T02_Op05) {
+        this.lblQtdCall_T02_Op05 = lblQtdCall_T02_Op05;
+    }
+
+    public Label getLblQtdPut_T02_Op05() {
+        return lblQtdPut_T02_Op05;
+    }
+
+    public void setLblQtdPut_T02_Op05(Label lblQtdPut_T02_Op05) {
+        this.lblQtdPut_T02_Op05 = lblQtdPut_T02_Op05;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op05() {
+        return lblQtdCallOrPut_T02_Op05;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op05(Label lblQtdCallOrPut_T02_Op05) {
+        this.lblQtdCallOrPut_T02_Op05 = lblQtdCallOrPut_T02_Op05;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op05() {
+        return imgCallOrPut_T02_Op05;
+    }
+
+    public void setImgCallOrPut_T02_Op05(ImageView imgCallOrPut_T02_Op05) {
+        this.imgCallOrPut_T02_Op05 = imgCallOrPut_T02_Op05;
+    }
+
+    public Label getLblQtdStakes_T02_Op05() {
+        return lblQtdStakes_T02_Op05;
+    }
+
+    public void setLblQtdStakes_T02_Op05(Label lblQtdStakes_T02_Op05) {
+        this.lblQtdStakes_T02_Op05 = lblQtdStakes_T02_Op05;
+    }
+
+    public Label getLblQtdWins_T02_Op05() {
+        return lblQtdWins_T02_Op05;
+    }
+
+    public void setLblQtdWins_T02_Op05(Label lblQtdWins_T02_Op05) {
+        this.lblQtdWins_T02_Op05 = lblQtdWins_T02_Op05;
+    }
+
+    public Label getLblQtdLoss_T02_Op05() {
+        return lblQtdLoss_T02_Op05;
+    }
+
+    public void setLblQtdLoss_T02_Op05(Label lblQtdLoss_T02_Op05) {
+        this.lblQtdLoss_T02_Op05 = lblQtdLoss_T02_Op05;
+    }
+
+    public Label getLblVlrIn_T02_Op05() {
+        return lblVlrIn_T02_Op05;
+    }
+
+    public void setLblVlrIn_T02_Op05(Label lblVlrIn_T02_Op05) {
+        this.lblVlrIn_T02_Op05 = lblVlrIn_T02_Op05;
+    }
+
+    public Label getLblVlrOut_T02_Op05() {
+        return lblVlrOut_T02_Op05;
+    }
+
+    public void setLblVlrOut_T02_Op05(Label lblVlrOut_T02_Op05) {
+        this.lblVlrOut_T02_Op05 = lblVlrOut_T02_Op05;
+    }
+
+    public Label getLblVlrDiff_T02_Op05() {
+        return lblVlrDiff_T02_Op05;
+    }
+
+    public void setLblVlrDiff_T02_Op05(Label lblVlrDiff_T02_Op05) {
+        this.lblVlrDiff_T02_Op05 = lblVlrDiff_T02_Op05;
+    }
+
+    public TableView getTbvTransacoes_T02_Op05() {
+        return tbvTransacoes_T02_Op05;
+    }
+
+    public void setTbvTransacoes_T02_Op05(TableView tbvTransacoes_T02_Op05) {
+        this.tbvTransacoes_T02_Op05 = tbvTransacoes_T02_Op05;
+    }
+
+    public Label getLblSymbol_T02_Op06() {
+        return lblSymbol_T02_Op06;
+    }
+
+    public void setLblSymbol_T02_Op06(Label lblSymbol_T02_Op06) {
+        this.lblSymbol_T02_Op06 = lblSymbol_T02_Op06;
+    }
+
+    public Label getLblQtdCall_T02_Op06() {
+        return lblQtdCall_T02_Op06;
+    }
+
+    public void setLblQtdCall_T02_Op06(Label lblQtdCall_T02_Op06) {
+        this.lblQtdCall_T02_Op06 = lblQtdCall_T02_Op06;
+    }
+
+    public Label getLblQtdPut_T02_Op06() {
+        return lblQtdPut_T02_Op06;
+    }
+
+    public void setLblQtdPut_T02_Op06(Label lblQtdPut_T02_Op06) {
+        this.lblQtdPut_T02_Op06 = lblQtdPut_T02_Op06;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op06() {
+        return lblQtdCallOrPut_T02_Op06;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op06(Label lblQtdCallOrPut_T02_Op06) {
+        this.lblQtdCallOrPut_T02_Op06 = lblQtdCallOrPut_T02_Op06;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op06() {
+        return imgCallOrPut_T02_Op06;
+    }
+
+    public void setImgCallOrPut_T02_Op06(ImageView imgCallOrPut_T02_Op06) {
+        this.imgCallOrPut_T02_Op06 = imgCallOrPut_T02_Op06;
+    }
+
+    public Label getLblQtdStakes_T02_Op06() {
+        return lblQtdStakes_T02_Op06;
+    }
+
+    public void setLblQtdStakes_T02_Op06(Label lblQtdStakes_T02_Op06) {
+        this.lblQtdStakes_T02_Op06 = lblQtdStakes_T02_Op06;
+    }
+
+    public Label getLblQtdWins_T02_Op06() {
+        return lblQtdWins_T02_Op06;
+    }
+
+    public void setLblQtdWins_T02_Op06(Label lblQtdWins_T02_Op06) {
+        this.lblQtdWins_T02_Op06 = lblQtdWins_T02_Op06;
+    }
+
+    public Label getLblQtdLoss_T02_Op06() {
+        return lblQtdLoss_T02_Op06;
+    }
+
+    public void setLblQtdLoss_T02_Op06(Label lblQtdLoss_T02_Op06) {
+        this.lblQtdLoss_T02_Op06 = lblQtdLoss_T02_Op06;
+    }
+
+    public Label getLblVlrIn_T02_Op06() {
+        return lblVlrIn_T02_Op06;
+    }
+
+    public void setLblVlrIn_T02_Op06(Label lblVlrIn_T02_Op06) {
+        this.lblVlrIn_T02_Op06 = lblVlrIn_T02_Op06;
+    }
+
+    public Label getLblVlrOut_T02_Op06() {
+        return lblVlrOut_T02_Op06;
+    }
+
+    public void setLblVlrOut_T02_Op06(Label lblVlrOut_T02_Op06) {
+        this.lblVlrOut_T02_Op06 = lblVlrOut_T02_Op06;
+    }
+
+    public Label getLblVlrDiff_T02_Op06() {
+        return lblVlrDiff_T02_Op06;
+    }
+
+    public void setLblVlrDiff_T02_Op06(Label lblVlrDiff_T02_Op06) {
+        this.lblVlrDiff_T02_Op06 = lblVlrDiff_T02_Op06;
+    }
+
+    public TableView getTbvTransacoes_T02_Op06() {
+        return tbvTransacoes_T02_Op06;
+    }
+
+    public void setTbvTransacoes_T02_Op06(TableView tbvTransacoes_T02_Op06) {
+        this.tbvTransacoes_T02_Op06 = tbvTransacoes_T02_Op06;
+    }
+
+    public Label getLblSymbol_T02_Op07() {
+        return lblSymbol_T02_Op07;
+    }
+
+    public void setLblSymbol_T02_Op07(Label lblSymbol_T02_Op07) {
+        this.lblSymbol_T02_Op07 = lblSymbol_T02_Op07;
+    }
+
+    public Label getLblQtdCall_T02_Op07() {
+        return lblQtdCall_T02_Op07;
+    }
+
+    public void setLblQtdCall_T02_Op07(Label lblQtdCall_T02_Op07) {
+        this.lblQtdCall_T02_Op07 = lblQtdCall_T02_Op07;
+    }
+
+    public Label getLblQtdPut_T02_Op07() {
+        return lblQtdPut_T02_Op07;
+    }
+
+    public void setLblQtdPut_T02_Op07(Label lblQtdPut_T02_Op07) {
+        this.lblQtdPut_T02_Op07 = lblQtdPut_T02_Op07;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op07() {
+        return lblQtdCallOrPut_T02_Op07;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op07(Label lblQtdCallOrPut_T02_Op07) {
+        this.lblQtdCallOrPut_T02_Op07 = lblQtdCallOrPut_T02_Op07;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op07() {
+        return imgCallOrPut_T02_Op07;
+    }
+
+    public void setImgCallOrPut_T02_Op07(ImageView imgCallOrPut_T02_Op07) {
+        this.imgCallOrPut_T02_Op07 = imgCallOrPut_T02_Op07;
+    }
+
+    public Label getLblQtdStakes_T02_Op07() {
+        return lblQtdStakes_T02_Op07;
+    }
+
+    public void setLblQtdStakes_T02_Op07(Label lblQtdStakes_T02_Op07) {
+        this.lblQtdStakes_T02_Op07 = lblQtdStakes_T02_Op07;
+    }
+
+    public Label getLblQtdWins_T02_Op07() {
+        return lblQtdWins_T02_Op07;
+    }
+
+    public void setLblQtdWins_T02_Op07(Label lblQtdWins_T02_Op07) {
+        this.lblQtdWins_T02_Op07 = lblQtdWins_T02_Op07;
+    }
+
+    public Label getLblQtdLoss_T02_Op07() {
+        return lblQtdLoss_T02_Op07;
+    }
+
+    public void setLblQtdLoss_T02_Op07(Label lblQtdLoss_T02_Op07) {
+        this.lblQtdLoss_T02_Op07 = lblQtdLoss_T02_Op07;
+    }
+
+    public Label getLblVlrIn_T02_Op07() {
+        return lblVlrIn_T02_Op07;
+    }
+
+    public void setLblVlrIn_T02_Op07(Label lblVlrIn_T02_Op07) {
+        this.lblVlrIn_T02_Op07 = lblVlrIn_T02_Op07;
+    }
+
+    public Label getLblVlrOut_T02_Op07() {
+        return lblVlrOut_T02_Op07;
+    }
+
+    public void setLblVlrOut_T02_Op07(Label lblVlrOut_T02_Op07) {
+        this.lblVlrOut_T02_Op07 = lblVlrOut_T02_Op07;
+    }
+
+    public Label getLblVlrDiff_T02_Op07() {
+        return lblVlrDiff_T02_Op07;
+    }
+
+    public void setLblVlrDiff_T02_Op07(Label lblVlrDiff_T02_Op07) {
+        this.lblVlrDiff_T02_Op07 = lblVlrDiff_T02_Op07;
+    }
+
+    public TableView getTbvTransacoes_T02_Op07() {
+        return tbvTransacoes_T02_Op07;
+    }
+
+    public void setTbvTransacoes_T02_Op07(TableView tbvTransacoes_T02_Op07) {
+        this.tbvTransacoes_T02_Op07 = tbvTransacoes_T02_Op07;
+    }
+
+    public Label getLblSymbol_T02_Op08() {
+        return lblSymbol_T02_Op08;
+    }
+
+    public void setLblSymbol_T02_Op08(Label lblSymbol_T02_Op08) {
+        this.lblSymbol_T02_Op08 = lblSymbol_T02_Op08;
+    }
+
+    public Label getLblQtdCall_T02_Op08() {
+        return lblQtdCall_T02_Op08;
+    }
+
+    public void setLblQtdCall_T02_Op08(Label lblQtdCall_T02_Op08) {
+        this.lblQtdCall_T02_Op08 = lblQtdCall_T02_Op08;
+    }
+
+    public Label getLblQtdPut_T02_Op08() {
+        return lblQtdPut_T02_Op08;
+    }
+
+    public void setLblQtdPut_T02_Op08(Label lblQtdPut_T02_Op08) {
+        this.lblQtdPut_T02_Op08 = lblQtdPut_T02_Op08;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op08() {
+        return lblQtdCallOrPut_T02_Op08;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op08(Label lblQtdCallOrPut_T02_Op08) {
+        this.lblQtdCallOrPut_T02_Op08 = lblQtdCallOrPut_T02_Op08;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op08() {
+        return imgCallOrPut_T02_Op08;
+    }
+
+    public void setImgCallOrPut_T02_Op08(ImageView imgCallOrPut_T02_Op08) {
+        this.imgCallOrPut_T02_Op08 = imgCallOrPut_T02_Op08;
+    }
+
+    public Label getLblQtdStakes_T02_Op08() {
+        return lblQtdStakes_T02_Op08;
+    }
+
+    public void setLblQtdStakes_T02_Op08(Label lblQtdStakes_T02_Op08) {
+        this.lblQtdStakes_T02_Op08 = lblQtdStakes_T02_Op08;
+    }
+
+    public Label getLblQtdWins_T02_Op08() {
+        return lblQtdWins_T02_Op08;
+    }
+
+    public void setLblQtdWins_T02_Op08(Label lblQtdWins_T02_Op08) {
+        this.lblQtdWins_T02_Op08 = lblQtdWins_T02_Op08;
+    }
+
+    public Label getLblQtdLoss_T02_Op08() {
+        return lblQtdLoss_T02_Op08;
+    }
+
+    public void setLblQtdLoss_T02_Op08(Label lblQtdLoss_T02_Op08) {
+        this.lblQtdLoss_T02_Op08 = lblQtdLoss_T02_Op08;
+    }
+
+    public Label getLblVlrIn_T02_Op08() {
+        return lblVlrIn_T02_Op08;
+    }
+
+    public void setLblVlrIn_T02_Op08(Label lblVlrIn_T02_Op08) {
+        this.lblVlrIn_T02_Op08 = lblVlrIn_T02_Op08;
+    }
+
+    public Label getLblVlrOut_T02_Op08() {
+        return lblVlrOut_T02_Op08;
+    }
+
+    public void setLblVlrOut_T02_Op08(Label lblVlrOut_T02_Op08) {
+        this.lblVlrOut_T02_Op08 = lblVlrOut_T02_Op08;
+    }
+
+    public Label getLblVlrDiff_T02_Op08() {
+        return lblVlrDiff_T02_Op08;
+    }
+
+    public void setLblVlrDiff_T02_Op08(Label lblVlrDiff_T02_Op08) {
+        this.lblVlrDiff_T02_Op08 = lblVlrDiff_T02_Op08;
+    }
+
+    public TableView getTbvTransacoes_T02_Op08() {
+        return tbvTransacoes_T02_Op08;
+    }
+
+    public void setTbvTransacoes_T02_Op08(TableView tbvTransacoes_T02_Op08) {
+        this.tbvTransacoes_T02_Op08 = tbvTransacoes_T02_Op08;
+    }
+
+    public Label getLblSymbol_T02_Op09() {
+        return lblSymbol_T02_Op09;
+    }
+
+    public void setLblSymbol_T02_Op09(Label lblSymbol_T02_Op09) {
+        this.lblSymbol_T02_Op09 = lblSymbol_T02_Op09;
+    }
+
+    public Label getLblQtdCall_T02_Op09() {
+        return lblQtdCall_T02_Op09;
+    }
+
+    public void setLblQtdCall_T02_Op09(Label lblQtdCall_T02_Op09) {
+        this.lblQtdCall_T02_Op09 = lblQtdCall_T02_Op09;
+    }
+
+    public Label getLblQtdPut_T02_Op09() {
+        return lblQtdPut_T02_Op09;
+    }
+
+    public void setLblQtdPut_T02_Op09(Label lblQtdPut_T02_Op09) {
+        this.lblQtdPut_T02_Op09 = lblQtdPut_T02_Op09;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op09() {
+        return lblQtdCallOrPut_T02_Op09;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op09(Label lblQtdCallOrPut_T02_Op09) {
+        this.lblQtdCallOrPut_T02_Op09 = lblQtdCallOrPut_T02_Op09;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op09() {
+        return imgCallOrPut_T02_Op09;
+    }
+
+    public void setImgCallOrPut_T02_Op09(ImageView imgCallOrPut_T02_Op09) {
+        this.imgCallOrPut_T02_Op09 = imgCallOrPut_T02_Op09;
+    }
+
+    public Label getLblQtdStakes_T02_Op09() {
+        return lblQtdStakes_T02_Op09;
+    }
+
+    public void setLblQtdStakes_T02_Op09(Label lblQtdStakes_T02_Op09) {
+        this.lblQtdStakes_T02_Op09 = lblQtdStakes_T02_Op09;
+    }
+
+    public Label getLblQtdWins_T02_Op09() {
+        return lblQtdWins_T02_Op09;
+    }
+
+    public void setLblQtdWins_T02_Op09(Label lblQtdWins_T02_Op09) {
+        this.lblQtdWins_T02_Op09 = lblQtdWins_T02_Op09;
+    }
+
+    public Label getLblQtdLoss_T02_Op09() {
+        return lblQtdLoss_T02_Op09;
+    }
+
+    public void setLblQtdLoss_T02_Op09(Label lblQtdLoss_T02_Op09) {
+        this.lblQtdLoss_T02_Op09 = lblQtdLoss_T02_Op09;
+    }
+
+    public Label getLblVlrIn_T02_Op09() {
+        return lblVlrIn_T02_Op09;
+    }
+
+    public void setLblVlrIn_T02_Op09(Label lblVlrIn_T02_Op09) {
+        this.lblVlrIn_T02_Op09 = lblVlrIn_T02_Op09;
+    }
+
+    public Label getLblVlrOut_T02_Op09() {
+        return lblVlrOut_T02_Op09;
+    }
+
+    public void setLblVlrOut_T02_Op09(Label lblVlrOut_T02_Op09) {
+        this.lblVlrOut_T02_Op09 = lblVlrOut_T02_Op09;
+    }
+
+    public Label getLblVlrDiff_T02_Op09() {
+        return lblVlrDiff_T02_Op09;
+    }
+
+    public void setLblVlrDiff_T02_Op09(Label lblVlrDiff_T02_Op09) {
+        this.lblVlrDiff_T02_Op09 = lblVlrDiff_T02_Op09;
+    }
+
+    public TableView getTbvTransacoes_T02_Op09() {
+        return tbvTransacoes_T02_Op09;
+    }
+
+    public void setTbvTransacoes_T02_Op09(TableView tbvTransacoes_T02_Op09) {
+        this.tbvTransacoes_T02_Op09 = tbvTransacoes_T02_Op09;
+    }
+
+    public Label getLblSymbol_T02_Op10() {
+        return lblSymbol_T02_Op10;
+    }
+
+    public void setLblSymbol_T02_Op10(Label lblSymbol_T02_Op10) {
+        this.lblSymbol_T02_Op10 = lblSymbol_T02_Op10;
+    }
+
+    public Label getLblQtdCall_T02_Op10() {
+        return lblQtdCall_T02_Op10;
+    }
+
+    public void setLblQtdCall_T02_Op10(Label lblQtdCall_T02_Op10) {
+        this.lblQtdCall_T02_Op10 = lblQtdCall_T02_Op10;
+    }
+
+    public Label getLblQtdPut_T02_Op10() {
+        return lblQtdPut_T02_Op10;
+    }
+
+    public void setLblQtdPut_T02_Op10(Label lblQtdPut_T02_Op10) {
+        this.lblQtdPut_T02_Op10 = lblQtdPut_T02_Op10;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op10() {
+        return lblQtdCallOrPut_T02_Op10;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op10(Label lblQtdCallOrPut_T02_Op10) {
+        this.lblQtdCallOrPut_T02_Op10 = lblQtdCallOrPut_T02_Op10;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op10() {
+        return imgCallOrPut_T02_Op10;
+    }
+
+    public void setImgCallOrPut_T02_Op10(ImageView imgCallOrPut_T02_Op10) {
+        this.imgCallOrPut_T02_Op10 = imgCallOrPut_T02_Op10;
+    }
+
+    public Label getLblQtdStakes_T02_Op10() {
+        return lblQtdStakes_T02_Op10;
+    }
+
+    public void setLblQtdStakes_T02_Op10(Label lblQtdStakes_T02_Op10) {
+        this.lblQtdStakes_T02_Op10 = lblQtdStakes_T02_Op10;
+    }
+
+    public Label getLblQtdWins_T02_Op10() {
+        return lblQtdWins_T02_Op10;
+    }
+
+    public void setLblQtdWins_T02_Op10(Label lblQtdWins_T02_Op10) {
+        this.lblQtdWins_T02_Op10 = lblQtdWins_T02_Op10;
+    }
+
+    public Label getLblQtdLoss_T02_Op10() {
+        return lblQtdLoss_T02_Op10;
+    }
+
+    public void setLblQtdLoss_T02_Op10(Label lblQtdLoss_T02_Op10) {
+        this.lblQtdLoss_T02_Op10 = lblQtdLoss_T02_Op10;
+    }
+
+    public Label getLblVlrIn_T02_Op10() {
+        return lblVlrIn_T02_Op10;
+    }
+
+    public void setLblVlrIn_T02_Op10(Label lblVlrIn_T02_Op10) {
+        this.lblVlrIn_T02_Op10 = lblVlrIn_T02_Op10;
+    }
+
+    public Label getLblVlrOut_T02_Op10() {
+        return lblVlrOut_T02_Op10;
+    }
+
+    public void setLblVlrOut_T02_Op10(Label lblVlrOut_T02_Op10) {
+        this.lblVlrOut_T02_Op10 = lblVlrOut_T02_Op10;
+    }
+
+    public Label getLblVlrDiff_T02_Op10() {
+        return lblVlrDiff_T02_Op10;
+    }
+
+    public void setLblVlrDiff_T02_Op10(Label lblVlrDiff_T02_Op10) {
+        this.lblVlrDiff_T02_Op10 = lblVlrDiff_T02_Op10;
+    }
+
+    public TableView getTbvTransacoes_T02_Op10() {
+        return tbvTransacoes_T02_Op10;
+    }
+
+    public void setTbvTransacoes_T02_Op10(TableView tbvTransacoes_T02_Op10) {
+        this.tbvTransacoes_T02_Op10 = tbvTransacoes_T02_Op10;
+    }
+
+    public Label getLblSymbol_T02_Op11() {
+        return lblSymbol_T02_Op11;
+    }
+
+    public void setLblSymbol_T02_Op11(Label lblSymbol_T02_Op11) {
+        this.lblSymbol_T02_Op11 = lblSymbol_T02_Op11;
+    }
+
+    public Label getLblQtdCall_T02_Op11() {
+        return lblQtdCall_T02_Op11;
+    }
+
+    public void setLblQtdCall_T02_Op11(Label lblQtdCall_T02_Op11) {
+        this.lblQtdCall_T02_Op11 = lblQtdCall_T02_Op11;
+    }
+
+    public Label getLblQtdPut_T02_Op11() {
+        return lblQtdPut_T02_Op11;
+    }
+
+    public void setLblQtdPut_T02_Op11(Label lblQtdPut_T02_Op11) {
+        this.lblQtdPut_T02_Op11 = lblQtdPut_T02_Op11;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op11() {
+        return lblQtdCallOrPut_T02_Op11;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op11(Label lblQtdCallOrPut_T02_Op11) {
+        this.lblQtdCallOrPut_T02_Op11 = lblQtdCallOrPut_T02_Op11;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op11() {
+        return imgCallOrPut_T02_Op11;
+    }
+
+    public void setImgCallOrPut_T02_Op11(ImageView imgCallOrPut_T02_Op11) {
+        this.imgCallOrPut_T02_Op11 = imgCallOrPut_T02_Op11;
+    }
+
+    public Label getLblQtdStakes_T02_Op11() {
+        return lblQtdStakes_T02_Op11;
+    }
+
+    public void setLblQtdStakes_T02_Op11(Label lblQtdStakes_T02_Op11) {
+        this.lblQtdStakes_T02_Op11 = lblQtdStakes_T02_Op11;
+    }
+
+    public Label getLblQtdWins_T02_Op11() {
+        return lblQtdWins_T02_Op11;
+    }
+
+    public void setLblQtdWins_T02_Op11(Label lblQtdWins_T02_Op11) {
+        this.lblQtdWins_T02_Op11 = lblQtdWins_T02_Op11;
+    }
+
+    public Label getLblQtdLoss_T02_Op11() {
+        return lblQtdLoss_T02_Op11;
+    }
+
+    public void setLblQtdLoss_T02_Op11(Label lblQtdLoss_T02_Op11) {
+        this.lblQtdLoss_T02_Op11 = lblQtdLoss_T02_Op11;
+    }
+
+    public Label getLblVlrIn_T02_Op11() {
+        return lblVlrIn_T02_Op11;
+    }
+
+    public void setLblVlrIn_T02_Op11(Label lblVlrIn_T02_Op11) {
+        this.lblVlrIn_T02_Op11 = lblVlrIn_T02_Op11;
+    }
+
+    public Label getLblVlrOut_T02_Op11() {
+        return lblVlrOut_T02_Op11;
+    }
+
+    public void setLblVlrOut_T02_Op11(Label lblVlrOut_T02_Op11) {
+        this.lblVlrOut_T02_Op11 = lblVlrOut_T02_Op11;
+    }
+
+    public Label getLblVlrDiff_T02_Op11() {
+        return lblVlrDiff_T02_Op11;
+    }
+
+    public void setLblVlrDiff_T02_Op11(Label lblVlrDiff_T02_Op11) {
+        this.lblVlrDiff_T02_Op11 = lblVlrDiff_T02_Op11;
+    }
+
+    public TableView getTbvTransacoes_T02_Op11() {
+        return tbvTransacoes_T02_Op11;
+    }
+
+    public void setTbvTransacoes_T02_Op11(TableView tbvTransacoes_T02_Op11) {
+        this.tbvTransacoes_T02_Op11 = tbvTransacoes_T02_Op11;
+    }
+
+    public Label getLblSymbol_T02_Op12() {
+        return lblSymbol_T02_Op12;
+    }
+
+    public void setLblSymbol_T02_Op12(Label lblSymbol_T02_Op12) {
+        this.lblSymbol_T02_Op12 = lblSymbol_T02_Op12;
+    }
+
+    public Label getLblQtdCall_T02_Op12() {
+        return lblQtdCall_T02_Op12;
+    }
+
+    public void setLblQtdCall_T02_Op12(Label lblQtdCall_T02_Op12) {
+        this.lblQtdCall_T02_Op12 = lblQtdCall_T02_Op12;
+    }
+
+    public Label getLblQtdPut_T02_Op12() {
+        return lblQtdPut_T02_Op12;
+    }
+
+    public void setLblQtdPut_T02_Op12(Label lblQtdPut_T02_Op12) {
+        this.lblQtdPut_T02_Op12 = lblQtdPut_T02_Op12;
+    }
+
+    public Label getLblQtdCallOrPut_T02_Op12() {
+        return lblQtdCallOrPut_T02_Op12;
+    }
+
+    public void setLblQtdCallOrPut_T02_Op12(Label lblQtdCallOrPut_T02_Op12) {
+        this.lblQtdCallOrPut_T02_Op12 = lblQtdCallOrPut_T02_Op12;
+    }
+
+    public ImageView getImgCallOrPut_T02_Op12() {
+        return imgCallOrPut_T02_Op12;
+    }
+
+    public void setImgCallOrPut_T02_Op12(ImageView imgCallOrPut_T02_Op12) {
+        this.imgCallOrPut_T02_Op12 = imgCallOrPut_T02_Op12;
+    }
+
+    public Label getLblQtdStakes_T02_Op12() {
+        return lblQtdStakes_T02_Op12;
+    }
+
+    public void setLblQtdStakes_T02_Op12(Label lblQtdStakes_T02_Op12) {
+        this.lblQtdStakes_T02_Op12 = lblQtdStakes_T02_Op12;
+    }
+
+    public Label getLblQtdWins_T02_Op12() {
+        return lblQtdWins_T02_Op12;
+    }
+
+    public void setLblQtdWins_T02_Op12(Label lblQtdWins_T02_Op12) {
+        this.lblQtdWins_T02_Op12 = lblQtdWins_T02_Op12;
+    }
+
+    public Label getLblQtdLoss_T02_Op12() {
+        return lblQtdLoss_T02_Op12;
+    }
+
+    public void setLblQtdLoss_T02_Op12(Label lblQtdLoss_T02_Op12) {
+        this.lblQtdLoss_T02_Op12 = lblQtdLoss_T02_Op12;
+    }
+
+    public Label getLblVlrIn_T02_Op12() {
+        return lblVlrIn_T02_Op12;
+    }
+
+    public void setLblVlrIn_T02_Op12(Label lblVlrIn_T02_Op12) {
+        this.lblVlrIn_T02_Op12 = lblVlrIn_T02_Op12;
+    }
+
+    public Label getLblVlrOut_T02_Op12() {
+        return lblVlrOut_T02_Op12;
+    }
+
+    public void setLblVlrOut_T02_Op12(Label lblVlrOut_T02_Op12) {
+        this.lblVlrOut_T02_Op12 = lblVlrOut_T02_Op12;
+    }
+
+    public Label getLblVlrDiff_T02_Op12() {
+        return lblVlrDiff_T02_Op12;
+    }
+
+    public void setLblVlrDiff_T02_Op12(Label lblVlrDiff_T02_Op12) {
+        this.lblVlrDiff_T02_Op12 = lblVlrDiff_T02_Op12;
+    }
+
+    public TableView getTbvTransacoes_T02_Op12() {
+        return tbvTransacoes_T02_Op12;
+    }
+
+    public void setTbvTransacoes_T02_Op12(TableView tbvTransacoes_T02_Op12) {
+        this.tbvTransacoes_T02_Op12 = tbvTransacoes_T02_Op12;
+    }
 }

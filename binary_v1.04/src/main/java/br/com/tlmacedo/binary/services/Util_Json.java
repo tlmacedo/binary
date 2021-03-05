@@ -1,18 +1,23 @@
 package br.com.tlmacedo.binary.services;
 
 import br.com.tlmacedo.binary.controller.Operacoes;
+import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.model.vo.Error;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collector;
 
 public class Util_Json {
@@ -47,25 +52,21 @@ public class Util_Json {
         try {
             return getMapper().readValue(obj.getJSONObject(aClass.getSimpleName().toLowerCase()).toString(), aClass);
         } catch (Exception ex) {
-            if (!(ex instanceof JSONException)) {
-                ex.printStackTrace();
-            } else {
-                try {
-                    if (aClass.equals(Symbols.class)) {
-                        String str = String.format("{\"active_symbols\": %s}",
-                                obj.getJSONArray("active_symbols").toString());
-                        return getMapper().readValue(str, Symbols.class);
-                    } else {
-                        return getMapper().readValue(obj.getJSONObject("error").toString(), Error.class);
-                    }
-                } catch (JsonMappingException e) {
-                    e.printStackTrace();
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-            }
+            ex.printStackTrace();
         }
         return null;
+
+    }
+
+    public static void addCandlesToHistorico(String strJson, int symbol_id, int granularity) {
+
+        try {
+            JSONArray array = new JSONObject(strJson).getJSONArray("candles");
+            for (Object o : array)
+                Operacoes.getHistoricoDeCandlesObservableList().add(0, new HistoricoDeCandles((JSONObject) o, symbol_id, granularity));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
 
@@ -86,39 +87,6 @@ public class Util_Json {
         JSONObject obj = new JSONObject(echo_req);
         return obj.getJSONObject("echo_req").getString(field);
 
-    }
-
-    public static void getHistory_from_String(Integer symbolId, String strJson) {
-
-//        JSONObject obj = new JSONObject(strJson).getJSONObject("history");
-//        List<BigDecimal> listPrices = new ArrayList((Collection) obj.getJSONArray("prices"));
-//        List<Integer> listTimes = new ArrayList((Collection) obj.getJSONArray("times"));
-//        ObservableList<HistoricoDeTicks> historicoDeTicksList = FXCollections.observableArrayList();
-//        for (int i = 0; i < Operacoes.getQtdTicksAnalisar(); i++) {
-//            historicoDeTicksList.add(0, new HistoricoDeTicks(symbolId,
-//                    listPrices.get(i), listTimes.get(i)));
-//        }
-//        Operacoes.getHistoricoDeTicksAnaliseObservableList()[symbolId]
-//                .setAll(historicoDeTicksList.sorted(Comparator.comparing(HistoricoDeTicks::getTime)));
-
-    }
-
-    public static void getCandles_from_String(Passthrough passthrough, String strJson) {
-        try {
-            JSONArray array = new JSONObject(strJson).getJSONArray("candles");
-            ObservableList<HistoricoDeCandles> historicoDeOhlcList = FXCollections.observableArrayList();
-            int timeCandle = Integer.parseInt(passthrough.getTickTime().getDescricao().replaceAll("\\D", ""));
-            for (int i = 0; i < Operacoes.getQtdCandlesAnalise(); i++) {
-                JSONObject obj = array.getJSONObject(i);
-                int granularity = timeCandle * 60;
-                historicoDeOhlcList.add(0, new HistoricoDeCandles(obj, passthrough.getSymbol(), granularity));
-                if (Operacoes.getTimeCandleStart()[timeCandle - 1].getValue().compareTo(0) == 0)
-                    Operacoes.getTimeCandleStart()[timeCandle - 1].setValue(obj.getInt("epoch"));
-            }
-            Operacoes.getHistoricoDeCandlesObservableList().addAll(historicoDeOhlcList.sorted(Comparator.comparing(HistoricoDeCandles::getEpoch)));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
     public static ObjectMapper getMapper() {

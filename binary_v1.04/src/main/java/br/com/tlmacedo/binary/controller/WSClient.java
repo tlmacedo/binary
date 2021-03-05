@@ -4,6 +4,7 @@ import br.com.tlmacedo.binary.controller.estrategias.Abr;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.model.enums.MSG_TYPE;
 import br.com.tlmacedo.binary.model.enums.ROBOS;
+import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Util_Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,7 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
+import java.util.List;
 
 import static br.com.tlmacedo.binary.interfaces.Constants.*;
 
@@ -24,7 +26,6 @@ public class WSClient extends WebSocketListener {
 
     private Msg_type msgType;
     private Passthrough passthrough;
-    private Candles candles;
     private History history;
     private Ohlc ohlc;
     private Tick tick;
@@ -196,8 +197,8 @@ public class WSClient extends WebSocketListener {
 
         Platform.runLater(() -> {
 
-            if (transaction.getAction() != null)
-                Operacoes.getTransactionObservableList().add(0, transaction);
+            //if (transaction.getAction() != null)
+            //Operacoes.getTransactionObservableList().add(0, transaction);
 
         });
 
@@ -206,7 +207,10 @@ public class WSClient extends WebSocketListener {
     private void refreshCandles(Passthrough passthrough, String candles) {
 
         Platform.runLater(() -> {
-            Util_Json.getCandles_from_String(getPassthrough(), candles);
+
+            Util_Json.addCandlesToHistorico(candles, passthrough.getSymbol().getId().intValue() - 1,
+                    TICK_TIME.getTimeSeconds(passthrough.getTickTime().getCod()));
+
         });
 
     }
@@ -364,11 +368,4 @@ public class WSClient extends WebSocketListener {
         this.transaction = transaction;
     }
 
-    public Candles getCandles() {
-        return candles;
-    }
-
-    public void setCandles(Candles candles) {
-        this.candles = candles;
-    }
 }

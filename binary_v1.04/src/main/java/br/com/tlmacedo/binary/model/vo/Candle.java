@@ -1,5 +1,7 @@
 package br.com.tlmacedo.binary.model.vo;
 
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -13,6 +15,14 @@ public class Candle implements Serializable {
     BigDecimal open;
 
     public Candle() {
+    }
+
+    public Candle(JSONObject o) {
+        this.close = o.getBigDecimal("close");
+        this.epoch = o.getLong("epoch");
+        this.high = o.getBigDecimal("high");
+        this.low = o.getBigDecimal("low");
+        this.open = o.getBigDecimal("open");
     }
 
     public BigDecimal getClose() {

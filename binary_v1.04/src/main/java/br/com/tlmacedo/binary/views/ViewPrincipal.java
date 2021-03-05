@@ -8,6 +8,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import static br.com.tlmacedo.binary.interfaces.Constants.VERSAO_APP;
@@ -21,11 +22,10 @@ public class ViewPrincipal {
     public void openViewPrincipal() throws IOException {
 
         setStage(new Stage());
-
         setParent(FXMLLoader.load(getClass().getResource(String.format("/fxml/FxmlBinary_%s.fxml", VERSAO_APP))));
         setScene(new Scene(getParent()));
 
-        getStage().setTitle(String.format("Binary by Thiago Macedo. %s", VERSAO_APP));
+        getStage().setTitle(String.format("BotBinary by Thiago Macedo. %s", VERSAO_APP));
         getStage().setResizable(true);
         getStage().setScene(getScene());
 

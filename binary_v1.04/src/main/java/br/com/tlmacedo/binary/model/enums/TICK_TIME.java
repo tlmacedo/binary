@@ -37,6 +37,14 @@ public enum TICK_TIME {
         return list;
     }
 
+    public static Integer getTimeMinutes(Integer cod) {
+        return Integer.parseInt(toEnum(cod).getDescricao().replaceAll("\\D", ""));
+    }
+
+    public static Integer getTimeSeconds(Integer cod) {
+        return getTimeMinutes(cod) * 60;
+    }
+
     public Integer getCod() {
         return cod;
     }

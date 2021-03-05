@@ -13,6 +13,10 @@ public class Candles implements Serializable {
     public Candles() {
     }
 
+    public Candles(List candlesList) {
+        this.candles = candlesList;
+    }
+
     public List<Candle> getCandles() {
         return candles;
     }
