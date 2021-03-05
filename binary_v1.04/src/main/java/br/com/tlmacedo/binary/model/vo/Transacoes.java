@@ -40,6 +40,7 @@ public class Transacoes implements Serializable {
 
     public void isBUY(Transaction transaction) {
 
+        System.out.printf("isBUY\n\n");
         this.contaToken = new SimpleObjectProperty<>(Operacoes.getContaToken());
         this.symbol = new SimpleObjectProperty<>(transaction.getSymbol());
         this.timeFrame = new SimpleObjectProperty<>(Service_DataTime.getTimeCandle_enum(transaction.getLongcode()));
@@ -59,7 +60,7 @@ public class Transacoes implements Serializable {
         this.longcode = new SimpleStringProperty(transaction.getLongcode());
         this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ONE);
         //this.tickVenda = tickVenda;
-        this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
+        this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount());
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.consolidado = new SimpleBooleanProperty(false);
 
@@ -67,23 +68,28 @@ public class Transacoes implements Serializable {
 
     }
 
-    public void isSELL(Transaction transaction) {
-        System.out.printf("SELL\n");
-    }
+    public void isSELL(Transaction transaction) throws Exception {
 
-    public void newTransacao_SELL(Transaction transaction) {
+        try {
+            System.out.printf("\nisSELL\n");
+            Transacoes transacao = Operacoes.getTransacoesObservableList().stream()
+                    .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
+                    .findFirst().orElse(null);
+            //int indexTransacao = Operacoes.getTransactionObservableList().indexOf(transacao);
 
-        Transacoes transacao = Operacoes.getTransacoesObservableList().stream()
-                .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
-                .findFirst().get();
-        int indexTransacao = Operacoes.getTransactionObservableList().indexOf(transacao);
+            int t_id = transacao.getTimeFrame().getCod(), s_id = transacao.getSymbol().getId().intValue() - 1;
+            Operacoes.getLastTransictionIsWin()[t_id][s_id].setValue(transaction.getAmount().compareTo(BigDecimal.ZERO) > 0);
 
-        transacao.setTickVenda(BigDecimal.TEN);
-        transacao.setDataHoraVenda(transaction.getTransaction_time());
-        transacao.setStakeVenda(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
-        transacao.setConsolidado(true);
+            transacao.setTickVenda(BigDecimal.TEN);
+            transacao.setStakeCompra(transacao.getStakeCompra().add(BigDecimal.ONE));
+            transacao.setDataHoraVenda(transaction.getTransaction_time());
+            transacao.setStakeVenda(transaction.getAmount());
+            transacao.setConsolidado(true);
 
-        Operacoes.getTransacoesObservableList().set(indexTransacao, transacao);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        //Operacoes.getTransacoesObservableList().set(indexTransacao, transacao);
 
 
 ////        Transacoes transacao = Operacoes.getTransacoesObservableList().stream()

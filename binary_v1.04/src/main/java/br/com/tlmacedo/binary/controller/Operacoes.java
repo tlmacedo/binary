@@ -58,7 +58,7 @@ public class Operacoes implements Initializable {
     static final List<Symbol> SYMBOL_LIST = getSymbolDAO().getAll(Symbol.class, null, null);
     static final ObservableList<Symbol> SYMBOL_OBSERVABLE_LIST =
             FXCollections.observableArrayList(
-                    getSymbolDAO().getAll(Symbol.class, null, null)
+                    getSymbolDAO().getAll(Symbol.class, "id=1", null)
             );
 
     /**
@@ -117,7 +117,7 @@ public class Operacoes implements Initializable {
 
 
     //** Operações com Robos **
-    static BooleanProperty[][] resultLastTransiction = new BooleanProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static BooleanProperty[][] lastTransictionIsWin = new BooleanProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static BooleanProperty[] timeAtivo = new BooleanProperty[TICK_TIME.values().length];
     static BooleanProperty contratoGerado = new SimpleBooleanProperty(false);
     static BooleanProperty disableContratoBtn = new SimpleBooleanProperty(true);
@@ -788,7 +788,7 @@ public class Operacoes implements Initializable {
                             getQtdCallOrPut()[finalT_id][finalS_id].setValue(0);
                             getQtdCall()[finalT_id][finalS_id].setValue(0);
                             getQtdPut()[finalT_id][finalS_id].setValue(0);
-                            for (HistoricoDeCandles candle : getHistoricoDeCandlesFilteredList()[finalT_id][finalS_id])
+                            for (HistoricoDeCandles candle : getHistoricoDeCandlesFilteredList()[finalT_id][finalS_id].sorted(Comparator.comparing(HistoricoDeCandles::getEpoch)))
                                 contarCallAndPut(candle, finalT_id, finalS_id);
                         }
                         for (HistoricoDeCandles candle : c.getAddedSubList())
@@ -949,7 +949,7 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-    public void gerarContrato(int t_id, int s_id, CONTRACT_TYPE cType) throws Exception {
+    public static void gerarContrato(int t_id, int s_id, CONTRACT_TYPE cType) throws Exception {
 
         Passthrough passthrough = new Passthrough(getSymbolObservableList().get(s_id),
                 TICK_TIME.toEnum(t_id), getTickStyle(), cType, "");
@@ -961,7 +961,7 @@ public class Operacoes implements Initializable {
         getPriceProposal()[t_id][s_id].setBasis(PRICE_PROPOSAL_BASIS);
         getPriceProposal()[t_id][s_id].setContract_type(cType);
         getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
-        int timeDuration = TICK_TIME.getTimeSeconds(t_id);// - symbol.getTickTime();
+        int timeDuration = TICK_TIME.getTimeSeconds(t_id);
         getPriceProposal()[t_id][s_id].setDuration(timeDuration);
         getPriceProposal()[t_id][s_id].setDuration_unit(DURATION_UNIT.s);
         getPriceProposal()[t_id][s_id].setSymbol(getSymbolObservableList().get(s_id).getSymbol());
@@ -1033,7 +1033,7 @@ public class Operacoes implements Initializable {
 
     }
 
-    public void solicitarProposal(PriceProposal priceProposal) {
+    public static void solicitarProposal(PriceProposal priceProposal) {
 
         if (!isAppAutorizado()) return;
         try {
@@ -1051,7 +1051,6 @@ public class Operacoes implements Initializable {
         try {
             if (proposal == null) return;
             Passthrough passthrough = new Passthrough();
-            passthrough.setMensagem("testando passthrough!!!");
             String jsonBuyContrato = Util_Json.getJson_from_Object(new BuyContract(proposal, passthrough));
             getWsClientObjectProperty().getMyWebSocket().send(jsonBuyContrato);
         } catch (Exception ex) {
@@ -1695,17 +1694,32 @@ public class Operacoes implements Initializable {
 
     private void conectarTimesAtivos() {
 
-        getTimeAtivo()[TIME_1M].bind(getChkTpn_T01_TimeAtivo().selectedProperty());
-        getTimeAtivo()[TIME_2M].bind(getChkTpn_T02_TimeAtivo().selectedProperty());
-
-        getChkTpn_T01_TimeAtivo().setSelected(true);
-        getChkTpn_T02_TimeAtivo().setSelected(true);
-
-//        getTpn_T01().expandedProperty().addListener((ov, o, n) -> {
-//            if (!n){
-//                getTpn_T
+        for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+            if (t_id == TIME_1M) {
+                getTimeAtivo()[t_id].bind(getChkTpn_T01_TimeAtivo().selectedProperty());
+                getChkTpn_T01_TimeAtivo().setSelected(true);
+            }
+            if (t_id == TIME_2M) {
+                getTimeAtivo()[t_id].bind(getChkTpn_T02_TimeAtivo().selectedProperty());
+                getChkTpn_T02_TimeAtivo().setSelected(true);
+            }
+//            if (t_id == TIME_3M) {
+//                getTimeAtivo()[t_id].bind(getChkTpn_T03_TimeAtivo().selectedProperty());
+//                getChkTpn_T03_TimeAtivo().setSelected(true);
 //            }
-//        });
+//            if (t_id == TIME_5M) {
+//                getTimeAtivo()[t_id].bind(getChkTpn_T04_TimeAtivo().selectedProperty());
+//                getChkTpn_T04_TimeAtivo().setSelected(true);
+//            }
+//            if (t_id == TIME_10M) {
+//                getTimeAtivo()[t_id].bind(getChkTpn_T05_TimeAtivo().selectedProperty());
+//                getChkTpn_T05_TimeAtivo().setSelected(true);
+//            }
+//            if (t_id == TIME_15M) {
+//                getTimeAtivo()[t_id].bind(getChkTpn_T06_TimeAtivo().selectedProperty());
+//                getChkTpn_T06_TimeAtivo().setSelected(true);
+//            }
+        }
 
     }
 
@@ -2096,12 +2110,12 @@ public class Operacoes implements Initializable {
         Operacoes.tmodelTransacoes = tmodelTransacoes;
     }
 
-    public static BooleanProperty[][] getResultLastTransiction() {
-        return resultLastTransiction;
+    public static BooleanProperty[][] getLastTransictionIsWin() {
+        return lastTransictionIsWin;
     }
 
-    public static void setResultLastTransiction(BooleanProperty[][] resultLastTransiction) {
-        Operacoes.resultLastTransiction = resultLastTransiction;
+    public static void setLastTransictionIsWin(BooleanProperty[][] lastTransictionIsWin) {
+        Operacoes.lastTransictionIsWin = lastTransictionIsWin;
     }
 
     public static BooleanProperty[] getTimeAtivo() {

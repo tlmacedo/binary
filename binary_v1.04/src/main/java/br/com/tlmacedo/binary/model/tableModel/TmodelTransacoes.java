@@ -61,7 +61,7 @@ public class TmodelTransacoes {
         getColDataHoraCompra().setPrefWidth(140);
         getColDataHoraCompra().setStyle("-fx-alignment: center-right;");
         getColDataHoraCompra().setCellValueFactory(param -> Service_DataTime
-                .getCarimboStrProperty(param.getValue().getDataHoraCompra(), Constants.DTF_TMODEL_DATA_TRANSACTION));
+                .getCarimboStrProperty(param.getValue().dataHoraCompraProperty().getValue(), Constants.DTF_TMODEL_DATA_TRANSACTION));
 
         setColNegociacao(new TableColumn<>("Negociação"));
         getColNegociacao().setPrefWidth(92);
@@ -91,18 +91,32 @@ public class TmodelTransacoes {
         getColStakeCompra().setCellValueFactory(param -> {
             if (param.getValue().getStakeCompra() != null)
                 return new SimpleStringProperty(Service_Mascara.getValorMoeda(
-                        param.getValue().getStakeCompra()));
+                        param.getValue().stakeCompraProperty().getValue().negate()));
             return new SimpleStringProperty("0.00");
         });
 
         setColStakeVenda(new TableColumn<>("result"));
-        getColStakeCompra().setPrefWidth(60);
+        getColStakeVenda().setPrefWidth(60);
         getColStakeVenda().setStyle("-fx-alignment: center-right;");
         getColStakeVenda().setCellValueFactory(param -> {
-            if (param.getValue().getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+            if (param.getValue().isConsolidado())
                 return new SimpleStringProperty(Service_Mascara.getValorMoeda(
-                        param.getValue().getStakeVenda().add(param.getValue().getStakeCompra())));
-            return new SimpleStringProperty(param.getValue().getStakeVenda().setScale(2, RoundingMode.HALF_UP).toString());
+                        param.getValue().stakeVendaProperty().getValue()
+                                .add(param.getValue().stakeCompraProperty().getValue())));
+            return param.getValue().stakeVendaProperty().asString();
+//            System.out.printf("[%s][%s]-myStakeVenda:[%s]myStakeCompra:[%s]myStakeResult:[%s]\n",
+//                    param.getValue().getTimeFrame().getCod(), param.getValue().getSymbol().getId().intValue() - 1,
+//                    param.getValue().getStakeVenda(),
+//                    param.getValue().getStakeCompra().negate(),
+//                    param.getValue().getStakeVenda() != null
+//                            ? param.getValue().getStakeVenda().add(param.getValue().getStakeCompra())
+//                            : param.getValue().getStakeCompra());
+
+//            if (param.getValue().stakeVendaProperty().getValue() != null)
+//                return new SimpleStringProperty(Service_Mascara.getValorMoeda(
+//                        param.getValue().stakeVendaProperty().getValue()
+//                                .add(param.getValue().stakeCompraProperty().getValue())));
+//            return new SimpleStringProperty("0.00");
         });
         getColStakeVenda().setCellFactory(param ->
                 new TableCell<Transacoes, String>() {

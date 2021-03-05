@@ -155,7 +155,9 @@ public class WSClient extends WebSocketListener {
             try {
                 boolean symbolAtivo = Operacoes.getSymbolObservableList().get(s_id) != null;
 
-                if (Operacoes.getTestaLastCandle()[t_id][s_id].getValue() == null) {
+                if (Operacoes.getTestaLastCandle()[t_id][s_id].getValue() == null
+                        && Operacoes.getHistoricoDeCandlesFilteredList()[t_id][s_id].size()
+                        <= Operacoes.getQtdCandlesAnalise()) {
                     Operacoes.getTestaLastCandle()[t_id][s_id].setValue(ohlc);
 
                     HistoricoDeCandles hCandle = Operacoes.getHistoricoDeCandlesFilteredList()[t_id][s_id]
@@ -186,7 +188,10 @@ public class WSClient extends WebSocketListener {
 
             switch (ROBOS.valueOf(Operacoes.getRobo().getClass().getSimpleName().toUpperCase())) {
                 case ABR -> {
-                    Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1] = proposal;
+                    if (proposal.getAsk_price().compareTo(Operacoes.getVlrStkPadrao()[t_id].getValue()) == 0)
+                        Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][0] = proposal;
+                    else
+                        Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][1] = proposal;
                 }
             }
         });
@@ -207,10 +212,14 @@ public class WSClient extends WebSocketListener {
     private void refreshCandles(Passthrough passthrough, String candles) {
 
         Platform.runLater(() -> {
-
-            Util_Json.addCandlesToHistorico(candles, passthrough.getSymbol().getId().intValue() - 1,
-                    TICK_TIME.getTimeSeconds(passthrough.getTickTime().getCod()));
-
+//            try {
+            int t_id = passthrough.getTickTime().getCod();
+            int s_id = passthrough.getSymbol().getId().intValue() - 1;
+            if (TICK_TIME.toEnum(t_id) != null && Operacoes.getSymbolObservableList().size() > s_id)
+                Util_Json.addCandlesToHistorico(candles, s_id, TICK_TIME.getTimeSeconds(t_id));
+//            } catch (Exception ex) {
+//
+//            }
         });
 
     }
