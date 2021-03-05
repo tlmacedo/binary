@@ -1,18 +1,22 @@
 package br.com.tlmacedo.binary.model.vo;
 
+import br.com.tlmacedo.binary.controller.Operacoes;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
+import br.com.tlmacedo.binary.model.enums.TICK_TIME;
+import br.com.tlmacedo.binary.services.Service_DataTime;
 import javafx.beans.property.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Transacoes implements Serializable {
     public static final long serialVersionUID = 1L;
 
     ObjectProperty<ContaToken> contaToken = new SimpleObjectProperty<>();
-    ObjectProperty<Symbol> activeSymbol = new SimpleObjectProperty<>();
-    IntegerProperty timeFrame = new SimpleIntegerProperty();
+    ObjectProperty<Symbol> symbol = new SimpleObjectProperty<>();
+    ObjectProperty<TICK_TIME> timeFrame = new SimpleObjectProperty<>();
     LongProperty transaction_id = new SimpleLongProperty();
     LongProperty contract_id = new SimpleLongProperty();
     IntegerProperty dataHoraCompra = new SimpleIntegerProperty();
@@ -32,52 +36,55 @@ public class Transacoes implements Serializable {
 //    StringBuilder stbContract_Type = new StringBuilder();
 
     public Transacoes() {
+    }
+
+    public void isBUY(Transaction transaction) {
+
+        this.contaToken = new SimpleObjectProperty<>(Operacoes.getContaToken());
+        this.symbol = new SimpleObjectProperty<>(transaction.getSymbol());
+        this.timeFrame = new SimpleObjectProperty<>(Service_DataTime.getTimeCandle_enum(transaction.getLongcode()));
+        this.transaction_id = new SimpleLongProperty(transaction.getTransaction_id());
+        this.contract_id = new SimpleLongProperty(transaction.getContract_id());
+        this.dataHoraCompra = new SimpleIntegerProperty(transaction.getTransaction_time());
+        //this.dataHoraVenda = dataHoraCompra;
+        this.dataHoraExpiry = new SimpleIntegerProperty(transaction.getDate_expiry());
+        if (transaction.getBarrier().equals("S0P")) {
+            String contract;
+            if (transaction.getLongcode().toLowerCase().contains(" higher "))
+                contract = CONTRACT_TYPE.CALL.toString();
+            else
+                contract = CONTRACT_TYPE.PUT.toString();
+            this.contract_type = new SimpleStringProperty(contract);
+        }
+        this.longcode = new SimpleStringProperty(transaction.getLongcode());
+        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ONE);
+        //this.tickVenda = tickVenda;
+        this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
+        this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
+        this.consolidado = new SimpleBooleanProperty(false);
+
+        Operacoes.getTransacoesObservableList().add(0, this);
 
     }
 
-    public Transacoes Transacoes_BUY(Transaction transaction) {
-        System.out.printf("BUY\n");
-        return null;
-    }
-
-    public Transacoes Transacoes_SELL(Transaction transaction) {
+    public void isSELL(Transaction transaction) {
         System.out.printf("SELL\n");
-        return null;
-    }
-
-    public void newTransacao_BUY(Transaction transaction) {
-
-//        this.contaToken = new SimpleObjectProperty<>(transaction.getContaToken());
-////                this.symbol = new SimpleObjectProperty<>(transaction.getSymbol());
-//        setSymbol(getSymbol());
-//        this.transaction_id = new SimpleLongProperty(transaction.getTransaction_id());
-//        this.contract_id = new SimpleLongProperty(transaction.getContract_id());
-//        this.dataHoraCompra = new SimpleIntegerProperty(transaction.getTransaction_time());
-//        try {
-//            getStbContract_Type().append(getContractTypeLastPriceProposal().getDescricao());
-//            if (getLastBarrier() != null)
-//                getStbContract_Type().append(String.format("_%s", getLastBarrier()));
-//        } catch (Exception ex) {
-//            if (transaction.getBarrier().equals("S0P")) {
-//                if (transaction.getLongcode().contains("higher"))
-//                    getStbContract_Type().append(CONTRACT_TYPE.CALL);
-//                else if (transaction.getLongcode().contains("lower"))
-//                    getStbContract_Type().append(CONTRACT_TYPE.PUT);
-//            }
-//            if (!(ex instanceof NullPointerException))
-//                ex.printStackTrace();
-//        }
-//        this.contract_type = new SimpleStringProperty(getStbContract_Type().toString());
-//        this.longcode = new SimpleStringProperty(transaction.getLongcode());
-//        this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
-//        this.dataHoraExpiry = new SimpleIntegerProperty(transaction.getDate_expiry());
-//        this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
-//
-//        Operacoes.getTransacoesObservableList().add(0, this);
-
     }
 
     public void newTransacao_SELL(Transaction transaction) {
+
+        Transacoes transacao = Operacoes.getTransacoesObservableList().stream()
+                .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
+                .findFirst().get();
+        int indexTransacao = Operacoes.getTransactionObservableList().indexOf(transacao);
+
+        transacao.setTickVenda(BigDecimal.TEN);
+        transacao.setDataHoraVenda(transaction.getTransaction_time());
+        transacao.setStakeVenda(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
+        transacao.setConsolidado(true);
+
+        Operacoes.getTransacoesObservableList().set(indexTransacao, transacao);
+
 
 ////        Transacoes transacao = Operacoes.getTransacoesObservableList().stream()
 ////                .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
@@ -126,16 +133,29 @@ public class Transacoes implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activeSymbol_id", foreignKey = @ForeignKey(name = "fk_transacoes_activeSymbol"), nullable = false)
-    public Symbol getActiveSymbol() {
-        return activeSymbol.get();
+    public Symbol getSymbol() {
+        return symbol.get();
     }
 
-    public ObjectProperty<Symbol> activeSymbolProperty() {
-        return activeSymbol;
+    public ObjectProperty<Symbol> symbolProperty() {
+        return symbol;
     }
 
-    public void setActiveSymbol(Symbol symbol) {
-        this.activeSymbol.set(symbol);
+    public void setSymbol(Symbol symbol) {
+        this.symbol.set(symbol);
+    }
+
+    @Enumerated(EnumType.STRING)
+    public TICK_TIME getTimeFrame() {
+        return timeFrame.get();
+    }
+
+    public ObjectProperty<TICK_TIME> timeFrameProperty() {
+        return timeFrame;
+    }
+
+    public void setTimeFrame(TICK_TIME timeFrame) {
+        this.timeFrame.set(timeFrame);
     }
 
     @Column(nullable = false)
@@ -299,7 +319,7 @@ public class Transacoes implements Serializable {
     public String toString() {
         return "Transacoes{" +
                 "contaToken=" + contaToken +
-                ", activeSymbol=" + activeSymbol +
+                ", symbol=" + symbol +
                 ", timeFrame=" + timeFrame +
                 ", transaction_id=" + transaction_id +
                 ", contract_id=" + contract_id +

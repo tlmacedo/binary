@@ -14,6 +14,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.stream.Collectors;
 
 public class TmodelTransacoes {
@@ -77,12 +78,12 @@ public class TmodelTransacoes {
         setColTickCompra(new TableColumn<>("tick_buy"));
         getColTickCompra().setPrefWidth(94);
         getColTickCompra().setStyle("-fx-alignment: center-right;");
-        getColTickCompra().setCellValueFactory(param -> new SimpleStringProperty(""));
+        getColTickCompra().setCellValueFactory(param -> param.getValue().tickCompraProperty().asString());
 
         setColTickVenda(new TableColumn<>("tick_sell"));
         getColTickVenda().setPrefWidth(94);
         getColTickVenda().setStyle("-fx-alignment: center-right;");
-        getColTickVenda().setCellValueFactory(param -> new SimpleStringProperty(""));
+        getColTickVenda().setCellValueFactory(param -> param.getValue().tickVendaProperty().asString());
 
         setColStakeCompra(new TableColumn<>("stake"));
         getColStakeCompra().setPrefWidth(60);
@@ -90,15 +91,19 @@ public class TmodelTransacoes {
         getColStakeCompra().setCellValueFactory(param -> {
             if (param.getValue().getStakeCompra() != null)
                 return new SimpleStringProperty(Service_Mascara.getValorMoeda(
-                        param.getValue().getStakeCompra().negate()));
+                        param.getValue().getStakeCompra()));
             return new SimpleStringProperty("0.00");
         });
 
         setColStakeVenda(new TableColumn<>("result"));
         getColStakeCompra().setPrefWidth(60);
         getColStakeVenda().setStyle("-fx-alignment: center-right;");
-        getColStakeVenda().setCellValueFactory(param -> new SimpleStringProperty(Service_Mascara.getValorMoeda(
-                param.getValue().getStakeVenda().add(param.getValue().getStakeCompra()))));
+        getColStakeVenda().setCellValueFactory(param -> {
+            if (param.getValue().getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+                return new SimpleStringProperty(Service_Mascara.getValorMoeda(
+                        param.getValue().getStakeVenda().add(param.getValue().getStakeCompra())));
+            return new SimpleStringProperty(param.getValue().getStakeVenda().setScale(2, RoundingMode.HALF_UP).toString());
+        });
         getColStakeVenda().setCellFactory(param ->
                 new TableCell<Transacoes, String>() {
                     @Override

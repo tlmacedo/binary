@@ -6,10 +6,15 @@ import javafx.beans.property.StringProperty;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
 public class Service_DataTime {
+
+    public static Long getIntegerDateNow() {
+        return LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
 
     public static StringProperty getCarimboStrProperty(LocalDateTime localDateTime, DateTimeFormatter dtf) {
         return new SimpleStringProperty(getCarimboStr(localDateTime, dtf));
@@ -33,8 +38,12 @@ public class Service_DataTime {
         return minutes;
     }
 
+    public static TICK_TIME getTimeCandle_enum(String longcode) {
+        return TICK_TIME.valueOf(String.format("T%dM", getTimeCandle(longcode)));
+    }
+
     public static Integer getTimeCandle_id(String longcode) {
-        return TICK_TIME.valueOf(String.format("T%dM", getTimeCandle(longcode))).getCod();
+        return getTimeCandle_enum(longcode).getCod();
     }
 
 

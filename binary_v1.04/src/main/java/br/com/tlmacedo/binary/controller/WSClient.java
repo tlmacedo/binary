@@ -197,8 +197,8 @@ public class WSClient extends WebSocketListener {
 
         Platform.runLater(() -> {
 
-            //if (transaction.getAction() != null)
-            //Operacoes.getTransactionObservableList().add(0, transaction);
+            if (transaction.getAction() != null)
+                Operacoes.getTransactionObservableList().add(0, transaction);
 
         });
 

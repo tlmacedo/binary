@@ -2,10 +2,7 @@ package br.com.tlmacedo.binary.controller;
 
 import br.com.tlmacedo.binary.controller.estrategias.Abr;
 import br.com.tlmacedo.binary.interfaces.Robo;
-import br.com.tlmacedo.binary.model.dao.ContaTokenDAO;
-import br.com.tlmacedo.binary.model.dao.SymbolDAO;
-import br.com.tlmacedo.binary.model.dao.TransacoesDAO;
-import br.com.tlmacedo.binary.model.dao.TransactionDAO;
+import br.com.tlmacedo.binary.model.dao.*;
 import br.com.tlmacedo.binary.model.enums.*;
 import br.com.tlmacedo.binary.model.tableModel.TmodelTransacoes;
 import br.com.tlmacedo.binary.model.vo.*;
@@ -33,6 +30,8 @@ import javafx.scene.layout.HBox;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,6 +48,7 @@ public class Operacoes implements Initializable {
     static ContaTokenDAO contaTokenDAO = new ContaTokenDAO();
     static TransacoesDAO transacoesDAO = new TransacoesDAO();
     static TransactionDAO transactionDAO = new TransactionDAO();
+    static LogSistemaStartDAO logSistemaStartDAO = new LogSistemaStartDAO();
 
 
     /**
@@ -67,6 +67,7 @@ public class Operacoes implements Initializable {
     static final ObservableList<ContaToken> CONTA_TOKEN_OBSERVABLE_LIST
             = FXCollections.observableArrayList(
             getContaTokenDAO().getAll(ContaToken.class, "tokenAtivo=1", "cReal, moeda, descricao"));
+    static ObjectProperty<ContaToken> contaToken = new SimpleObjectProperty<>();
     static ObjectProperty<Authorize> authorize = new SimpleObjectProperty<>();
 
 
@@ -108,6 +109,7 @@ public class Operacoes implements Initializable {
 
     //** Listas **
     static ObservableList<HistoricoDeCandles> historicoDeCandlesObservableList = FXCollections.observableArrayList();
+    static ObservableList<Transaction> transactionObservableList = FXCollections.observableArrayList();
     static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
     static FilteredList<HistoricoDeCandles>[][] historicoDeCandlesFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static FilteredList<Transacoes>[][] transacoesFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
@@ -124,6 +126,8 @@ public class Operacoes implements Initializable {
     static BooleanProperty disableStopBtn = new SimpleBooleanProperty(true);
     static BooleanProperty roboMonitorando = new SimpleBooleanProperty(false);
     static BooleanProperty roboMonitorandoPausado = new SimpleBooleanProperty(false);
+    static ObjectProperty<BigDecimal>[] porcMartingale = new ObjectProperty[TICK_TIME.values().length];
+    static ObjectProperty<BigDecimal>[][] vlrLossAcumulado = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObjectProperty<BigDecimal>[] vlrStkPadrao = new ObjectProperty[TICK_TIME.values().length];
     static ObjectProperty<BigDecimal>[][] vlrStkContrato = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static IntegerProperty[] qtdCandlesEntrada = new IntegerProperty[TICK_TIME.values().length];
@@ -654,19 +658,19 @@ public class Operacoes implements Initializable {
 
 //******************
 
-//                getTransacoesFilteredList()[t_id][s_id] = new FilteredList<>(getTransacoesObservableList());
-//                getTransacoesFilteredList()[t_id][s_id].setPredicate(transaction ->
-//                        Service_DataTime.getTimeCandle_id(transaction.getLongcode()) == finalT_id
-//                                && transaction.getSymbol().getId().intValue() - 1 == finalS_id);
-//
-//
-//                getTmodelTransactions()[t_id][s_id] = new TmodelTransactions();
-//                getTmodelTransactions()[t_id][s_id].criar_tabela();
-//
-//                getTmodelTransactions()[t_id][s_id].setTransactionFilteredList(getTransactionFilteredList()[t_id][s_id]);
-//                contectarTabelaEmLista(t_id, s_id);
-//
-//                getTmodelTransactions()[t_id][s_id].tabela_preencher();
+                getTransacoesFilteredList()[t_id][s_id] = new FilteredList<>(getTransacoesObservableList());
+                getTransacoesFilteredList()[t_id][s_id].setPredicate(transaction ->
+                        Service_DataTime.getTimeCandle_id(transaction.getLongcode()) == finalT_id
+                                && transaction.getSymbol().getId().intValue() - 1 == finalS_id);
+
+
+                getTmodelTransacoes()[t_id][s_id] = new TmodelTransacoes();
+                getTmodelTransacoes()[t_id][s_id].criar_tabela();
+
+                getTmodelTransacoes()[t_id][s_id].setTransacoesFilteredList(getTransacoesFilteredList()[t_id][s_id]);
+                contectarTabelaEmLista(t_id, s_id);
+
+                getTmodelTransacoes()[t_id][s_id].tabela_preencher();
             }
         }
 
@@ -685,6 +689,8 @@ public class Operacoes implements Initializable {
                 return BigDecimal.ZERO;
             return authorizeProperty().getValue().getBalance();
         }, authorizeProperty()));
+
+        contaTokenProperty().bind(getCboTpnDetalhesContaBinary().valueProperty());
 
     }
 
@@ -750,14 +756,26 @@ public class Operacoes implements Initializable {
 
         });
 
-//        getTransactionObservableList().addListener((ListChangeListener<? super Transaction>) c -> {
-//            while (c.next()) {
-//                System.out.printf("***TransactionObservableList(): teve alteração");
-//                for (Transaction transaction : c.getAddedSubList()) {
-//                    System.out.printf("***TransactionObservableList()===>>> %s\n", transaction);
-//                }
-//            }
-//        });
+        getTransactionObservableList().addListener((ListChangeListener<? super Transaction>) c -> {
+            while (c.next()) {
+                for (Transaction transaction : c.getAddedSubList()) {
+                    try {
+                        switch (ACTION.valueOf(transaction.getAction().toUpperCase())) {
+                            case BUY -> {
+                                new Transacoes().isBUY(transaction);
+                            }
+                            case SELL -> {
+                                //**************
+                                new Transacoes().isSELL(transaction);
+                            }
+                        }
+                    } catch (Exception ex) {
+                        if (!(ex instanceof NullPointerException) && !(ex instanceof IllegalStateException))
+                            ex.printStackTrace();
+                    }
+                }
+            }
+        });
 
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
             if (!getTimeAtivo()[t_id].getValue()) continue;
@@ -777,13 +795,6 @@ public class Operacoes implements Initializable {
                             contarCallAndPut(candle, finalT_id, finalS_id);
                     }
                 });
-//                getTransactionFilteredList()[t_id][s_id].addListener((ListChangeListener<? super Transaction>) c -> {
-//                    while (c.next()) {
-//                        for (Transaction transaction : c.getAddedSubList()) {
-//                            System.out.printf("***TransactionFilteredList()[%s][%s]===>>> %s\n", finalT_id, finalS_id, transaction);
-//                        }
-//                    }
-//                });
             }
         }
 
@@ -878,6 +889,10 @@ public class Operacoes implements Initializable {
             try {
                 getRobo().monitorarCondicoesParaComprar();
                 setRoboMonitorando(true);
+                getLogSistemaStartDAO().merger(
+                        new LogSistemaStart(getCboTpnDetalhesContaBinary().getValue(),
+                                Service_DataTime.getIntegerDateNow(),
+                                Service_Mascara.getParametrosToDB()));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -934,10 +949,10 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-    public void gerarContrato(TICK_TIME time, Symbol symbol, CONTRACT_TYPE cType) throws Exception {
+    public void gerarContrato(int t_id, int s_id, CONTRACT_TYPE cType) throws Exception {
 
-        Passthrough passthrough = new Passthrough(symbol, time, getTickStyle(), cType, "");
-        int t_id = time.getCod(), s_id = symbol.getId().intValue() - 1;
+        Passthrough passthrough = new Passthrough(getSymbolObservableList().get(s_id),
+                TICK_TIME.toEnum(t_id), getTickStyle(), cType, "");
 
         getPriceProposal()[t_id][s_id] = new PriceProposal();
 
@@ -946,10 +961,10 @@ public class Operacoes implements Initializable {
         getPriceProposal()[t_id][s_id].setBasis(PRICE_PROPOSAL_BASIS);
         getPriceProposal()[t_id][s_id].setContract_type(cType);
         getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
-        int timeDuration = (Integer.parseInt(time.getDescricao().replaceAll("\\D", "")) * 60);// - symbol.getTickTime();
+        int timeDuration = TICK_TIME.getTimeSeconds(t_id);// - symbol.getTickTime();
         getPriceProposal()[t_id][s_id].setDuration(timeDuration);
         getPriceProposal()[t_id][s_id].setDuration_unit(DURATION_UNIT.s);
-        getPriceProposal()[t_id][s_id].setSymbol(symbol.getSymbol());
+        getPriceProposal()[t_id][s_id].setSymbol(getSymbolObservableList().get(s_id).getSymbol());
         getPriceProposal()[t_id][s_id].setPassthrough(passthrough);
 
         solicitarProposal(getPriceProposal()[t_id][s_id]);
@@ -2041,6 +2056,14 @@ public class Operacoes implements Initializable {
         Operacoes.historicoDeCandlesObservableList = historicoDeCandlesObservableList;
     }
 
+    public static ObservableList<Transaction> getTransactionObservableList() {
+        return transactionObservableList;
+    }
+
+    public static void setTransactionObservableList(ObservableList<Transaction> transactionObservableList) {
+        Operacoes.transactionObservableList = transactionObservableList;
+    }
+
     public static ObservableList<Transacoes> getTransacoesObservableList() {
         return transacoesObservableList;
     }
@@ -2171,6 +2194,22 @@ public class Operacoes implements Initializable {
 
     public static void setRoboMonitorandoPausado(boolean roboMonitorandoPausado) {
         Operacoes.roboMonitorandoPausado.set(roboMonitorandoPausado);
+    }
+
+    public static ObjectProperty<BigDecimal>[] getPorcMartingale() {
+        return porcMartingale;
+    }
+
+    public static void setPorcMartingale(ObjectProperty<BigDecimal>[] porcMartingale) {
+        Operacoes.porcMartingale = porcMartingale;
+    }
+
+    public static ObjectProperty<BigDecimal>[][] getVlrLossAcumulado() {
+        return vlrLossAcumulado;
+    }
+
+    public static void setVlrLossAcumulado(ObjectProperty<BigDecimal>[][] vlrLossAcumulado) {
+        Operacoes.vlrLossAcumulado = vlrLossAcumulado;
     }
 
     public static ObjectProperty<BigDecimal>[] getVlrStkPadrao() {
@@ -5163,5 +5202,25 @@ public class Operacoes implements Initializable {
 
     public void setTbvTransacoes_T02_Op12(TableView tbvTransacoes_T02_Op12) {
         this.tbvTransacoes_T02_Op12 = tbvTransacoes_T02_Op12;
+    }
+
+    public static LogSistemaStartDAO getLogSistemaStartDAO() {
+        return logSistemaStartDAO;
+    }
+
+    public static void setLogSistemaStartDAO(LogSistemaStartDAO logSistemaStartDAO) {
+        Operacoes.logSistemaStartDAO = logSistemaStartDAO;
+    }
+
+    public static ContaToken getContaToken() {
+        return contaToken.get();
+    }
+
+    public static ObjectProperty<ContaToken> contaTokenProperty() {
+        return contaToken;
+    }
+
+    public static void setContaToken(ContaToken contaToken) {
+        Operacoes.contaToken.set(contaToken);
     }
 }

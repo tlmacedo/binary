@@ -1,5 +1,6 @@
 package br.com.tlmacedo.binary.services;
 
+import br.com.tlmacedo.binary.controller.Operacoes;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
 
@@ -12,6 +13,11 @@ import java.util.regex.Pattern;
 public class Service_Mascara {
 
     private static String REGEX_PONTUACAO = "[ !\"$%&'()*+,-./:;_`{|}]";
+
+    public static String getParametrosToDB() {
+        return Operacoes.getParametrosUtilizadosRobo().replaceAll("\n", "\t")
+                .replaceAll("  ", " ");
+    }
 
     public static int getNumberOfDecimal(BigDecimal bigDecimal) {
         String string = bigDecimal.stripTrailingZeros().toPlainString();
