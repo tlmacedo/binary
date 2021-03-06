@@ -962,6 +962,7 @@ public class Operacoes implements Initializable {
         getPriceProposal()[t_id][s_id].setContract_type(cType);
         getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
         int timeDuration = TICK_TIME.getTimeSeconds(t_id);
+//        int timeDuration = TICK_TIME.getTimeSeconds(t_id) - getSymbolObservableList().get(s_id).getTickTime();
         getPriceProposal()[t_id][s_id].setDuration(timeDuration);
         getPriceProposal()[t_id][s_id].setDuration_unit(DURATION_UNIT.s);
         getPriceProposal()[t_id][s_id].setSymbol(getSymbolObservableList().get(s_id).getSymbol());

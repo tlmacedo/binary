@@ -29,6 +29,7 @@ public class Transaction {
     String take_profit;
     Long transaction_id;
     Integer transaction_time;
+    BigDecimal payout;
 
 
     public Transaction() {
@@ -192,6 +193,14 @@ public class Transaction {
         this.transaction_time = transaction_time;
     }
 
+    public BigDecimal getPayout() {
+        return payout;
+    }
+
+    public void setPayout(BigDecimal payout) {
+        this.payout = payout;
+    }
+
     @Override
     public String toString() {
         return "Transaction{" +
@@ -210,11 +219,11 @@ public class Transaction {
                 ", low_barrier='" + low_barrier + '\'' +
                 ", purchase_time=" + purchase_time +
                 ", stop_out='" + stop_out + '\'' +
-                ", symbol=" + symbol.transictionToString() +
+                ", symbol=" + symbol +
                 ", take_profit='" + take_profit + '\'' +
                 ", transaction_id=" + transaction_id +
                 ", transaction_time=" + transaction_time +
+                ", payout=" + payout +
                 '}';
     }
-
 }

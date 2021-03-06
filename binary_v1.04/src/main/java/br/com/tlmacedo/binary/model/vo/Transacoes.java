@@ -66,6 +66,9 @@ public class Transacoes implements Serializable {
 
         Operacoes.getTransacoesObservableList().add(0, this);
 
+        Operacoes.getRobo().gerarNovosContratos(getTimeFrame().getCod(), getSymbol().getId().intValue() - 1,
+                transaction.getPayout(), transaction.getAmount());
+
     }
 
     public void isSELL(Transaction transaction) throws Exception {
