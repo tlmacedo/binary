@@ -7,7 +7,7 @@ import br.com.tlmacedo.binary.model.vo.Transacoes;
 import br.com.tlmacedo.binary.model.vo.Transaction;
 import br.com.tlmacedo.binary.services.Service_DataTime;
 import br.com.tlmacedo.binary.services.Service_Mascara;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class TmodelTransacoes {
@@ -27,19 +28,30 @@ public class TmodelTransacoes {
     private TableColumn<Transacoes, String> colTickVenda;
     private TableColumn<Transacoes, String> colStakeCompra;
     private TableColumn<Transacoes, String> colStakeVenda;
+    private TableColumn<Transacoes, Boolean> colConsolidado;
 
     private TableView<Transacoes> tbvTransacoes;
     private ObservableList<Transacoes> transacoesObservableList;
-    private FilteredList<Transacoes> transacoesFilteredList;
+//    private FilteredList<Transacoes> transacoesFilteredList;
 
+    private IntegerProperty n_Stakes = new SimpleIntegerProperty(0);
+    private IntegerProperty n_Wins = new SimpleIntegerProperty(0);
+    private IntegerProperty n_Loss = new SimpleIntegerProperty(0);
+
+    private ObjectProperty<BigDecimal> vlr_In = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    private ObjectProperty<BigDecimal> vlr_Out = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    private ObjectProperty<BigDecimal> vlr_Diff = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
     public TmodelTransacoes() {
     }
 
-    public TmodelTransacoes(FilteredList transacoesFilteredList) {
-        this.transacoesFilteredList = transacoesFilteredList;
-    }
+//    public TmodelTransacoes(FilteredList transacoesFilteredList) {
+//        this.transacoesFilteredList = transacoesFilteredList;
+//    }
 
+    public TmodelTransacoes(ObservableList<Transacoes> transacoesObservableList) {
+        this.transacoesObservableList = transacoesObservableList;
+    }
 
     /**
      * <p>
@@ -63,8 +75,8 @@ public class TmodelTransacoes {
         getColDataHoraCompra().setCellValueFactory(param -> Service_DataTime
                 .getCarimboStrProperty(param.getValue().dataHoraCompraProperty().getValue(), Constants.DTF_TMODEL_DATA_TRANSACTION));
 
-        setColNegociacao(new TableColumn<>("Negociação"));
-        getColNegociacao().setPrefWidth(92);
+        setColNegociacao(new TableColumn<>("Type"));
+        getColNegociacao().setPrefWidth(50);
         getColNegociacao().setStyle("-fx-alignment: center-left;");
         getColNegociacao().setCellValueFactory(param -> {
             CONTRACT_TYPE op = null;
@@ -78,12 +90,18 @@ public class TmodelTransacoes {
         setColTickCompra(new TableColumn<>("tick_buy"));
         getColTickCompra().setPrefWidth(94);
         getColTickCompra().setStyle("-fx-alignment: center-right;");
-        getColTickCompra().setCellValueFactory(param -> param.getValue().tickCompraProperty().asString());
+        getColTickCompra().setCellValueFactory(param ->
+                param.getValue().tickCompraProperty().asString()
+        );
 
         setColTickVenda(new TableColumn<>("tick_sell"));
         getColTickVenda().setPrefWidth(94);
         getColTickVenda().setStyle("-fx-alignment: center-right;");
-        getColTickVenda().setCellValueFactory(param -> param.getValue().tickVendaProperty().asString());
+        getColTickVenda().setCellValueFactory(param -> {
+            if (param.getValue().tickVendaProperty().getValue() != null)
+                return param.getValue().tickVendaProperty().asString();
+            return new SimpleStringProperty("");
+        });
 
         setColStakeCompra(new TableColumn<>("stake"));
         getColStakeCompra().setPrefWidth(60);
@@ -95,6 +113,11 @@ public class TmodelTransacoes {
             return new SimpleStringProperty("0.00");
         });
 
+        setColConsolidado(new TableColumn<>("Consl"));
+        getColConsolidado().setPrefWidth(30);
+        getColConsolidado().setStyle("-fx-alignment: center");
+        getColConsolidado().setCellValueFactory(param -> param.getValue().consolidadoProperty());
+
         setColStakeVenda(new TableColumn<>("result"));
         getColStakeVenda().setPrefWidth(60);
         getColStakeVenda().setStyle("-fx-alignment: center-right;");
@@ -104,19 +127,6 @@ public class TmodelTransacoes {
                         param.getValue().stakeVendaProperty().getValue()
                                 .add(param.getValue().stakeCompraProperty().getValue())));
             return param.getValue().stakeVendaProperty().asString();
-//            System.out.printf("[%s][%s]-myStakeVenda:[%s]myStakeCompra:[%s]myStakeResult:[%s]\n",
-//                    param.getValue().getTimeFrame().getCod(), param.getValue().getSymbol().getId().intValue() - 1,
-//                    param.getValue().getStakeVenda(),
-//                    param.getValue().getStakeCompra().negate(),
-//                    param.getValue().getStakeVenda() != null
-//                            ? param.getValue().getStakeVenda().add(param.getValue().getStakeCompra())
-//                            : param.getValue().getStakeCompra());
-
-//            if (param.getValue().stakeVendaProperty().getValue() != null)
-//                return new SimpleStringProperty(Service_Mascara.getValorMoeda(
-//                        param.getValue().stakeVendaProperty().getValue()
-//                                .add(param.getValue().stakeCompraProperty().getValue())));
-//            return new SimpleStringProperty("0.00");
         });
         getColStakeVenda().setCellFactory(param ->
                 new TableCell<Transacoes, String>() {
@@ -130,8 +140,8 @@ public class TmodelTransacoes {
                         } else {
                             this.setText(item);
                             Transacoes linha = param.getTableView().getItems().get(getIndex());
-                            if (linha.isConsolidado()) {
-                                if (linha.getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+                            if (linha.consolidadoProperty().getValue()) {
+                                if (linha.stakeVendaProperty().getValue().compareTo(BigDecimal.ZERO) > 0)
                                     this.setStyle("-fx-text-fill: #59A35B;-fx-alignment: center-right;");
                                 else
                                     this.setStyle("-fx-text-fill: #f75600;-fx-alignment: center-right;");
@@ -156,7 +166,7 @@ public class TmodelTransacoes {
 
         getTbvTransacoes().getColumns().setAll(
                 getColNegociacao(), getColTickCompra(), getColTickVenda(), getColStakeCompra(),
-                getColStakeVenda(), getColDataHoraCompra(), getColTransaction_id()
+                getColStakeVenda(), getColConsolidado(), getColDataHoraCompra(), getColTransaction_id()
         );
         getTbvTransacoes().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         getTbvTransacoes().getSelectionModel().setCellSelectionEnabled(true);
@@ -168,9 +178,48 @@ public class TmodelTransacoes {
 //                    System.out.printf("mudou na Transação ===>>>   %s\n", transaction);
 //            }
 //        });
-        getTbvTransacoes().setItems(getTransacoesFilteredList());
+        getTbvTransacoes().setItems(getTransacoesObservableList()
+                .sorted(Comparator.comparing(Transacoes::getDataHoraCompra).reversed()));
+
+        totalizaTabelas();
 
     }
+
+    public void totalizaTabelas() {
+
+        getTransacoesObservableList().addListener((ListChangeListener<? super Transacoes>) c -> {
+            n_StakesProperty().setValue(c.getList().size());
+            n_WinsProperty().setValue(c.getList().stream()
+                    .filter(transacoes -> transacoes.isConsolidado())
+                    .filter(transacoes -> transacoes.getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+                    .count());
+            n_LossProperty().setValue(c.getList().stream()
+                    .filter(transacoes -> transacoes.isConsolidado())
+                    .filter(transacoes -> transacoes.getStakeVenda().compareTo(BigDecimal.ZERO) == 0)
+                    .count());
+
+            vlr_InProperty().setValue(
+                    c.getList().stream()
+                            .map(Transacoes::getStakeCompra).reduce(BigDecimal.ZERO, BigDecimal::add)
+                            .negate().setScale(2, RoundingMode.HALF_UP));
+
+            vlr_OutProperty().setValue(
+                    c.getList().stream()
+                            .filter(transacoes -> transacoes.isConsolidado())
+                            .map(Transacoes::getStakeVenda).reduce(BigDecimal.ZERO, BigDecimal::add)
+                            .setScale(2, RoundingMode.HALF_UP));
+
+            vlr_DiffProperty().setValue(
+                    c.getList().stream()
+                            .filter(transacoes -> transacoes.isConsolidado())
+                            .map(transacoes -> transacoes.stakeVendaProperty().getValue()
+                                    .add(transacoes.stakeCompraProperty().getValue()))
+                            .reduce(BigDecimal.ZERO, BigDecimal::add)
+                            .setScale(2, RoundingMode.HALF_UP));
+
+        });
+    }
+
 
     /**
      * Getters and Setters
@@ -263,11 +312,83 @@ public class TmodelTransacoes {
         this.transacoesObservableList = transacoesObservableList;
     }
 
-    public FilteredList<Transacoes> getTransacoesFilteredList() {
-        return transacoesFilteredList;
+    public int getN_Stakes() {
+        return n_Stakes.get();
     }
 
-    public void setTransacoesFilteredList(FilteredList<Transacoes> transacoesFilteredList) {
-        this.transacoesFilteredList = transacoesFilteredList;
+    public IntegerProperty n_StakesProperty() {
+        return n_Stakes;
+    }
+
+    public void setN_Stakes(int n_Stakes) {
+        this.n_Stakes.set(n_Stakes);
+    }
+
+    public int getN_Wins() {
+        return n_Wins.get();
+    }
+
+    public IntegerProperty n_WinsProperty() {
+        return n_Wins;
+    }
+
+    public void setN_Wins(int n_Wins) {
+        this.n_Wins.set(n_Wins);
+    }
+
+    public int getN_Loss() {
+        return n_Loss.get();
+    }
+
+    public IntegerProperty n_LossProperty() {
+        return n_Loss;
+    }
+
+    public void setN_Loss(int n_Loss) {
+        this.n_Loss.set(n_Loss);
+    }
+
+    public BigDecimal getVlr_In() {
+        return vlr_In.get();
+    }
+
+    public ObjectProperty<BigDecimal> vlr_InProperty() {
+        return vlr_In;
+    }
+
+    public void setVlr_In(BigDecimal vlr_In) {
+        this.vlr_In.set(vlr_In);
+    }
+
+    public BigDecimal getVlr_Out() {
+        return vlr_Out.get();
+    }
+
+    public ObjectProperty<BigDecimal> vlr_OutProperty() {
+        return vlr_Out;
+    }
+
+    public void setVlr_Out(BigDecimal vlr_Out) {
+        this.vlr_Out.set(vlr_Out);
+    }
+
+    public BigDecimal getVlr_Diff() {
+        return vlr_Diff.get();
+    }
+
+    public ObjectProperty<BigDecimal> vlr_DiffProperty() {
+        return vlr_Diff;
+    }
+
+    public void setVlr_Diff(BigDecimal vlr_Diff) {
+        this.vlr_Diff.set(vlr_Diff);
+    }
+
+    public TableColumn<Transacoes, Boolean> getColConsolidado() {
+        return colConsolidado;
+    }
+
+    public void setColConsolidado(TableColumn<Transacoes, Boolean> colConsolidado) {
+        this.colConsolidado = colConsolidado;
     }
 }

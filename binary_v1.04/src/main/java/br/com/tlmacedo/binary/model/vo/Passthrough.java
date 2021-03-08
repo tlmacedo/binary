@@ -13,17 +13,20 @@ public class Passthrough implements Serializable {
     TICK_TIME tickTime;
     TICK_STYLE tickStyle;
     CONTRACT_TYPE contractType;
+    boolean priceLoss = false;
     String mensagem;
 
 
     public Passthrough() {
     }
 
-    public Passthrough(Symbol symbol, TICK_TIME tickTime, TICK_STYLE tickStyle, CONTRACT_TYPE contractType, String mensagem) {
+    public Passthrough(Symbol symbol, TICK_TIME tickTime, TICK_STYLE tickStyle, CONTRACT_TYPE contractType, boolean priceLoss, String mensagem) {
         this.symbol = symbol;
         this.tickTime = tickTime;
         this.tickStyle = tickStyle;
         this.contractType = contractType;
+        if (priceLoss)
+            this.priceLoss = true;
         this.mensagem = mensagem;
     }
 
@@ -59,6 +62,14 @@ public class Passthrough implements Serializable {
         this.contractType = contractType;
     }
 
+    public boolean isPriceLoss() {
+        return priceLoss;
+    }
+
+    public void setPriceLoss(boolean priceLoss) {
+        this.priceLoss = priceLoss;
+    }
+
     public String getMensagem() {
         return mensagem;
     }
@@ -74,6 +85,7 @@ public class Passthrough implements Serializable {
                 ", tickTime=" + tickTime +
                 ", tickStyle=" + tickStyle +
                 ", contractType=" + contractType +
+                ", priceLoss=" + priceLoss +
                 ", mensagem='" + mensagem + '\'' +
                 '}';
     }

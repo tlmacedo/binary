@@ -1,6 +1,7 @@
 package br.com.tlmacedo.binary.model.vo;
 
 
+import br.com.tlmacedo.binary.controller.Operacoes;
 import br.com.tlmacedo.binary.services.Service_Mascara;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.beans.property.*;
@@ -19,6 +20,16 @@ public class HistoricoDeTicks implements Serializable {
     IntegerProperty pip_size = new SimpleIntegerProperty();
 
     public HistoricoDeTicks() {
+    }
+
+    public HistoricoDeTicks(Ohlc ohlc) {
+        this.symbol = new SimpleObjectProperty<>(Operacoes.getSymbolList().stream()
+                .filter(symbol1 -> symbol1.getSymbol().equals(ohlc.getSymbol()))
+                .findFirst().get());
+        this.price = new SimpleObjectProperty<>(ohlc.getClose());
+        this.time = new SimpleIntegerProperty(ohlc.getEpoch());
+        this.pip_size = new SimpleIntegerProperty(ohlc.getPip_size());
+        setUltimoDigito();
     }
 
     public HistoricoDeTicks(Symbol symbol, BigDecimal price, Integer time) {

@@ -265,8 +265,8 @@
                                                 <Insets bottom="2.0"/>
                                             </VBox.margin>
                                         </JFXButton>
-                                        <JFXButton fx:id="btnTpnNegociacao_Iniciar" disable="true" layoutX="10.0"
-                                                   layoutY="10.0" text="Iniciar">
+                                        <JFXButton fx:id="btnTpnNegociacao_Iniciar" defaultButton="true" disable="true"
+                                                   layoutX="10.0" layoutY="10.0" text="Iniciar">
                                             <VBox.margin>
                                                 <Insets top="2.0"/>
                                             </VBox.margin>
@@ -283,8 +283,8 @@
                                                 <Insets bottom="2.0"/>
                                             </VBox.margin>
                                         </JFXButton>
-                                        <JFXButton fx:id="btnTpnNegociacao_Stop" disable="true" layoutX="10.0"
-                                                   layoutY="10.0" text="Stop">
+                                        <JFXButton fx:id="btnTpnNegociacao_Stop" cancelButton="true" disable="true"
+                                                   layoutX="10.0" layoutY="10.0" text="Stop">
                                             <VBox.margin>
                                                 <Insets top="2.0"/>
                                             </VBox.margin>

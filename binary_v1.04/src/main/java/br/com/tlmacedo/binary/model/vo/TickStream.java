@@ -6,7 +6,7 @@ public class TickStream implements Serializable {
     public static final long serialVersionUID = 1L;
 
     String ticks;
-    Integer subscribe;
+    Integer subscribe = 1;
 
     public TickStream(String ticks, Integer subscribe) {
         this.ticks = ticks;
@@ -15,7 +15,6 @@ public class TickStream implements Serializable {
 
     public TickStream(String ticks) {
         this.ticks = ticks;
-        this.subscribe = 1;
     }
 
     public String getTicks() {

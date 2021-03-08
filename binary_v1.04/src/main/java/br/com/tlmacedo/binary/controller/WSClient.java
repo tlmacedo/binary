@@ -6,12 +6,15 @@ import br.com.tlmacedo.binary.model.enums.MSG_TYPE;
 import br.com.tlmacedo.binary.model.enums.ROBOS;
 import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 import br.com.tlmacedo.binary.model.vo.*;
+import br.com.tlmacedo.binary.model.vo.Error;
+import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Util_Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class WSClient extends WebSocketListener {
     private Ohlc ohlc;
     private Tick tick;
     private Authorize authorize;
+    private Error error;
 
     private Proposal proposal;
     private Buy buy;
@@ -66,42 +70,48 @@ public class WSClient extends WebSocketListener {
         setMsgType((Msg_type) Util_Json.getMsg_Type(text));
         imprime(text, getMsgType().getMsgType());
 
-        if (getMsgType().getMsgType() != null) {
-            if (text.toLowerCase().contains("passthrough"))
-                setPassthrough((Passthrough) Util_Json.getObject_from_String(text, Passthrough.class));
-            switch (getMsgType().getMsgType()) {
-                case AUTHORIZE -> {
-                    setAuthorize((Authorize) Util_Json.getObject_from_String(text, Authorize.class));
-                    refreshAuthorize(getAuthorize());
-                }
-                case CANDLES -> {
-                    refreshCandles(getPassthrough(), text);
-                }
-                case HISTORY -> {
-                    setHistory((History) Util_Json.getObject_from_String(text, History.class));
-                    refreshHistoryTick(getPassthrough(), getHistory());
-                }
-                case TICK -> {
-                    setTick((Tick) Util_Json.getObject_from_String(text, Tick.class));
-                    refreshTick(getPassthrough(), getTick());
-                }
-                case OHLC -> {
-                    setOhlc((Ohlc) Util_Json.getObject_from_String(text, Ohlc.class));
-                    refreshOhlc(getPassthrough(), getOhlc());
-                }
-                case PROPOSAL -> {
-                    setProposal((Proposal) Util_Json.getObject_from_String(text, Proposal.class));
-                    refreshProposal(getPassthrough(), getProposal());
-                }
-                case BUY -> {
-                    setBuy((Buy) Util_Json.getObject_from_String(text, Buy.class));
-                    //refreshBuy();
-                }
-                case TRANSACTION -> {
-                    setTransaction((Transaction) Util_Json.getObject_from_String(text, Transaction.class));
-                    refreshTransaction(getTransaction());
+        if (text.contains("\"error\":")) {
+            setError((Error) Util_Json.getObject_from_String(text, Error.class));
+            refreshError(getError(), text);
+        } else {
+            if (getMsgType().getMsgType() != null) {
+                if (text.toLowerCase().contains("passthrough"))
+                    setPassthrough((Passthrough) Util_Json.getObject_from_String(text, Passthrough.class));
+                switch (getMsgType().getMsgType()) {
+                    case AUTHORIZE -> {
+                        setAuthorize((Authorize) Util_Json.getObject_from_String(text, Authorize.class));
+                        refreshAuthorize(getAuthorize());
+                    }
+                    case CANDLES -> {
+                        refreshCandles(getPassthrough(), text);
+                    }
+                    case HISTORY -> {
+                        setHistory((History) Util_Json.getObject_from_String(text, History.class));
+                        refreshHistoryTick(getPassthrough(), getHistory());
+                    }
+                    case TICK -> {
+                        setTick((Tick) Util_Json.getObject_from_String(text, Tick.class));
+                        refreshTick(getPassthrough(), getTick());
+                    }
+                    case OHLC -> {
+                        setOhlc((Ohlc) Util_Json.getObject_from_String(text, Ohlc.class));
+                        refreshOhlc(getPassthrough(), getOhlc());
+                    }
+                    case PROPOSAL -> {
+                        setProposal((Proposal) Util_Json.getObject_from_String(text, Proposal.class));
+                        refreshProposal(getPassthrough(), getProposal());
+                    }
+                    case BUY -> {
+                        setBuy((Buy) Util_Json.getObject_from_String(text, Buy.class));
+                        //refreshBuy();
+                    }
+                    case TRANSACTION -> {
+                        setTransaction((Transaction) Util_Json.getObject_from_String(text, Transaction.class));
+                        refreshTransaction(getTransaction());
+                    }
                 }
             }
+
         }
 
     }
@@ -123,9 +133,23 @@ public class WSClient extends WebSocketListener {
 
     }
 
-    private void refreshError() {
+    private void refreshError(Error error, String text) {
 
-//        System.out.printf("deu erro!!!!!\n%s\n", getError().toString());
+        System.out.printf("err:%s\n", text);
+        System.out.printf("*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
+        System.out.printf("*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
+        System.out.printf("*-*-*-*-*-*ERROR*-*-*-*-*-*\n");
+        System.out.printf("*-*-*-*-*-*ERROR*-*-*-*-*-*\n");
+        System.out.printf("*-*-*-*-*-*ERROR*-*-*-*-*-*\n");
+        System.out.printf("*-*-*-*-*-*ERROR*-*-*-*-*-*\n");
+        System.out.printf("*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
+        System.out.printf("*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
+        System.out.printf("*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
+
+        Service_Alert alert = new Service_Alert();
+        alert.setCabecalho("Error servidor");
+        alert.setContentText(String.format("code: %s\nmessage: %s", error.getCode(), error.getMessage()));
+        alert.alertOk();
 
     }
 
@@ -149,16 +173,18 @@ public class WSClient extends WebSocketListener {
             int s_id = symbol.getId().intValue() - 1;
             int t_id = passthrough.getTickTime().getCod();
 
-            if (t_id == 0)
+            if (t_id == 0) {
+                Operacoes.getHistoricoDeTicksObservableList()[s_id].add(new HistoricoDeTicks(ohlc));
                 Operacoes.getUltimoOhlcStr()[s_id].setValue(ohlc);
+            }
 
             try {
                 boolean symbolAtivo = Operacoes.getSymbolObservableList().get(s_id) != null;
 
-                if (Operacoes.getTestaLastCandle()[t_id][s_id].getValue() == null
-                        && Operacoes.getHistoricoDeCandlesFilteredList()[t_id][s_id].size()
+                if (Operacoes.getHistoricoDeCandlesFilteredList()[t_id][s_id].size()
                         <= Operacoes.getQtdCandlesAnalise()) {
-                    Operacoes.getTestaLastCandle()[t_id][s_id].setValue(ohlc);
+//                    Operacoes.getTestaLastCandle()[t_id][s_id].setValue(ohlc);
+//                    Operacoes.getTestaLastCandle()[t_id][s_id].getValue() == null
 
                     HistoricoDeCandles hCandle = Operacoes.getHistoricoDeCandlesFilteredList()[t_id][s_id]
                             .sorted(Comparator.comparing(HistoricoDeCandles::getEpoch).reversed()).get(0);
@@ -169,7 +195,7 @@ public class WSClient extends WebSocketListener {
                 Operacoes.getTimeCandleToClose()[t_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
 
                 if (Operacoes.getTimeCandleToClose()[t_id].getValue().compareTo(symbol.getTickTime()) == 0)
-                    Operacoes.getHistoricoDeCandlesObservableList().add(0, new HistoricoDeCandles(ohlc));
+                    Operacoes.getHistoricoDeCandlesObservableList().add(new HistoricoDeCandles(ohlc));
 
             } catch (Exception ex) {
                 if (!(ex instanceof IndexOutOfBoundsException))
@@ -183,15 +209,14 @@ public class WSClient extends WebSocketListener {
     private void refreshProposal(Passthrough passthrough, Proposal proposal) {
 
         Platform.runLater(() -> {
+            if (proposal == null) return;
             int s_id = passthrough.getSymbol().getId().intValue() - 1, t_id = passthrough.getTickTime().getCod();
+            boolean priceLoss = passthrough.isPriceLoss();
             CONTRACT_TYPE cType = passthrough.getContractType();
 
             switch (ROBOS.valueOf(Operacoes.getRobo().getClass().getSimpleName().toUpperCase())) {
                 case ABR -> {
-                    if (proposal.getAsk_price().compareTo(Operacoes.getVlrStkPadrao()[t_id].getValue()) == 0)
-                        Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][0] = proposal;
-                    else
-                        Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][1] = proposal;
+                    Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][priceLoss ? 1 : 0] = proposal;
                 }
             }
         });
@@ -237,28 +262,28 @@ public class WSClient extends WebSocketListener {
         if (CONSOLE_BINARY_ALL || CONSOLE_BINARY_ALL_SEM_TICKS) {
             if (CONSOLE_BINARY_ALL_SEM_TICKS) {
                 if (msgType.equals(MSG_TYPE.TICK)
+                        || msgType.equals(MSG_TYPE.CANDLES)
                         || msgType.equals(MSG_TYPE.HISTORY)
-                        || msgType.equals(MSG_TYPE.OHLC)
-                        || msgType.equals(MSG_TYPE.CANDLES))
+                        || msgType.equals(MSG_TYPE.OHLC))
                     return;
             }
             System.out.printf("..0..%s\n", text);
-        } else {
-            boolean print = false;
-            switch (msgType) {
-//                case ACTIVE_SYMBOLS -> print = CONSOLE_BINARY_ACTIVE_SYMBOL;
-                case AUTHORIZE -> print = CONSOLE_BINARY_AUTHORIZE;
-                case ERROR -> print = CONSOLE_BINARY_ERROR;
-                case TICK, OHLC -> print = CONSOLE_BINARY_TICK;
-                case PROPOSAL -> print = CONSOLE_BINARY_PROPOSAL;
-                case BUY -> print = CONSOLE_BINARY_BUY;
-                case TRANSACTION -> print = CONSOLE_BINARY_TRANSACTION;
-                case HISTORY, CANDLES -> print = CONSOLE_BINARY_HISTORY;
-                default -> print = (CONSOLE_BINARY_ALL || CONSOLE_BINARY_ALL_SEM_TICKS);
-            }
-            if (print)
-                System.out.printf("..1..%s\n", text);
+            return;
         }
+        boolean print = false;
+        switch (msgType) {
+//                case ACTIVE_SYMBOLS -> print = CONSOLE_BINARY_ACTIVE_SYMBOL;
+            case AUTHORIZE -> print = CONSOLE_BINARY_AUTHORIZE;
+            case ERROR -> print = CONSOLE_BINARY_ERROR;
+            case TICK, OHLC -> print = CONSOLE_BINARY_TICK;
+            case PROPOSAL -> print = CONSOLE_BINARY_PROPOSAL;
+            case BUY -> print = CONSOLE_BINARY_BUY;
+            case TRANSACTION -> print = CONSOLE_BINARY_TRANSACTION;
+            case HISTORY, CANDLES -> print = CONSOLE_BINARY_HISTORY;
+            default -> print = (CONSOLE_BINARY_ALL || CONSOLE_BINARY_ALL_SEM_TICKS);
+        }
+        if (print)
+            System.out.printf("..1..%s\n", text);
 
     }
 
@@ -377,4 +402,11 @@ public class WSClient extends WebSocketListener {
         this.transaction = transaction;
     }
 
+    public Error getError() {
+        return error;
+    }
+
+    public void setError(Error error) {
+        this.error = error;
+    }
 }

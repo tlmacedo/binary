@@ -14,10 +14,10 @@ public class TicksHistory implements Serializable {
     Integer granularity;
     Integer start = 1;
     String style;
-    Integer subscribe = 1;
+    Integer subscribe;
     Passthrough passthrough;
 
-    public TicksHistory(String symbol, Integer count, TICK_STYLE tickStyle, Integer candleTime, Passthrough passthrough) {
+    public TicksHistory(String symbol, Integer count, TICK_STYLE tickStyle, Integer candleTime, Passthrough passthrough, boolean subscribe) {
 
         this.ticks_history = symbol;
         this.count = count;
@@ -25,6 +25,9 @@ public class TicksHistory implements Serializable {
         if (tickStyle.equals(TICK_STYLE.CANDLES))
             this.granularity = candleTime;
         this.passthrough = passthrough;
+        this.subscribe = null;
+        if (subscribe)
+            this.subscribe = 1;
 
     }
 
@@ -112,11 +115,12 @@ public class TicksHistory implements Serializable {
                 : "" +
                 ", start=" + start +
                 ", style='" + style + '\'' +
-                ", subscribe=" + subscribe +
+                subscribe != null
+                ? ", subscribe=" + subscribe
+                : "" +
                 passthrough != null
                 ? ", passthrough=" + passthrough
                 : "" +
                 '}';
     }
-
 }

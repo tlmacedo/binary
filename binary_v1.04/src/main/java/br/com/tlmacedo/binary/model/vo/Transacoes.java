@@ -4,13 +4,15 @@ import br.com.tlmacedo.binary.controller.Operacoes;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 import br.com.tlmacedo.binary.services.Service_DataTime;
+import br.com.tlmacedo.binary.services.Service_NewVlrContrato;
 import javafx.beans.property.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
+@Entity(name = "transacoes")
+@Table(name = "transacoes")
 public class Transacoes implements Serializable {
     public static final long serialVersionUID = 1L;
 
@@ -40,7 +42,7 @@ public class Transacoes implements Serializable {
 
     public void isBUY(Transaction transaction) {
 
-        System.out.printf("isBUY\n\n");
+        System.out.printf("isBUY\n");
         this.contaToken = new SimpleObjectProperty<>(Operacoes.getContaToken());
         this.symbol = new SimpleObjectProperty<>(transaction.getSymbol());
         this.timeFrame = new SimpleObjectProperty<>(Service_DataTime.getTimeCandle_enum(transaction.getLongcode()));
@@ -58,71 +60,52 @@ public class Transacoes implements Serializable {
             this.contract_type = new SimpleStringProperty(contract);
         }
         this.longcode = new SimpleStringProperty(transaction.getLongcode());
-        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ONE);
+        //this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ONE);
         //this.tickVenda = tickVenda;
         this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount());
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.consolidado = new SimpleBooleanProperty(false);
 
-        Operacoes.getTransacoesObservableList().add(0, this);
+        int t_id = getTimeFrame().getCod(), s_id = getSymbol().getS_id();
 
-        Operacoes.getRobo().gerarNovosContratos(getTimeFrame().getCod(), getSymbol().getId().intValue() - 1,
-                transaction.getPayout(), transaction.getAmount());
+        BigDecimal tickBuy;
+        if ((tickBuy = Operacoes.getHistoricoDeTicksObservableList()[t_id].stream()
+                .filter(historicoDeTicks -> historicoDeTicks.getTime() == getDataHoraCompra())
+                .findFirst().orElse(null).getPrice()) != null) {
+            System.out.printf("tickBuy: [%s]\n", tickBuy);
+            this.tickCompra = new SimpleObjectProperty<>(tickBuy);
+        }
+
+
+        Operacoes.getTransacoesObservableList()[t_id][s_id].add(Operacoes.getTransacoesDAO().merger(this));
+
+        Operacoes.getRobo().gerarNovosContratos(t_id, s_id);
 
     }
 
     public void isSELL(Transaction transaction) throws Exception {
 
         try {
-            System.out.printf("\nisSELL\n");
-            Transacoes transacao = Operacoes.getTransacoesObservableList().stream()
-                    .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
-                    .findFirst().orElse(null);
-            //int indexTransacao = Operacoes.getTransactionObservableList().indexOf(transacao);
 
-            int t_id = transacao.getTimeFrame().getCod(), s_id = transacao.getSymbol().getId().intValue() - 1;
-            Operacoes.getLastTransictionIsWin()[t_id][s_id].setValue(transaction.getAmount().compareTo(BigDecimal.ZERO) > 0);
+            int t_id = getTimeFrame().getCod(), s_id = getSymbol().getS_id();
 
-            transacao.setTickVenda(BigDecimal.TEN);
-            transacao.setStakeCompra(transacao.getStakeCompra().add(BigDecimal.ONE));
-            transacao.setDataHoraVenda(transaction.getTransaction_time());
-            transacao.setStakeVenda(transaction.getAmount());
-            transacao.setConsolidado(true);
+            this.setTickVenda(Operacoes.getUltimoOhlcStr()[t_id].getValue().getClose());
+            this.setDataHoraVenda(transaction.getTransaction_time());
+            this.setStakeVenda(transaction.getAmount());
+            this.setConsolidado(true);
 
+//            BigDecimal tickSell;
+//            if ((tickSell = Operacoes.getHistoricoDeTicksObservableList()[t_id].stream()
+//                    .filter(historicoDeTicks -> historicoDeTicks.getTime() == getDataHoraExpiry())
+//                    .findFirst().orElse(null).getPrice()) != null) {
+//                System.out.printf("tickSell: [%s]\n", tickSell);
+//                this.tickVenda = new SimpleObjectProperty<>(tickSell);
+//            }
+
+            Operacoes.getTransacoesDAO().merger(this);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        //Operacoes.getTransacoesObservableList().set(indexTransacao, transacao);
-
-
-////        Transacoes transacao = Operacoes.getTransacoesObservableList().stream()
-////                .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
-////                .findFirst().get();
-//
-//        int index = Operacoes.getTransacoesObservableList().indexOf(this);
-//
-////        this.contaToken = new SimpleObjectProperty<>(transacao.getContaToken());
-//////                this.symbol = new SimpleObjectProperty<>(transacao.getSymbol());
-////        setSymbol(getSymbol());
-////        this.transaction_id = new SimpleLongProperty(transacao.getTransaction_id());
-////        this.contract_id = new SimpleLongProperty(transacao.getContract_id());
-////        this.dataHoraCompra = new SimpleIntegerProperty(transacao.getDataHoraCompra());
-////        this.contract_type = new SimpleStringProperty(transacao.getContract_type());
-////        this.longcode = new SimpleStringProperty(transacao.getLongcode());
-////        this.stakeCompra = new SimpleObjectProperty<>(transacao.getStakeCompra());
-////        this.tickCompra = new SimpleObjectProperty<>(transacao.getTickCompra());
-//        this.dataHoraExpiry = new SimpleIntegerProperty(transaction.getDate_expiry());
-//        this.consolidado = new SimpleBooleanProperty(true);
-//
-//        this.stakeVenda = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
-//        this.dataHoraVenda = new SimpleIntegerProperty(transaction.getTransaction_time());
-//
-////        if (transacao.tickVenda != null)
-////            this.tickVenda = new SimpleObjectProperty<>(transacao.getTickVenda());
-//
-//        Operacoes.getTransacoesObservableList().set(index, this);
-//
-//        Operacoes.getTransacoesDAO().merger(this);
 
     }
 
@@ -141,7 +124,7 @@ public class Transacoes implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "activeSymbol_id", foreignKey = @ForeignKey(name = "fk_transacoes_activeSymbol"), nullable = false)
+    @JoinColumn(name = "symbol_id", foreignKey = @ForeignKey(name = "fk_transacoes_symbol"), nullable = false)
     public Symbol getSymbol() {
         return symbol.get();
     }

@@ -1,5 +1,7 @@
 package br.com.tlmacedo.binary.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -144,6 +146,12 @@ public class Symbol implements Serializable {
         this.tickTime = tickTime;
     }
 
+    @Transient
+    @JsonIgnore
+    public Integer getS_id() {
+        return getId().intValue() - 1;
+    }
+
     @Override
     public String toString() {
         return String.format("%s", getDisplay_name().replace(" Index", ""));
@@ -152,6 +160,7 @@ public class Symbol implements Serializable {
     public String transictionToString() {
         return String.format("%s", getSymbol());
     }
+
 
     //    @Override
 //    public String toString() {

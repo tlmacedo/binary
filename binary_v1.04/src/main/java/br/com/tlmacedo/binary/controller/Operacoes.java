@@ -12,8 +12,6 @@ import br.com.tlmacedo.binary.services.Service_Mascara;
 import br.com.tlmacedo.binary.services.Util_Json;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
-import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -22,17 +20,22 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import static br.com.tlmacedo.binary.interfaces.Constants.*;
@@ -58,7 +61,7 @@ public class Operacoes implements Initializable {
     static final List<Symbol> SYMBOL_LIST = getSymbolDAO().getAll(Symbol.class, null, null);
     static final ObservableList<Symbol> SYMBOL_OBSERVABLE_LIST =
             FXCollections.observableArrayList(
-                    getSymbolDAO().getAll(Symbol.class, "id=1", null)
+                    getSymbolDAO().getAll(Symbol.class, null, null)
             );
 
     /**
@@ -97,6 +100,7 @@ public class Operacoes implements Initializable {
     //** Variaveis **
     static IntegerProperty qtdCandlesAnalise = new SimpleIntegerProperty();
     static ObjectProperty<Ohlc>[] ultimoOhlcStr = new ObjectProperty[getSymbolList().size()];
+    static ObservableList<HistoricoDeTicks>[] historicoDeTicksObservableList = new ObservableList[getSymbolList().size()];
     static ObjectProperty<Ohlc>[][] testaLastCandle = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static BooleanProperty[] tickSubindo = new BooleanProperty[getSymbolList().size()];
 
@@ -110,14 +114,13 @@ public class Operacoes implements Initializable {
     //** Listas **
     static ObservableList<HistoricoDeCandles> historicoDeCandlesObservableList = FXCollections.observableArrayList();
     static ObservableList<Transaction> transactionObservableList = FXCollections.observableArrayList();
-    static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
+    static ObservableList<Transacoes>[][] transacoesObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static FilteredList<HistoricoDeCandles>[][] historicoDeCandlesFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
-    static FilteredList<Transacoes>[][] transacoesFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static TmodelTransacoes[][] tmodelTransacoes = new TmodelTransacoes[TICK_TIME.values().length][getSymbolObservableList().size()];
 
 
     //** Operações com Robos **
-    static BooleanProperty[][] lastTransictionIsWin = new BooleanProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static BooleanProperty[][] lastTransictionIsBuy = new BooleanProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static BooleanProperty[] timeAtivo = new BooleanProperty[TICK_TIME.values().length];
     static BooleanProperty contratoGerado = new SimpleBooleanProperty(false);
     static BooleanProperty disableContratoBtn = new SimpleBooleanProperty(true);
@@ -605,7 +608,7 @@ public class Operacoes implements Initializable {
                     try {
                         if (n) {
                             monitorarTicks();
-                            solicitarTicks();
+                            solicitarTicks(true);
                         } else {
                             getBtnTpnNegociacao_Stop().fire();
                             new Service_Alert("Conexão fechou", "Conexão com a binary foi fechada!!", null)
@@ -632,6 +635,7 @@ public class Operacoes implements Initializable {
     private void variaveis_Carregar() {
 
         for (int s_id = 0; s_id < getSymbolList().size(); s_id++) {
+            getHistoricoDeTicksObservableList()[s_id] = FXCollections.observableArrayList();
             getUltimoOhlcStr()[s_id] = new SimpleObjectProperty<>();
             getTickSubindo()[s_id] = new SimpleBooleanProperty(false);
         }
@@ -656,18 +660,12 @@ public class Operacoes implements Initializable {
                         historicoDeCandles.getGranularity() == TICK_TIME.getTimeSeconds(finalT_id)
                                 && historicoDeCandles.getSymbol().getId() - 1 == finalS_id);
 
-//******************
+                getTransacoesObservableList()[t_id][s_id] = FXCollections.observableArrayList();
 
-                getTransacoesFilteredList()[t_id][s_id] = new FilteredList<>(getTransacoesObservableList());
-                getTransacoesFilteredList()[t_id][s_id].setPredicate(transaction ->
-                        Service_DataTime.getTimeCandle_id(transaction.getLongcode()) == finalT_id
-                                && transaction.getSymbol().getId().intValue() - 1 == finalS_id);
-
-
-                getTmodelTransacoes()[t_id][s_id] = new TmodelTransacoes();
+                getTmodelTransacoes()[t_id][s_id] = new TmodelTransacoes(getTransacoesObservableList()[t_id][s_id]);
                 getTmodelTransacoes()[t_id][s_id].criar_tabela();
 
-                getTmodelTransacoes()[t_id][s_id].setTransacoesFilteredList(getTransacoesFilteredList()[t_id][s_id]);
+//                getTmodelTransacoes()[t_id][s_id].setTransacoesObservableList(getTransacoesObservableList()[t_id][s_id]);
                 contectarTabelaEmLista(t_id, s_id);
 
                 getTmodelTransacoes()[t_id][s_id].tabela_preencher();
@@ -760,13 +758,16 @@ public class Operacoes implements Initializable {
             while (c.next()) {
                 for (Transaction transaction : c.getAddedSubList()) {
                     try {
+                        int t_id = Service_DataTime.getTimeCandle_enum(transaction.getLongcode()).getCod(),
+                                s_id = transaction.getSymbol().getS_id();
                         switch (ACTION.valueOf(transaction.getAction().toUpperCase())) {
                             case BUY -> {
                                 new Transacoes().isBUY(transaction);
                             }
                             case SELL -> {
-                                //**************
-                                new Transacoes().isSELL(transaction);
+                                getTransacoesObservableList()[t_id][s_id].stream()
+                                        .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
+                                        .findFirst().get().isSELL(transaction);
                             }
                         }
                     } catch (Exception ex) {
@@ -774,6 +775,15 @@ public class Operacoes implements Initializable {
                             ex.printStackTrace();
                     }
                 }
+            }
+        });
+
+        getHistoricoDeCandlesObservableList().addListener((ListChangeListener<? super HistoricoDeCandles>) c -> {
+            while (c.next()) {
+                if (c.getList().size() == 1)
+                    for (HistoricoDeCandles hCandle : c.getAddedSubList()) {
+                        getTimeCandleStart()[TICK_TIME.getTimeCod(hCandle.getGranularity())].setValue(hCandle.getEpoch());
+                    }
             }
         });
 
@@ -788,14 +798,43 @@ public class Operacoes implements Initializable {
                             getQtdCallOrPut()[finalT_id][finalS_id].setValue(0);
                             getQtdCall()[finalT_id][finalS_id].setValue(0);
                             getQtdPut()[finalT_id][finalS_id].setValue(0);
-                            for (HistoricoDeCandles candle : getHistoricoDeCandlesFilteredList()[finalT_id][finalS_id].sorted(Comparator.comparing(HistoricoDeCandles::getEpoch)))
+                            for (HistoricoDeCandles candle : getHistoricoDeCandlesFilteredList()[finalT_id][finalS_id]
+                                    .sorted(Comparator.comparing(HistoricoDeCandles::getEpoch)))
                                 contarCallAndPut(candle, finalT_id, finalS_id);
                         }
-                        for (HistoricoDeCandles candle : c.getAddedSubList())
+                        for (HistoricoDeCandles candle : c.getAddedSubList()) {
+                            if (c.getList().size() == 1 && finalT_id == 0)
+                                getTimeCandleStart()[finalT_id].setValue(candle.getEpoch());
                             contarCallAndPut(candle, finalT_id, finalS_id);
+                        }
                     }
                 });
+
             }
+        }
+
+        for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+            int finalS_id = s_id;
+            getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                Transacoes transacaoBuy, transacaoSell;
+                if (o == null || n == null) return;
+                for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+                    if ((transacaoBuy = getTransacoesObservableList()[t_id][finalS_id].stream()
+                            .filter(transacoes -> transacoes.getDataHoraCompra() == o.getEpoch())
+                            .findFirst().orElse(null)) != null) {
+                        System.out.printf("oldTick:[%s]\tnewTick:[%s]\n", o.getQuoteCompleto(), n.getQuoteCompleto());
+                        transacaoBuy.setTickCompra(n.getClose().setScale(n.getPip_size(), RoundingMode.HALF_UP));
+                        getTransacoesDAO().merger(transacaoBuy);
+                    }
+                    if ((transacaoSell = getTransacoesObservableList()[t_id][finalS_id].stream()
+                            .filter(transacoes -> transacoes.getDataHoraExpiry() == n.getEpoch())
+                            .findFirst().orElse(null)) != null) {
+                        transacaoSell.setTickVenda(n.getClose().setScale(n.getPip_size(), RoundingMode.HALF_UP));
+                        getTransacoesDAO().merger(transacaoSell);
+                    }
+                }
+
+            });
         }
 
     }
@@ -806,8 +845,8 @@ public class Operacoes implements Initializable {
 
     private void objetos_Carregar() {
 
-        getCboTpnNegociacaoQtdCandlesAnalise().getItems().setAll(10, 15, 20, 25, 30, 35, 40, 45, 50);
-        getCboTpnNegociacaoQtdCandlesAnalise().getSelectionModel().select(0);
+        getCboTpnNegociacaoQtdCandlesAnalise().getItems().setAll(5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100);
+        getCboTpnNegociacaoQtdCandlesAnalise().getSelectionModel().select(1);
 
         qtdCandlesAnaliseProperty().bind(Bindings.createIntegerBinding(() ->
                 getCboTpnNegociacaoQtdCandlesAnalise().getValue() + 1, getCboTpnNegociacaoQtdCandlesAnalise().valueProperty()));
@@ -846,6 +885,11 @@ public class Operacoes implements Initializable {
     }
 
     private void objetos_Listener() {
+
+        qtdCandlesAnaliseProperty().addListener((ov, o, n) -> {
+            if (n == null) return;
+            solicitarTicks(false);
+        });
 
         getCboTpnDetalhesContaBinary().valueProperty().addListener((ov, o, n) -> {
             if (n == null) {
@@ -949,20 +993,24 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-    public static void gerarContrato(int t_id, int s_id, CONTRACT_TYPE cType) throws Exception {
+    public static void gerarContrato(int t_id, int s_id, CONTRACT_TYPE cType, BigDecimal vlrPriceProposal) throws Exception {
+
+        boolean priceLoss = vlrPriceProposal != null;
 
         Passthrough passthrough = new Passthrough(getSymbolObservableList().get(s_id),
-                TICK_TIME.toEnum(t_id), getTickStyle(), cType, "");
+                TICK_TIME.toEnum(t_id), getTickStyle(), cType, priceLoss, "");
 
         getPriceProposal()[t_id][s_id] = new PriceProposal();
 
         getPriceProposal()[t_id][s_id].setProposal(1);
-        getPriceProposal()[t_id][s_id].setAmount(getVlrStkContrato()[t_id][s_id].getValue());
+        getPriceProposal()[t_id][s_id].setAmount(vlrPriceProposal != null
+                ? vlrPriceProposal.setScale(2, RoundingMode.HALF_UP)
+                : getVlrStkPadrao()[t_id].getValue().setScale(2, RoundingMode.HALF_UP));
+//                : getVlrStkContrato()[t_id][s_id].getValue().setScale(2, RoundingMode.HALF_UP));
         getPriceProposal()[t_id][s_id].setBasis(PRICE_PROPOSAL_BASIS);
         getPriceProposal()[t_id][s_id].setContract_type(cType);
         getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
         int timeDuration = TICK_TIME.getTimeSeconds(t_id);
-//        int timeDuration = TICK_TIME.getTimeSeconds(t_id) - getSymbolObservableList().get(s_id).getTickTime();
         getPriceProposal()[t_id][s_id].setDuration(timeDuration);
         getPriceProposal()[t_id][s_id].setDuration_unit(DURATION_UNIT.s);
         getPriceProposal()[t_id][s_id].setSymbol(getSymbolObservableList().get(s_id).getSymbol());
@@ -1009,10 +1057,12 @@ public class Operacoes implements Initializable {
 
     }
 
-    private void solicitarTicks() {
+    private void solicitarTicks(boolean subscribe) {
 
         Passthrough passthrough = new Passthrough();
         Integer tempoVela = null;
+
+        getHistoricoDeCandlesObservableList().clear();
 
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
             if (t_id > 0 && !getTimeAtivo()[t_id].getValue()) continue;
@@ -1024,9 +1074,11 @@ public class Operacoes implements Initializable {
                 passthrough.setSymbol(getSymbolList().get(s_id));
 
                 String jsonHistory = Util_Json.getJson_from_Object(new TicksHistory(getSymbolList().get(s_id).getSymbol(),
-                        getCboTpnNegociacaoQtdCandlesAnalise().getValue() + 1, getTickStyle(), tempoVela, passthrough));
+                        getQtdCandlesAnalise(), getTickStyle(), tempoVela, passthrough,
+                        subscribe));
                 if (tempoVela == null) jsonHistory = jsonHistory.replace(",\"granularity\":null", "");
                 if (passthrough == null) jsonHistory = jsonHistory.replace(",\"passthrough\":null", "");
+                if (!subscribe) jsonHistory = jsonHistory.replace(",\"subscribe\":null", "");
 //                System.out.printf("jsonHistory: %s\n", jsonHistory);
                 getWsClientObjectProperty().getMyWebSocket().send(jsonHistory);
             }
@@ -1051,8 +1103,7 @@ public class Operacoes implements Initializable {
 
         try {
             if (proposal == null) return;
-            Passthrough passthrough = new Passthrough();
-            String jsonBuyContrato = Util_Json.getJson_from_Object(new BuyContract(proposal, passthrough));
+            String jsonBuyContrato = Util_Json.getJson_from_Object(new BuyContract(proposal));
             getWsClientObjectProperty().getMyWebSocket().send(jsonBuyContrato);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1236,6 +1287,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op01().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_02
                     if (s_id == SYMBOL_02) {
@@ -1255,6 +1312,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op02().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_03
                     if (s_id == SYMBOL_03) {
@@ -1274,6 +1337,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op03().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_04
                     if (s_id == SYMBOL_04) {
@@ -1293,6 +1362,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op04().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_05
                     if (s_id == SYMBOL_05) {
@@ -1312,6 +1387,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op05().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_06
                     if (s_id == SYMBOL_06) {
@@ -1331,6 +1412,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op06().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_07
                     if (s_id == SYMBOL_07) {
@@ -1350,6 +1437,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op07().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_08
                     if (s_id == SYMBOL_08) {
@@ -1369,6 +1462,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op08().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_09
                     if (s_id == SYMBOL_09) {
@@ -1388,6 +1487,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op09().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_10
                     if (s_id == SYMBOL_10) {
@@ -1407,6 +1512,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op10().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_11
                     if (s_id == SYMBOL_11) {
@@ -1426,6 +1537,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op11().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_01_Op_12
                     if (s_id == SYMBOL_12) {
@@ -1445,6 +1562,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T01_Op12().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                 }
             }
@@ -1477,6 +1600,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op01().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_02
                     if (s_id == SYMBOL_02) {
@@ -1496,6 +1625,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op02().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_03
                     if (s_id == SYMBOL_03) {
@@ -1515,6 +1650,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op03().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_04
                     if (s_id == SYMBOL_04) {
@@ -1534,6 +1675,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op04().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_05
                     if (s_id == SYMBOL_05) {
@@ -1553,6 +1700,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op05().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_06
                     if (s_id == SYMBOL_06) {
@@ -1572,6 +1725,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op06().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_07
                     if (s_id == SYMBOL_07) {
@@ -1591,6 +1750,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op07().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_08
                     if (s_id == SYMBOL_08) {
@@ -1610,6 +1775,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op08().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_09
                     if (s_id == SYMBOL_09) {
@@ -1629,6 +1800,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op09().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_10
                     if (s_id == SYMBOL_10) {
@@ -1648,6 +1825,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op10().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_11
                     if (s_id == SYMBOL_11) {
@@ -1667,6 +1850,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op11().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                     //*-*-* *-*-* Timer_02_Op_12
                     if (s_id == SYMBOL_12) {
@@ -1686,6 +1875,12 @@ public class Operacoes implements Initializable {
                                 getImgCallOrPut_T02_Op12().setImage(null);
                             return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
                         }, getQtdCallOrPut()[t_id][s_id]));
+                        getLblQtdStakes_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                        getLblQtdWins_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                        getLblQtdLoss_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                        getLblVlrIn_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                        getLblVlrOut_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                        getLblVlrDiff_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
                     }
                 }
             }
@@ -1887,6 +2082,14 @@ public class Operacoes implements Initializable {
         Operacoes.transactionDAO = transactionDAO;
     }
 
+    public static LogSistemaStartDAO getLogSistemaStartDAO() {
+        return logSistemaStartDAO;
+    }
+
+    public static void setLogSistemaStartDAO(LogSistemaStartDAO logSistemaStartDAO) {
+        Operacoes.logSistemaStartDAO = logSistemaStartDAO;
+    }
+
     public static List<Symbol> getSymbolList() {
         return SYMBOL_LIST;
     }
@@ -1897,6 +2100,18 @@ public class Operacoes implements Initializable {
 
     public static ObservableList<ContaToken> getContaTokenObservableList() {
         return CONTA_TOKEN_OBSERVABLE_LIST;
+    }
+
+    public static ContaToken getContaToken() {
+        return contaToken.get();
+    }
+
+    public static ObjectProperty<ContaToken> contaTokenProperty() {
+        return contaToken;
+    }
+
+    public static void setContaToken(ContaToken contaToken) {
+        Operacoes.contaToken.set(contaToken);
     }
 
     public static Authorize getAuthorize() {
@@ -2063,6 +2278,14 @@ public class Operacoes implements Initializable {
         Operacoes.qtdPut = qtdPut;
     }
 
+    public static ObservableList<HistoricoDeTicks>[] getHistoricoDeTicksObservableList() {
+        return historicoDeTicksObservableList;
+    }
+
+    public static void setHistoricoDeTicksObservableList(ObservableList<HistoricoDeTicks>[] historicoDeTicksObservableList) {
+        Operacoes.historicoDeTicksObservableList = historicoDeTicksObservableList;
+    }
+
     public static ObservableList<HistoricoDeCandles> getHistoricoDeCandlesObservableList() {
         return historicoDeCandlesObservableList;
     }
@@ -2079,11 +2302,11 @@ public class Operacoes implements Initializable {
         Operacoes.transactionObservableList = transactionObservableList;
     }
 
-    public static ObservableList<Transacoes> getTransacoesObservableList() {
+    public static ObservableList<Transacoes>[][] getTransacoesObservableList() {
         return transacoesObservableList;
     }
 
-    public static void setTransacoesObservableList(ObservableList<Transacoes> transacoesObservableList) {
+    public static void setTransacoesObservableList(ObservableList<Transacoes>[][] transacoesObservableList) {
         Operacoes.transacoesObservableList = transacoesObservableList;
     }
 
@@ -2095,14 +2318,6 @@ public class Operacoes implements Initializable {
         Operacoes.historicoDeCandlesFilteredList = historicoDeCandlesFilteredList;
     }
 
-    public static FilteredList<Transacoes>[][] getTransacoesFilteredList() {
-        return transacoesFilteredList;
-    }
-
-    public static void setTransacoesFilteredList(FilteredList<Transacoes>[][] transacoesFilteredList) {
-        Operacoes.transacoesFilteredList = transacoesFilteredList;
-    }
-
     public static TmodelTransacoes[][] getTmodelTransacoes() {
         return tmodelTransacoes;
     }
@@ -2111,12 +2326,12 @@ public class Operacoes implements Initializable {
         Operacoes.tmodelTransacoes = tmodelTransacoes;
     }
 
-    public static BooleanProperty[][] getLastTransictionIsWin() {
-        return lastTransictionIsWin;
+    public static BooleanProperty[][] getLastTransictionIsBuy() {
+        return lastTransictionIsBuy;
     }
 
-    public static void setLastTransictionIsWin(BooleanProperty[][] lastTransictionIsWin) {
-        Operacoes.lastTransictionIsWin = lastTransictionIsWin;
+    public static void setLastTransictionIsBuy(BooleanProperty[][] lastTransictionIsBuy) {
+        Operacoes.lastTransictionIsBuy = lastTransictionIsBuy;
     }
 
     public static BooleanProperty[] getTimeAtivo() {
@@ -5217,25 +5432,5 @@ public class Operacoes implements Initializable {
 
     public void setTbvTransacoes_T02_Op12(TableView tbvTransacoes_T02_Op12) {
         this.tbvTransacoes_T02_Op12 = tbvTransacoes_T02_Op12;
-    }
-
-    public static LogSistemaStartDAO getLogSistemaStartDAO() {
-        return logSistemaStartDAO;
-    }
-
-    public static void setLogSistemaStartDAO(LogSistemaStartDAO logSistemaStartDAO) {
-        Operacoes.logSistemaStartDAO = logSistemaStartDAO;
-    }
-
-    public static ContaToken getContaToken() {
-        return contaToken.get();
-    }
-
-    public static ObjectProperty<ContaToken> contaTokenProperty() {
-        return contaToken;
-    }
-
-    public static void setContaToken(ContaToken contaToken) {
-        Operacoes.contaToken.set(contaToken);
     }
 }

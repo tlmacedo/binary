@@ -63,7 +63,7 @@ public class Util_Json {
         try {
             JSONArray array = new JSONObject(strJson).getJSONArray("candles");
             for (Object o : array)
-                Operacoes.getHistoricoDeCandlesObservableList().add(0, new HistoricoDeCandles((JSONObject) o, symbol_id, granularity));
+                Operacoes.getHistoricoDeCandlesObservableList().add(new HistoricoDeCandles((JSONObject) o, symbol_id, granularity));
         } catch (Exception ex) {
             ex.printStackTrace();
         }

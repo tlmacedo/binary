@@ -10,6 +10,6 @@ public interface Robo {
 
     void monitorarCondicoesParaComprar() throws Exception;
 
-    void gerarNovosContratos(int t_id, int s_id, BigDecimal payout, BigDecimal askPrice);
+    void gerarNovosContratos(int t_id, int s_id);
 
 }

@@ -33,12 +33,9 @@ public class Service_DataTime {
     }
 
     public static Integer getTimeCandle(String longcode) {
-        System.out.printf("longcode:[%s]\t", longcode);
         int indexMin = longcode.indexOf("minute");
         int minutes = indexMin < 0 ? 0 : Integer.parseInt(longcode.substring(indexMin - 3, indexMin + 6).replaceAll("\\D", ""));
-        System.out.printf("indexMin:[%s]\t", indexMin < 0 ? "" : longcode.substring(indexMin - 3, indexMin + 6));
-        System.out.printf("[%s]\n", minutes + 1);
-        return minutes + 1;
+        return minutes;
     }
 
     public static TICK_TIME getTimeCandle_enum(String longcode) {

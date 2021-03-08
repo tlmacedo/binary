@@ -6,9 +6,8 @@ import java.util.List;
 
 public enum TICK_TIME {
 
-    T1M(0, "1M")
-//    ,
-//    T2M(1, "2M")
+    T1M(0, "1M"),
+    T2M(1, "2M")
 //    ,
 //    T3M(2, "3M"),
 //    T5M(3, "5M"),
@@ -44,6 +43,10 @@ public enum TICK_TIME {
 
     public static Integer getTimeSeconds(Integer cod) {
         return getTimeMinutes(cod) * 60;
+    }
+
+    public static Integer getTimeCod(Integer granularity) {
+        return TICK_TIME.valueOf(String.format("T%dM", granularity / 60)).getCod();
     }
 
     public Integer getCod() {
