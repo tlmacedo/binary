@@ -60,8 +60,8 @@ public class Transacoes implements Serializable {
             this.contract_type = new SimpleStringProperty(contract);
         }
         this.longcode = new SimpleStringProperty(transaction.getLongcode());
-        //this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ONE);
-        //this.tickVenda = tickVenda;
+        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
+        this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount());
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.consolidado = new SimpleBooleanProperty(false);
@@ -103,6 +103,7 @@ public class Transacoes implements Serializable {
 //            }
 
             Operacoes.getTransacoesDAO().merger(this);
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }

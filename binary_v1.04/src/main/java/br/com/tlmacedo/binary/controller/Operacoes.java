@@ -61,7 +61,7 @@ public class Operacoes implements Initializable {
     static final List<Symbol> SYMBOL_LIST = getSymbolDAO().getAll(Symbol.class, null, null);
     static final ObservableList<Symbol> SYMBOL_OBSERVABLE_LIST =
             FXCollections.observableArrayList(
-                    getSymbolDAO().getAll(Symbol.class, null, null)
+                    getSymbolDAO().getAll(Symbol.class, "id=1", null)
             );
 
     /**
@@ -809,7 +809,6 @@ public class Operacoes implements Initializable {
                         }
                     }
                 });
-
             }
         }
 
@@ -820,20 +819,23 @@ public class Operacoes implements Initializable {
                 if (o == null || n == null) return;
                 for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
                     if ((transacaoBuy = getTransacoesObservableList()[t_id][finalS_id].stream()
+//                            .filter(transacoes -> transacoes.getTickCompra().compareTo(BigDecimal.ZERO) == 0
+//                                    && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
                             .filter(transacoes -> transacoes.getDataHoraCompra() == o.getEpoch())
+                            .sorted(Comparator.comparing(Transacoes::getContract_id))
                             .findFirst().orElse(null)) != null) {
-                        System.out.printf("oldTick:[%s]\tnewTick:[%s]\n", o.getQuoteCompleto(), n.getQuoteCompleto());
                         transacaoBuy.setTickCompra(n.getClose().setScale(n.getPip_size(), RoundingMode.HALF_UP));
                         getTransacoesDAO().merger(transacaoBuy);
                     }
                     if ((transacaoSell = getTransacoesObservableList()[t_id][finalS_id].stream()
+//                            .filter(transacoes -> transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
                             .filter(transacoes -> transacoes.getDataHoraExpiry() == n.getEpoch())
+                            .sorted(Comparator.comparing(Transacoes::getDataHoraCompra))
                             .findFirst().orElse(null)) != null) {
                         transacaoSell.setTickVenda(n.getClose().setScale(n.getPip_size(), RoundingMode.HALF_UP));
                         getTransacoesDAO().merger(transacaoSell);
                     }
                 }
-
             });
         }
 
