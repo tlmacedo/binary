@@ -6,15 +6,18 @@ import br.com.tlmacedo.binary.services.Service_Mascara;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.beans.property.*;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+@Entity(name = "historicoDeTicks")
+@Table(name = "historioco_de_ticks")
 public class HistoricoDeTicks implements Serializable {
     public static final long serialVersionUID = 1L;
 
     LongProperty id = new SimpleLongProperty();
     ObjectProperty<Symbol> symbol = new SimpleObjectProperty<>();
-    ObjectProperty<BigDecimal> price = new SimpleObjectProperty<>();
+    ObjectProperty<BigDecimal> price = new SimpleObjectProperty<>(BigDecimal.ZERO);
     IntegerProperty time = new SimpleIntegerProperty();
     IntegerProperty ultimoDigito = new SimpleIntegerProperty();
     IntegerProperty pip_size = new SimpleIntegerProperty();
@@ -41,6 +44,8 @@ public class HistoricoDeTicks implements Serializable {
     }
 
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public long getId() {
         return id.get();
     }
@@ -53,6 +58,7 @@ public class HistoricoDeTicks implements Serializable {
         this.id.set(id);
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
     public Symbol getSymbol() {
         return symbol.get();
     }
@@ -119,6 +125,7 @@ public class HistoricoDeTicks implements Serializable {
     }
 
     @JsonIgnore
+    @Transient
     public String getQuoteCompleto() {
         return Service_Mascara.getValorFormatado(getPip_size(), getPrice());
     }

@@ -3,28 +3,29 @@ package br.com.tlmacedo.binary.controller.estrategias;
 import br.com.tlmacedo.binary.controller.Operacoes;
 import br.com.tlmacedo.binary.interfaces.Robo;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
-import br.com.tlmacedo.binary.model.enums.ROBOS;
 import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 import br.com.tlmacedo.binary.model.vo.Proposal;
-import br.com.tlmacedo.binary.model.vo.Transacoes;
 import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Service_NewVlrContrato;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
+import javafx.beans.value.ChangeListener;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.NoSuchElementException;
 
 public class Abr extends Operacoes implements Robo {
 
     static Proposal[][][][] proposal = new Proposal[TICK_TIME.values().length][getSymbolObservableList().size()][2][2];
-    static ObjectProperty<BigDecimal>[][] vlrTmpWin = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
-    static ObjectProperty<BigDecimal>[][] vlrTmpLoss = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
+    ChangeListener<? super Number> listener;
+
+    @Override
+    public void cancelarContratos() {
+        for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+            for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+                getQtdCallOrPut()[t_id][s_id].removeListener(getListener());
+            }
+        }
+    }
 
     @Override
     public void definicaoDeContrato() throws Exception {
@@ -38,7 +39,7 @@ public class Abr extends Operacoes implements Robo {
 
         alert = new Service_Alert();
         alert.setContentText("Espera quantas candles seguidas em pull ou call?");
-        qtd = Integer.valueOf(alert.alertTextField("#,##0.*0", "1", "").get()
+        qtd = Integer.valueOf(alert.alertTextField("#,##0.*0", "2", "").get()
                 .replaceAll("\\D", ""));
 
         alert = new Service_Alert();
@@ -78,13 +79,13 @@ public class Abr extends Operacoes implements Robo {
             int finalT_id = t_id;
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 int finalS_id = s_id;
-                getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
-                    if (n == null || isRoboMonitorandoPausado()) return;
+                setListener((ov, o, n) -> {
+                    if (n == null || isRoboMonitorandoPausado() || !isContratoGerado()) return;
                     boolean maior = Math.abs(n.intValue()) > getQtdCandlesEntrada()[finalT_id].getValue(),
                             igual = Math.abs(n.intValue()) == getQtdCandlesEntrada()[finalT_id].getValue();
                     if (maior || igual) {
                         Proposal proposal;
-                        if (getTransacoesObservableList()[finalT_id][finalS_id].size() == 0)
+                        if (isFirsBuy())
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1][0];
                         else
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1]
@@ -92,9 +93,11 @@ public class Abr extends Operacoes implements Robo {
                         if (proposal != null) {
                             getVlrStkContrato()[finalT_id][finalS_id].setValue(proposal.getAsk_price());
                             solicitarCompraContrato(proposal);
+                            setFirsBuy(false);
                         }
                     }
                 });
+                getQtdCallOrPut()[t_id][s_id].addListener(getListener());
             }
         }
 
@@ -126,8 +129,6 @@ public class Abr extends Operacoes implements Robo {
                 for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                     getVlrStkContrato()[t_id][s_id] = new SimpleObjectProperty<>();
                     getVlrLossAcumulado()[t_id][s_id] = new SimpleObjectProperty<>(BigDecimal.ZERO);
-                    getLastTransictionIsBuy()[t_id][s_id] = new SimpleBooleanProperty(false);
-                    getVlrTmpLoss()[t_id][s_id] = new SimpleObjectProperty<>(BigDecimal.ZERO);
                 }
             }
 
@@ -152,19 +153,11 @@ public class Abr extends Operacoes implements Robo {
         Abr.proposal = proposal;
     }
 
-    public static ObjectProperty<BigDecimal>[][] getVlrTmpWin() {
-        return vlrTmpWin;
+    public ChangeListener<? super Number> getListener() {
+        return listener;
     }
 
-    public static void setVlrTmpWin(ObjectProperty<BigDecimal>[][] vlrTmpWin) {
-        Abr.vlrTmpWin = vlrTmpWin;
-    }
-
-    public static ObjectProperty<BigDecimal>[][] getVlrTmpLoss() {
-        return vlrTmpLoss;
-    }
-
-    public static void setVlrTmpLoss(ObjectProperty<BigDecimal>[][] vlrTmpLoss) {
-        Abr.vlrTmpLoss = vlrTmpLoss;
+    public void setListener(ChangeListener<? super Number> listener) {
+        this.listener = listener;
     }
 }

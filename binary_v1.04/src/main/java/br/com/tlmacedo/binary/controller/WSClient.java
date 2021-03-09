@@ -174,6 +174,9 @@ public class WSClient extends WebSocketListener {
             int t_id = passthrough.getTickTime().getCod();
 
             if (t_id == 0) {
+                if (Operacoes.isRoboMonitorando() && !Operacoes.isRoboMonitorandoPausado())
+                    if (s_id < Operacoes.getSymbolObservableList().size())
+                        Operacoes.getHistoricoDeTicksDAO().merger(new HistoricoDeTicks(ohlc));
                 Operacoes.getHistoricoDeTicksObservableList()[s_id].add(new HistoricoDeTicks(ohlc));
                 Operacoes.getUltimoOhlcStr()[s_id].setValue(ohlc);
             }
@@ -228,7 +231,7 @@ public class WSClient extends WebSocketListener {
         Platform.runLater(() -> {
 
             if (transaction.getAction() != null)
-                Operacoes.getTransactionObservableList().add(0, transaction);
+                Operacoes.newTransaction(Operacoes.getTransactionDAO().merger(transaction));
 
         });
 

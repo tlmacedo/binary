@@ -51,6 +51,7 @@ public class Operacoes implements Initializable {
     static ContaTokenDAO contaTokenDAO = new ContaTokenDAO();
     static TransacoesDAO transacoesDAO = new TransacoesDAO();
     static TransactionDAO transactionDAO = new TransactionDAO();
+    static HistoricoDeTicksDAO historicoDeTicksDAO = new HistoricoDeTicksDAO();
     static LogSistemaStartDAO logSistemaStartDAO = new LogSistemaStartDAO();
 
 
@@ -61,8 +62,9 @@ public class Operacoes implements Initializable {
     static final List<Symbol> SYMBOL_LIST = getSymbolDAO().getAll(Symbol.class, null, null);
     static final ObservableList<Symbol> SYMBOL_OBSERVABLE_LIST =
             FXCollections.observableArrayList(
-                    getSymbolDAO().getAll(Symbol.class, null, null)
+                    getSymbolDAO().getAll(Symbol.class, "id=1", null)
             );
+
 
     /**
      * Contas corretora
@@ -81,6 +83,7 @@ public class Operacoes implements Initializable {
     static final ObjectProperty<WSClient> WS_CLIENT_OBJECT_PROPERTY = new SimpleObjectProperty<>(new WSClient());
     static final TICK_STYLE tickStyle = CANDLES;
 
+
     /**
      * Robos
      */
@@ -94,33 +97,33 @@ public class Operacoes implements Initializable {
     static StringProperty parametrosUtilizadosRobo = new SimpleStringProperty("");
     static ObjectProperty<BigDecimal> saldoInicial = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
+
     /**
      * Variaveis de informações para operadores
      */
     //** Variaveis **
     static IntegerProperty qtdCandlesAnalise = new SimpleIntegerProperty();
     static ObjectProperty<Ohlc>[] ultimoOhlcStr = new ObjectProperty[getSymbolList().size()];
-    static ObservableList<HistoricoDeTicks>[] historicoDeTicksObservableList = new ObservableList[getSymbolList().size()];
-    static ObjectProperty<Ohlc>[][] testaLastCandle = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static BooleanProperty[] tickSubindo = new BooleanProperty[getSymbolList().size()];
 
     static IntegerProperty[] timeCandleStart = new IntegerProperty[TICK_TIME.values().length];
     static IntegerProperty[] timeCandleToClose = new IntegerProperty[TICK_TIME.values().length];
 
+    static BooleanProperty firsBuy = new SimpleBooleanProperty(true);
     static IntegerProperty[][] qtdCallOrPut = new IntegerProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static IntegerProperty[][] qtdCall = new IntegerProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static IntegerProperty[][] qtdPut = new IntegerProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
 
     //** Listas **
+    static ObservableList<HistoricoDeTicks>[] historicoDeTicksObservableList = new ObservableList[getSymbolList().size()];
     static ObservableList<HistoricoDeCandles> historicoDeCandlesObservableList = FXCollections.observableArrayList();
-    static ObservableList<Transaction> transactionObservableList = FXCollections.observableArrayList();
-    static ObservableList<Transacoes>[][] transacoesObservableList = new ObservableList[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static ObservableList<Transacoes> transacoesObservableList = FXCollections.observableArrayList();
     static FilteredList<HistoricoDeCandles>[][] historicoDeCandlesFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
+    static FilteredList<Transacoes>[][] transacoesFilteredList = new FilteredList[TICK_TIME.values().length][getSymbolObservableList().size()];
     static TmodelTransacoes[][] tmodelTransacoes = new TmodelTransacoes[TICK_TIME.values().length][getSymbolObservableList().size()];
 
 
     //** Operações com Robos **
-    static BooleanProperty[][] lastTransictionIsBuy = new BooleanProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static BooleanProperty[] timeAtivo = new BooleanProperty[TICK_TIME.values().length];
     static BooleanProperty contratoGerado = new SimpleBooleanProperty(false);
     static BooleanProperty disableContratoBtn = new SimpleBooleanProperty(true);
@@ -129,34 +132,12 @@ public class Operacoes implements Initializable {
     static BooleanProperty disableStopBtn = new SimpleBooleanProperty(true);
     static BooleanProperty roboMonitorando = new SimpleBooleanProperty(false);
     static BooleanProperty roboMonitorandoPausado = new SimpleBooleanProperty(false);
+    static IntegerProperty[] qtdCandlesEntrada = new IntegerProperty[TICK_TIME.values().length];
     static ObjectProperty<BigDecimal>[] porcMartingale = new ObjectProperty[TICK_TIME.values().length];
-    static ObjectProperty<BigDecimal>[][] vlrLossAcumulado = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
     static ObjectProperty<BigDecimal>[] vlrStkPadrao = new ObjectProperty[TICK_TIME.values().length];
     static ObjectProperty<BigDecimal>[][] vlrStkContrato = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
-    static IntegerProperty[] qtdCandlesEntrada = new IntegerProperty[TICK_TIME.values().length];
+    static ObjectProperty<BigDecimal>[][] vlrLossAcumulado = new ObjectProperty[TICK_TIME.values().length][getSymbolObservableList().size()];
 
-    static PriceProposal[][] priceProposal = new PriceProposal[TICK_TIME.values().length][getSymbolObservableList().size()];
-
-
-    public static final Integer TIME_1M = 0;
-    public static final Integer TIME_2M = 1;
-    public static final Integer TIME_3M = 2;
-    public static final Integer TIME_5M = 3;
-    public static final Integer TIME_10M = 4;
-    public static final Integer TIME_15M = 5;
-
-    public static final Integer SYMBOL_01 = 0;
-    public static final Integer SYMBOL_02 = 1;
-    public static final Integer SYMBOL_03 = 2;
-    public static final Integer SYMBOL_04 = 3;
-    public static final Integer SYMBOL_05 = 4;
-    public static final Integer SYMBOL_06 = 5;
-    public static final Integer SYMBOL_07 = 6;
-    public static final Integer SYMBOL_08 = 7;
-    public static final Integer SYMBOL_09 = 8;
-    public static final Integer SYMBOL_10 = 9;
-    public static final Integer SYMBOL_11 = 10;
-    public static final Integer SYMBOL_12 = 11;
 //    public static final String[] VOL_NAME = symbolObservableList.stream().map(Symbol::getName).collect(Collectors.toList()).toArray(String[]::new);
 
 
@@ -654,18 +635,19 @@ public class Operacoes implements Initializable {
                 getQtdPut()[t_id][s_id] = new SimpleIntegerProperty(0);
                 getQtdCallOrPut()[t_id][s_id] = new SimpleIntegerProperty(0);
 
-                getTestaLastCandle()[t_id][s_id] = new SimpleObjectProperty<>();
                 getHistoricoDeCandlesFilteredList()[t_id][s_id] = new FilteredList<>(getHistoricoDeCandlesObservableList());
                 getHistoricoDeCandlesFilteredList()[t_id][s_id].setPredicate(historicoDeCandles ->
                         historicoDeCandles.getGranularity() == TICK_TIME.getTimeSeconds(finalT_id)
                                 && historicoDeCandles.getSymbol().getId() - 1 == finalS_id);
 
-                getTransacoesObservableList()[t_id][s_id] = FXCollections.observableArrayList();
+                getTransacoesFilteredList()[t_id][s_id] = new FilteredList<>(getTransacoesObservableList());
+                getTransacoesFilteredList()[t_id][s_id].setPredicate(transacoes ->
+                        transacoes.getTimeFrame().getCod() == finalT_id && transacoes.getSymbol().getS_id() == finalS_id);
 
-                getTmodelTransacoes()[t_id][s_id] = new TmodelTransacoes(getTransacoesObservableList()[t_id][s_id]);
+
+                getTmodelTransacoes()[t_id][s_id] = new TmodelTransacoes(getTransacoesFilteredList()[t_id][s_id]);
                 getTmodelTransacoes()[t_id][s_id].criar_tabela();
 
-//                getTmodelTransacoes()[t_id][s_id].setTransacoesObservableList(getTransacoesObservableList()[t_id][s_id]);
                 contectarTabelaEmLista(t_id, s_id);
 
                 getTmodelTransacoes()[t_id][s_id].tabela_preencher();
@@ -743,7 +725,16 @@ public class Operacoes implements Initializable {
                         (!isWsConectado() || getAuthorize() == null || getRobo() == null || isContratoGerado()),
                 wsConectadoProperty(), authorizeProperty(), ROBOProperty(), contratoGeradoProperty()));
 
-        disableIniciarBtnProperty().bind(contratoGeradoProperty().not());
+        disableIniciarBtnProperty().bind(Bindings.createBooleanBinding(() ->
+                        (!isContratoGerado() || (isRoboMonitorando())
+                                && !isRoboMonitorandoPausado()),
+                contratoGeradoProperty(), roboMonitorandoProperty(), roboMonitorandoPausadoProperty()));
+
+        disablePausarBtnProperty().bind(Bindings.createBooleanBinding(() ->
+                        (!isContratoGerado() || !isRoboMonitorando() && !isRoboMonitorandoPausado()),
+                roboMonitorandoProperty(), roboMonitorandoPausadoProperty()));
+
+        disableStopBtnProperty().bind(contratoGeradoProperty().not());
 
         ROBOProperty().addListener((ov, o, n) -> {
 
@@ -752,30 +743,6 @@ public class Operacoes implements Initializable {
                 return;
             }
 
-        });
-
-        getTransactionObservableList().addListener((ListChangeListener<? super Transaction>) c -> {
-            while (c.next()) {
-                for (Transaction transaction : c.getAddedSubList()) {
-                    try {
-                        int t_id = Service_DataTime.getTimeCandle_enum(transaction.getLongcode()).getCod(),
-                                s_id = transaction.getSymbol().getS_id();
-                        switch (ACTION.valueOf(transaction.getAction().toUpperCase())) {
-                            case BUY -> {
-                                new Transacoes().isBUY(transaction);
-                            }
-                            case SELL -> {
-                                getTransacoesObservableList()[t_id][s_id].stream()
-                                        .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
-                                        .findFirst().get().isSELL(transaction);
-                            }
-                        }
-                    } catch (Exception ex) {
-                        if (!(ex instanceof NullPointerException) && !(ex instanceof IllegalStateException))
-                            ex.printStackTrace();
-                    }
-                }
-            }
         });
 
         getHistoricoDeCandlesObservableList().addListener((ListChangeListener<? super HistoricoDeCandles>) c -> {
@@ -812,40 +779,38 @@ public class Operacoes implements Initializable {
             }
         }
 
-//        for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
-//            int finalT_id = t_id;
-//            getHistoricoDeTicksObservableList()[t_id].addListener((ListChangeListener<? super HistoricoDeTicks>) c -> {
-//
-//            });
-//            for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
-//                int finalS_id = s_id;
-//
-//            }
-//        }
-
         for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
             int finalS_id = s_id;
             getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                Transacoes transacaoBuy, transacaoSell;
                 if (o == null || n == null) return;
                 for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
-                    if ((transacaoBuy = getTransacoesObservableList()[t_id][finalS_id].stream()
-//                            .filter(transacoes -> transacoes.getTickCompra().compareTo(BigDecimal.ZERO) == 0
-//                                    && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
-                            .filter(transacoes -> transacoes.getDataHoraCompra() == o.getEpoch())
-                            .sorted(Comparator.comparing(Transacoes::getContract_id))
-                            .findFirst().orElse(null)) != null) {
-                        transacaoBuy.setTickCompra(n.getClose().setScale(n.getPip_size(), RoundingMode.HALF_UP));
-                        getTransacoesDAO().merger(transacaoBuy);
-                    }
-                    if ((transacaoSell = getTransacoesObservableList()[t_id][finalS_id].stream()
-//                            .filter(transacoes -> transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
-                            .filter(transacoes -> transacoes.getDataHoraExpiry() == n.getEpoch())
-                            .sorted(Comparator.comparing(Transacoes::getDataHoraCompra))
-                            .findFirst().orElse(null)) != null) {
-                        transacaoSell.setTickVenda(n.getClose().setScale(n.getPip_size(), RoundingMode.HALF_UP));
-                        getTransacoesDAO().merger(transacaoSell);
-                    }
+                    int finalT_id = t_id;
+                    getTransacoesFilteredList()[t_id][finalS_id].stream()
+                            .filter(transacoes -> transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) == 0
+                                    && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
+                            .forEach(transacoes -> {
+                                transacoes.setTickCompra(
+                                        getHistoricoDeTicksObservableList()[finalT_id].stream()
+                                                .filter(historicoDeTicks -> historicoDeTicks.getTime()
+                                                        == transacoes.getDataHoraCompra())
+                                                .findFirst().orElse(new HistoricoDeTicks()).getPrice());
+                                transacoes.setTickNegociacaoInicio(
+                                        getHistoricoDeTicksObservableList()[finalT_id].stream()
+                                                .filter(historicoDeTicks -> historicoDeTicks.getTime()
+                                                        == (transacoes.getDataHoraCompra() + transacoes.getSymbol().getTickTime()))
+                                                .findFirst().orElse(new HistoricoDeTicks()).getPrice());
+                                getTransacoesDAO().merger(transacoes);
+                            });
+                    getTransacoesFilteredList()[t_id][finalS_id].stream()
+                            .filter(transacoes -> transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
+                            .forEach(transacoes -> {
+                                transacoes.setTickVenda(
+                                        getHistoricoDeTicksObservableList()[finalT_id].stream()
+                                                .filter(historicoDeTicks -> historicoDeTicks.getTime()
+                                                        == transacoes.getDataHoraExpiry())
+                                                .findFirst().orElse(new HistoricoDeTicks()).getPrice());
+                                getTransacoesDAO().merger(transacoes);
+                            });
                 }
             });
         }
@@ -935,6 +900,7 @@ public class Operacoes implements Initializable {
                     solicitarTransacoes();
                 getRobo().definicaoDeContrato();
                 setContratoGerado(true);
+                setFirsBuy(true);
             } catch (Exception ex) {
                 if (ex instanceof NoSuchElementException)
                     return;
@@ -944,12 +910,16 @@ public class Operacoes implements Initializable {
 
         getBtnTpnNegociacao_Iniciar().setOnAction(event -> {
             try {
-                getRobo().monitorarCondicoesParaComprar();
-                setRoboMonitorando(true);
-                getLogSistemaStartDAO().merger(
-                        new LogSistemaStart(getCboTpnDetalhesContaBinary().getValue(),
-                                Service_DataTime.getIntegerDateNow(),
-                                Service_Mascara.getParametrosToDB()));
+                if (isRoboMonitorando()) {
+                    setRoboMonitorandoPausado(false);
+                } else {
+                    getRobo().monitorarCondicoesParaComprar();
+                    setRoboMonitorando(true);
+                    getLogSistemaStartDAO().merger(
+                            new LogSistemaStart(getCboTpnDetalhesContaBinary().getValue(),
+                                    Service_DataTime.getIntegerDateNow(),
+                                    Service_Mascara.getParametrosToDB()));
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -959,6 +929,10 @@ public class Operacoes implements Initializable {
 
         getBtnTpnNegociacao_Stop().setOnAction(event -> {
             getCboNegociacaoRobos().getSelectionModel().select(0);
+            setRoboMonitorando(false);
+            setRoboMonitorandoPausado(false);
+            setContratoGerado(false);
+            setRobo(null);
         });
 
     }
@@ -1013,23 +987,23 @@ public class Operacoes implements Initializable {
         Passthrough passthrough = new Passthrough(getSymbolObservableList().get(s_id),
                 TICK_TIME.toEnum(t_id), getTickStyle(), cType, priceLoss, "");
 
-        getPriceProposal()[t_id][s_id] = new PriceProposal();
+        PriceProposal priceProposal = new PriceProposal();
 
-        getPriceProposal()[t_id][s_id].setProposal(1);
-        getPriceProposal()[t_id][s_id].setAmount(vlrPriceProposal != null
+        priceProposal.setProposal(1);
+        priceProposal.setAmount(vlrPriceProposal != null
                 ? vlrPriceProposal.setScale(2, RoundingMode.HALF_UP)
                 : getVlrStkPadrao()[t_id].getValue().setScale(2, RoundingMode.HALF_UP));
 //                : getVlrStkContrato()[t_id][s_id].getValue().setScale(2, RoundingMode.HALF_UP));
-        getPriceProposal()[t_id][s_id].setBasis(PRICE_PROPOSAL_BASIS);
-        getPriceProposal()[t_id][s_id].setContract_type(cType);
-        getPriceProposal()[t_id][s_id].setCurrency(getAuthorize().getCurrency().toUpperCase());
+        priceProposal.setBasis(PRICE_PROPOSAL_BASIS);
+        priceProposal.setContract_type(cType);
+        priceProposal.setCurrency(getAuthorize().getCurrency().toUpperCase());
         int timeDuration = TICK_TIME.getTimeSeconds(t_id);
-        getPriceProposal()[t_id][s_id].setDuration(timeDuration);
-        getPriceProposal()[t_id][s_id].setDuration_unit(DURATION_UNIT.s);
-        getPriceProposal()[t_id][s_id].setSymbol(getSymbolObservableList().get(s_id).getSymbol());
-        getPriceProposal()[t_id][s_id].setPassthrough(passthrough);
+        priceProposal.setDuration(timeDuration);
+        priceProposal.setDuration_unit(DURATION_UNIT.s);
+        priceProposal.setSymbol(getSymbolObservableList().get(s_id).getSymbol());
+        priceProposal.setPassthrough(passthrough);
 
-        solicitarProposal(getPriceProposal()[t_id][s_id]);
+        solicitarProposal(priceProposal);
 
     }
 
@@ -1135,117 +1109,134 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
+    public static void newTransaction(Transaction transaction) {
+
+        try {
+            int t_id = Service_DataTime.getTimeCandle_enum(transaction.getLongcode()).getCod(),
+                    s_id = transaction.getSymbol().getS_id();
+            switch (ACTION.valueOf(transaction.getAction().toUpperCase())) {
+                case BUY -> {
+                    new Transacoes().isBUY(transaction);
+                }
+                case SELL -> {
+                    try {
+                        getTransacoesObservableList().stream()
+                                .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
+                                .findFirst().get().isSELL(transaction);
+                    } catch (Exception ex) {
+                        if (!(ex instanceof NoSuchElementException))
+                            ex.printStackTrace();
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            if (!(ex instanceof NullPointerException) && !(ex instanceof IllegalStateException))
+                ex.printStackTrace();
+        }
+
+    }
 
     private void conectarObjetosEmVariaveis_LastTicks() {
 
         for (int s_id = 0; s_id < getSymbolList().size(); s_id++) {
             int finalS_id = s_id;
-            if (s_id == SYMBOL_01) {
-                getLblSymbol_01().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_01().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_01().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_02) {
-                getLblSymbol_02().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_02().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_02().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_03) {
-                getLblSymbol_03().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_03().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_03().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_04) {
-                getLblSymbol_04().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_04().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_04().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_05) {
-                getLblSymbol_05().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_05().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_05().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_06) {
-                getLblSymbol_06().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_06().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_06().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_07) {
-                getLblSymbol_07().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_07().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_07().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_08) {
-                getLblSymbol_08().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_08().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_08().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_09) {
-                getLblSymbol_09().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_09().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_09().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_10) {
-                getLblSymbol_10().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_10().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_10().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_11) {
-                getLblSymbol_11().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_11().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_11().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
-            }
-
-            if (s_id == SYMBOL_12) {
-                getLblSymbol_12().setText(getSymbolList().get(s_id).toString());
-                getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
-                    getLblLastTickSymbol_12().setText(n == null ? "" : n.toString());
-                    getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
-                    getLblLastTickSymbol_12().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
-                });
+            switch (s_id) {
+                case 0 -> {
+                    getLblSymbol_01().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_01().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_01().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 1 -> {
+                    getLblSymbol_02().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_02().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_02().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 2 -> {
+                    getLblSymbol_03().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_03().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_03().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 3 -> {
+                    getLblSymbol_04().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_04().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_04().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 4 -> {
+                    getLblSymbol_05().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_05().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_05().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 5 -> {
+                    getLblSymbol_06().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_06().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_06().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 6 -> {
+                    getLblSymbol_07().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_07().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_07().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 7 -> {
+                    getLblSymbol_08().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_08().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_08().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 8 -> {
+                    getLblSymbol_09().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_09().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_09().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 9 -> {
+                    getLblSymbol_10().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_10().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_10().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 10 -> {
+                    getLblSymbol_11().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_11().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_11().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
+                case 11 -> {
+                    getLblSymbol_12().setText(getSymbolList().get(s_id).toString());
+                    getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
+                        getLblLastTickSymbol_12().setText(n == null ? "" : n.toString());
+                        getTickSubindo()[finalS_id].setValue(n != null && o != null && n.getClose().compareTo(o.getClose()) > 0);
+                        getLblLastTickSymbol_12().setStyle(getTickSubindo()[finalS_id].getValue() ? STYLE_TICK_SUBINDO : STYLE_TICK_DESCENDO);
+                    });
+                }
             }
         }
 
@@ -1254,646 +1245,648 @@ public class Operacoes implements Initializable {
     private void conectarObjetosEmVariaveis_Timers() {
 
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
-            if (t_id == TIME_1M)
-                getTpn_T01().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
-            if (t_id == TIME_2M)
-                getTpn_T02().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
-//            if (t_id == TIME_3M)
-//                getTpn_T03().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
-//            if (t_id == TIME_5M)
-//                getTpn_T04().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
-//            if (t_id == TIME_10M)
-//                getTpn_T05().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
-//            if (t_id == TIME_15M)
-//                getTpn_T06().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+            switch (t_id) {
+                case 0 -> getTpn_T01().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+                case 1 -> getTpn_T02().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+//                case 2 ->getTpn_T03().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+//                case 3 ->getTpn_T04().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+//                case 4 ->getTpn_T05().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+//                case 5 ->getTpn_T06().setText(String.format("T%s - ", TICK_TIME.toEnum(t_id)));
+            }
         }
 
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
             if (!getTimeAtivo()[t_id].getValue()) continue;
             int finalT_id = t_id;
             //*-*-* Timer_01
-            if (t_id == TIME_1M) {
-                getLblTpn_T01_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
-                                Service_DataTime.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
-                        getTimeCandleStart()[t_id]));
-                getLblTpn_T01_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
-                                String.format("-%s s", getTimeCandleToClose()[finalT_id].getValue()),
-                        getTimeCandleToClose()[t_id]));
+            switch (t_id) {
+                case 0 -> {
+                    getLblTpn_T01_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
+                                    Service_DataTime.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
+                            getTimeCandleStart()[t_id]));
+                    getLblTpn_T01_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                    String.format("-%s s", getTimeCandleToClose()[finalT_id].getValue()),
+                            getTimeCandleToClose()[t_id]));
 
-                for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
-                    int finalS_id = s_id;
-                    //*-*-* *-*-* Timer_01_Op_01
-                    if (s_id == SYMBOL_01) {
-                        getLblSymbol_T01_Op01().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op01().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_02
-                    if (s_id == SYMBOL_02) {
-                        getLblSymbol_T01_Op02().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op02().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_03
-                    if (s_id == SYMBOL_03) {
-                        getLblSymbol_T01_Op03().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op03().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_04
-                    if (s_id == SYMBOL_04) {
-                        getLblSymbol_T01_Op04().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op04().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_05
-                    if (s_id == SYMBOL_05) {
-                        getLblSymbol_T01_Op05().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op05().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_06
-                    if (s_id == SYMBOL_06) {
-                        getLblSymbol_T01_Op06().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op06().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_07
-                    if (s_id == SYMBOL_07) {
-                        getLblSymbol_T01_Op07().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op07().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_08
-                    if (s_id == SYMBOL_08) {
-                        getLblSymbol_T01_Op08().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op08().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_09
-                    if (s_id == SYMBOL_09) {
-                        getLblSymbol_T01_Op09().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op09().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_10
-                    if (s_id == SYMBOL_10) {
-                        getLblSymbol_T01_Op10().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op10().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_11
-                    if (s_id == SYMBOL_11) {
-                        getLblSymbol_T01_Op11().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op11().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_01_Op_12
-                    if (s_id == SYMBOL_12) {
-                        getLblSymbol_T01_Op12().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T01_Op12().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                    for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+                        int finalS_id = s_id;
+                        switch (s_id) {
+                            //*-*-* *-*-* Timer_01_Op_01
+                            case 0 -> {
+                                getLblSymbol_T01_Op01().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op01().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_02
+                            case 1 -> {
+                                getLblSymbol_T01_Op02().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op02().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_03
+                            case 2 -> {
+                                getLblSymbol_T01_Op03().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op03().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_04
+                            case 3 -> {
+                                getLblSymbol_T01_Op04().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op04().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_05
+                            case 4 -> {
+                                getLblSymbol_T01_Op05().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op05().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_06
+                            case 5 -> {
+                                getLblSymbol_T01_Op06().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op06().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_07
+                            case 6 -> {
+                                getLblSymbol_T01_Op07().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op07().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_08
+                            case 7 -> {
+                                getLblSymbol_T01_Op08().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op08().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_09
+                            case 8 -> {
+                                getLblSymbol_T01_Op09().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op09().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_10
+                            case 9 -> {
+                                getLblSymbol_T01_Op10().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op10().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_11
+                            case 10 -> {
+                                getLblSymbol_T01_Op11().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op11().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_01_Op_12
+                            case 11 -> {
+                                getLblSymbol_T01_Op12().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T01_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T01_Op12().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T01_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                        }
                     }
                 }
-            }
-            //*-*-* Timer_02
-            if (t_id == TIME_2M) {
-                getLblTpn_T02_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
-                                Service_DataTime.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
-                        getTimeCandleStart()[t_id]));
-                getLblTpn_T02_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
-                                String.format("-%s s", getTimeCandleToClose()[finalT_id].getValue()),
-                        getTimeCandleToClose()[t_id]));
+                //*-*-* Timer_02
+                case 1 -> {
+                    getLblTpn_T02_CandleTimeStart().textProperty().bind(Bindings.createStringBinding(() ->
+                                    Service_DataTime.getCarimboStr(getTimeCandleStart()[finalT_id].getValue(), DTF_HORA_MINUTOS),
+                            getTimeCandleStart()[t_id]));
+                    getLblTpn_T02_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                    String.format("-%s s", getTimeCandleToClose()[finalT_id].getValue()),
+                            getTimeCandleToClose()[t_id]));
 
-                for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
-                    int finalS_id = s_id;
-                    //*-*-* *-*-* Timer_02_Op_01
-                    if (s_id == SYMBOL_01) {
-                        getLblSymbol_T02_Op01().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op01().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op01().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op01().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_02
-                    if (s_id == SYMBOL_02) {
-                        getLblSymbol_T02_Op02().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op02().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op02().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op02().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_03
-                    if (s_id == SYMBOL_03) {
-                        getLblSymbol_T02_Op03().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op03().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op03().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op03().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_04
-                    if (s_id == SYMBOL_04) {
-                        getLblSymbol_T02_Op04().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op04().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op04().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op04().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op04().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_05
-                    if (s_id == SYMBOL_05) {
-                        getLblSymbol_T02_Op05().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op05().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op05().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op05().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op05().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_06
-                    if (s_id == SYMBOL_06) {
-                        getLblSymbol_T02_Op06().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op06().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op06().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op06().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op06().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op06().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_07
-                    if (s_id == SYMBOL_07) {
-                        getLblSymbol_T02_Op07().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op07().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op07().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op07().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op07().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op07().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_08
-                    if (s_id == SYMBOL_08) {
-                        getLblSymbol_T02_Op08().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op08().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op08().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op08().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op08().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op08().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_09
-                    if (s_id == SYMBOL_09) {
-                        getLblSymbol_T02_Op09().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op09().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op09().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op09().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op09().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op09().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_10
-                    if (s_id == SYMBOL_10) {
-                        getLblSymbol_T02_Op10().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op10().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op10().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op10().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op10().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op10().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_11
-                    if (s_id == SYMBOL_11) {
-                        getLblSymbol_T02_Op11().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op11().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op11().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op11().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op11().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op11().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
-                    }
-                    //*-*-* *-*-* Timer_02_Op_12
-                    if (s_id == SYMBOL_12) {
-                        getLblSymbol_T02_Op12().setText(getSymbolObservableList().get(s_id).getSymbol());
-                        getLblQtdCall_T02_Op12().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdCall()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdCall()[t_id][s_id]));
-                        getLblQtdPut_T02_Op12().textProperty().bind(Bindings.createStringBinding(() ->
-                                        getQtdPut()[finalT_id][finalS_id].getValue().toString(),
-                                getQtdPut()[t_id][s_id]));
-                        getLblQtdCallOrPut_T02_Op12().textProperty().bind(Bindings.createStringBinding(() -> {
-                            if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
-                                getImgCallOrPut_T02_Op12().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
-                            else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
-                                getImgCallOrPut_T02_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
-                            else
-                                getImgCallOrPut_T02_Op12().setImage(null);
-                            return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
-                        }, getQtdCallOrPut()[t_id][s_id]));
-                        getLblQtdStakes_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
-                        getLblQtdWins_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
-                        getLblQtdLoss_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
-                        getLblVlrIn_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
-                        getLblVlrOut_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
-                        getLblVlrDiff_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                    for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+                        int finalS_id = s_id;
+                        switch (s_id) {
+                            //*-*-* *-*-* Timer_02_Op_01
+                            case 0 -> {
+                                getLblSymbol_T02_Op01().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op01().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op01().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op01().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op01().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op01().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op01().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_02
+                            case 1 -> {
+                                getLblSymbol_T02_Op02().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op02().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op02().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op02().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op02().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op02().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op02().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_03
+                            case 2 -> {
+                                getLblSymbol_T02_Op03().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op03().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op03().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op03().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op03().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op03().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op03().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_04
+                            case 3 -> {
+                                getLblSymbol_T02_Op04().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op04().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op04().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op04().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op04().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op04().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op04().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_05
+                            case 4 -> {
+                                getLblSymbol_T02_Op05().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op05().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op05().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op05().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op05().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op05().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op05().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_06
+                            case 5 -> {
+                                getLblSymbol_T02_Op06().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op06().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op06().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op06().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op06().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op06().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op06().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_07
+                            case 6 -> {
+                                getLblSymbol_T02_Op07().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op07().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op07().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op07().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op07().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op07().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op07().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_08
+                            case 7 -> {
+                                getLblSymbol_T02_Op08().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op08().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op08().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op08().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op08().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op08().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op08().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_09
+                            case 8 -> {
+                                getLblSymbol_T02_Op09().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op09().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op09().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op09().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op09().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op09().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op09().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_10
+                            case 9 -> {
+                                getLblSymbol_T02_Op10().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op10().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op10().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op10().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op10().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op10().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op10().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_11
+                            case 10 -> {
+                                getLblSymbol_T02_Op11().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op11().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op11().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op11().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op11().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op11().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op11().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                            //*-*-* *-*-* Timer_02_Op_12
+                            case 11 -> {
+                                getLblSymbol_T02_Op12().setText(getSymbolObservableList().get(s_id).getSymbol());
+                                getLblQtdCall_T02_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdCall()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdCall()[t_id][s_id]));
+                                getLblQtdPut_T02_Op12().textProperty().bind(Bindings.createStringBinding(() ->
+                                                getQtdPut()[finalT_id][finalS_id].getValue().toString(),
+                                        getQtdPut()[t_id][s_id]));
+                                getLblQtdCallOrPut_T02_Op12().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(1) >= 0)
+                                        getImgCallOrPut_T02_Op12().setImage(new Image("image/ico/ic_seta_call_sobe_black_18dp.png"));
+                                    else if (getQtdCallOrPut()[finalT_id][finalS_id].getValue().compareTo(-1) <= 0)
+                                        getImgCallOrPut_T02_Op12().setImage(new Image("image/ico/ic_seta_put_desce_black_18dp.png"));
+                                    else
+                                        getImgCallOrPut_T02_Op12().setImage(null);
+                                    return String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue()));
+                                }, getQtdCallOrPut()[t_id][s_id]));
+                                getLblQtdStakes_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_StakesProperty().asString());
+                                getLblQtdWins_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_WinsProperty().asString());
+                                getLblQtdLoss_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].n_LossProperty().asString());
+                                getLblVlrIn_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_InProperty().asString());
+                                getLblVlrOut_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_OutProperty().asString());
+                                getLblVlrDiff_T02_Op12().textProperty().bind(getTmodelTransacoes()[finalT_id][finalS_id].vlr_DiffProperty().asString());
+                            }
+                        }
                     }
                 }
             }
@@ -1904,136 +1897,58 @@ public class Operacoes implements Initializable {
     private void conectarTimesAtivos() {
 
         for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
-            if (t_id == TIME_1M) {
-                getTimeAtivo()[t_id].bind(getChkTpn_T01_TimeAtivo().selectedProperty());
-                getChkTpn_T01_TimeAtivo().setSelected(true);
+            switch (t_id) {
+                case 0 -> {
+                    getTimeAtivo()[t_id].bind(getChkTpn_T01_TimeAtivo().selectedProperty());
+                    getChkTpn_T01_TimeAtivo().setSelected(true);
+                }
+                case 1 -> {
+                    getTimeAtivo()[t_id].bind(getChkTpn_T02_TimeAtivo().selectedProperty());
+                    getChkTpn_T02_TimeAtivo().setSelected(true);
+                }
             }
-            if (t_id == TIME_2M) {
-                getTimeAtivo()[t_id].bind(getChkTpn_T02_TimeAtivo().selectedProperty());
-                getChkTpn_T02_TimeAtivo().setSelected(true);
-            }
-//            if (t_id == TIME_3M) {
-//                getTimeAtivo()[t_id].bind(getChkTpn_T03_TimeAtivo().selectedProperty());
-//                getChkTpn_T03_TimeAtivo().setSelected(true);
-//            }
-//            if (t_id == TIME_5M) {
-//                getTimeAtivo()[t_id].bind(getChkTpn_T04_TimeAtivo().selectedProperty());
-//                getChkTpn_T04_TimeAtivo().setSelected(true);
-//            }
-//            if (t_id == TIME_10M) {
-//                getTimeAtivo()[t_id].bind(getChkTpn_T05_TimeAtivo().selectedProperty());
-//                getChkTpn_T05_TimeAtivo().setSelected(true);
-//            }
-//            if (t_id == TIME_15M) {
-//                getTimeAtivo()[t_id].bind(getChkTpn_T06_TimeAtivo().selectedProperty());
-//                getChkTpn_T06_TimeAtivo().setSelected(true);
-//            }
         }
 
     }
 
     private void contectarTabelaEmLista(int t_id, int s_id) {
-        if (t_id == TIME_1M) {
-            if (s_id == SYMBOL_01) {
-                getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op01());
-                getTmodelTransacoes()[t_id][s_id].tabela_preencher();
-            }
-            if (s_id == SYMBOL_02) {
-                getTmodelTransacoes()[t_id][SYMBOL_02].setTbvTransacoes(getTbvTransacoes_T01_Op02());
-                getTmodelTransacoes()[t_id][SYMBOL_02].tabela_preencher();
-            }
-            if (s_id == SYMBOL_03) {
-                getTmodelTransacoes()[t_id][SYMBOL_03].setTbvTransacoes(getTbvTransacoes_T01_Op03());
-                getTmodelTransacoes()[t_id][SYMBOL_03].tabela_preencher();
-            }
-            if (s_id == SYMBOL_04) {
-                getTmodelTransacoes()[t_id][SYMBOL_04].setTbvTransacoes(getTbvTransacoes_T01_Op04());
-                getTmodelTransacoes()[t_id][SYMBOL_04].tabela_preencher();
-            }
-            if (s_id == SYMBOL_05) {
-                getTmodelTransacoes()[t_id][SYMBOL_05].setTbvTransacoes(getTbvTransacoes_T01_Op05());
-                getTmodelTransacoes()[t_id][SYMBOL_05].tabela_preencher();
-            }
-            if (s_id == SYMBOL_06) {
-                getTmodelTransacoes()[t_id][SYMBOL_06].setTbvTransacoes(getTbvTransacoes_T01_Op06());
-                getTmodelTransacoes()[t_id][SYMBOL_06].tabela_preencher();
-            }
-            if (s_id == SYMBOL_07) {
-                getTmodelTransacoes()[t_id][SYMBOL_07].setTbvTransacoes(getTbvTransacoes_T01_Op07());
-                getTmodelTransacoes()[t_id][SYMBOL_07].tabela_preencher();
-            }
-            if (s_id == SYMBOL_08) {
-                getTmodelTransacoes()[t_id][SYMBOL_08].setTbvTransacoes(getTbvTransacoes_T01_Op08());
-                getTmodelTransacoes()[t_id][SYMBOL_08].tabela_preencher();
-            }
-            if (s_id == SYMBOL_09) {
-                getTmodelTransacoes()[t_id][SYMBOL_09].setTbvTransacoes(getTbvTransacoes_T01_Op09());
-                getTmodelTransacoes()[t_id][SYMBOL_09].tabela_preencher();
-            }
-            if (s_id == SYMBOL_10) {
-                getTmodelTransacoes()[t_id][SYMBOL_10].setTbvTransacoes(getTbvTransacoes_T01_Op10());
-                getTmodelTransacoes()[t_id][SYMBOL_10].tabela_preencher();
-            }
-            if (s_id == SYMBOL_11) {
-                getTmodelTransacoes()[t_id][SYMBOL_11].setTbvTransacoes(getTbvTransacoes_T01_Op11());
-                getTmodelTransacoes()[t_id][SYMBOL_11].tabela_preencher();
-            }
-            if (s_id == SYMBOL_12) {
-                getTmodelTransacoes()[t_id][SYMBOL_12].setTbvTransacoes(getTbvTransacoes_T01_Op12());
-                getTmodelTransacoes()[t_id][SYMBOL_12].tabela_preencher();
-            }
-        }
-        if (t_id == TIME_2M) {
-            if (s_id == SYMBOL_01) {
-                getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op01());
-                getTmodelTransacoes()[t_id][s_id].tabela_preencher();
-            }
-            if (s_id == SYMBOL_02) {
-                getTmodelTransacoes()[t_id][SYMBOL_02].setTbvTransacoes(getTbvTransacoes_T02_Op02());
-                getTmodelTransacoes()[t_id][SYMBOL_02].tabela_preencher();
-            }
-            if (s_id == SYMBOL_03) {
-                getTmodelTransacoes()[t_id][SYMBOL_03].setTbvTransacoes(getTbvTransacoes_T02_Op03());
-                getTmodelTransacoes()[t_id][SYMBOL_03].tabela_preencher();
-            }
-            if (s_id == SYMBOL_04) {
-                getTmodelTransacoes()[t_id][SYMBOL_04].setTbvTransacoes(getTbvTransacoes_T02_Op04());
-                getTmodelTransacoes()[t_id][SYMBOL_04].tabela_preencher();
-            }
-            if (s_id == SYMBOL_05) {
-                getTmodelTransacoes()[t_id][SYMBOL_05].setTbvTransacoes(getTbvTransacoes_T02_Op05());
-                getTmodelTransacoes()[t_id][SYMBOL_05].tabela_preencher();
-            }
-            if (s_id == SYMBOL_06) {
-                getTmodelTransacoes()[t_id][SYMBOL_06].setTbvTransacoes(getTbvTransacoes_T02_Op06());
-                getTmodelTransacoes()[t_id][SYMBOL_06].tabela_preencher();
-            }
-            if (s_id == SYMBOL_07) {
-                getTmodelTransacoes()[t_id][SYMBOL_07].setTbvTransacoes(getTbvTransacoes_T02_Op07());
-                getTmodelTransacoes()[t_id][SYMBOL_07].tabela_preencher();
-            }
-            if (s_id == SYMBOL_08) {
-                getTmodelTransacoes()[t_id][SYMBOL_08].setTbvTransacoes(getTbvTransacoes_T02_Op08());
-                getTmodelTransacoes()[t_id][SYMBOL_08].tabela_preencher();
-            }
-            if (s_id == SYMBOL_09) {
-                getTmodelTransacoes()[t_id][SYMBOL_09].setTbvTransacoes(getTbvTransacoes_T02_Op09());
-                getTmodelTransacoes()[t_id][SYMBOL_09].tabela_preencher();
-            }
-            if (s_id == SYMBOL_10) {
-                getTmodelTransacoes()[t_id][SYMBOL_10].setTbvTransacoes(getTbvTransacoes_T02_Op10());
-                getTmodelTransacoes()[t_id][SYMBOL_10].tabela_preencher();
-            }
-            if (s_id == SYMBOL_11) {
-                getTmodelTransacoes()[t_id][SYMBOL_11].setTbvTransacoes(getTbvTransacoes_T02_Op11());
-                getTmodelTransacoes()[t_id][SYMBOL_11].tabela_preencher();
-            }
-            if (s_id == SYMBOL_12) {
-                getTmodelTransacoes()[t_id][SYMBOL_12].setTbvTransacoes(getTbvTransacoes_T02_Op12());
-                getTmodelTransacoes()[t_id][SYMBOL_12].tabela_preencher();
-            }
-        }
 
+        switch (t_id) {
+            case 0 -> {
+                switch (s_id) {
+                    case 0 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op01());
+                    case 1 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op02());
+                    case 2 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op03());
+                    case 3 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op04());
+                    case 4 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op05());
+                    case 5 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op06());
+                    case 6 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op07());
+                    case 7 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op08());
+                    case 8 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op09());
+                    case 9 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op10());
+                    case 10 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op11());
+                    case 11 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T01_Op12());
+                }
+                getTmodelTransacoes()[t_id][s_id].tabela_preencher();
+            }
+            case 1 -> {
+                switch (s_id) {
+                    case 0 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op01());
+                    case 1 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op02());
+                    case 2 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op03());
+                    case 3 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op04());
+                    case 4 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op05());
+                    case 5 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op06());
+                    case 6 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op07());
+                    case 7 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op08());
+                    case 8 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op09());
+                    case 9 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op10());
+                    case 10 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op11());
+                    case 11 -> getTmodelTransacoes()[t_id][s_id].setTbvTransacoes(getTbvTransacoes_T02_Op12());
+                }
+                getTmodelTransacoes()[t_id][s_id].tabela_preencher();
+            }
+        }
     }
 
     /**
@@ -2235,14 +2150,6 @@ public class Operacoes implements Initializable {
         Operacoes.ultimoOhlcStr = ultimoOhlcStr;
     }
 
-    public static ObjectProperty<Ohlc>[][] getTestaLastCandle() {
-        return testaLastCandle;
-    }
-
-    public static void setTestaLastCandle(ObjectProperty<Ohlc>[][] testaLastCandle) {
-        Operacoes.testaLastCandle = testaLastCandle;
-    }
-
     public static BooleanProperty[] getTickSubindo() {
         return tickSubindo;
     }
@@ -2307,19 +2214,11 @@ public class Operacoes implements Initializable {
         Operacoes.historicoDeCandlesObservableList = historicoDeCandlesObservableList;
     }
 
-    public static ObservableList<Transaction> getTransactionObservableList() {
-        return transactionObservableList;
-    }
-
-    public static void setTransactionObservableList(ObservableList<Transaction> transactionObservableList) {
-        Operacoes.transactionObservableList = transactionObservableList;
-    }
-
-    public static ObservableList<Transacoes>[][] getTransacoesObservableList() {
+    public static ObservableList<Transacoes> getTransacoesObservableList() {
         return transacoesObservableList;
     }
 
-    public static void setTransacoesObservableList(ObservableList<Transacoes>[][] transacoesObservableList) {
+    public static void setTransacoesObservableList(ObservableList<Transacoes> transacoesObservableList) {
         Operacoes.transacoesObservableList = transacoesObservableList;
     }
 
@@ -2331,20 +2230,20 @@ public class Operacoes implements Initializable {
         Operacoes.historicoDeCandlesFilteredList = historicoDeCandlesFilteredList;
     }
 
+    public static FilteredList<Transacoes>[][] getTransacoesFilteredList() {
+        return transacoesFilteredList;
+    }
+
+    public static void setTransacoesFilteredList(FilteredList<Transacoes>[][] transacoesFilteredList) {
+        Operacoes.transacoesFilteredList = transacoesFilteredList;
+    }
+
     public static TmodelTransacoes[][] getTmodelTransacoes() {
         return tmodelTransacoes;
     }
 
     public static void setTmodelTransacoes(TmodelTransacoes[][] tmodelTransacoes) {
         Operacoes.tmodelTransacoes = tmodelTransacoes;
-    }
-
-    public static BooleanProperty[][] getLastTransictionIsBuy() {
-        return lastTransictionIsBuy;
-    }
-
-    public static void setLastTransictionIsBuy(BooleanProperty[][] lastTransictionIsBuy) {
-        Operacoes.lastTransictionIsBuy = lastTransictionIsBuy;
     }
 
     public static BooleanProperty[] getTimeAtivo() {
@@ -2439,20 +2338,20 @@ public class Operacoes implements Initializable {
         Operacoes.roboMonitorandoPausado.set(roboMonitorandoPausado);
     }
 
+    public static IntegerProperty[] getQtdCandlesEntrada() {
+        return qtdCandlesEntrada;
+    }
+
+    public static void setQtdCandlesEntrada(IntegerProperty[] qtdCandlesEntrada) {
+        Operacoes.qtdCandlesEntrada = qtdCandlesEntrada;
+    }
+
     public static ObjectProperty<BigDecimal>[] getPorcMartingale() {
         return porcMartingale;
     }
 
     public static void setPorcMartingale(ObjectProperty<BigDecimal>[] porcMartingale) {
         Operacoes.porcMartingale = porcMartingale;
-    }
-
-    public static ObjectProperty<BigDecimal>[][] getVlrLossAcumulado() {
-        return vlrLossAcumulado;
-    }
-
-    public static void setVlrLossAcumulado(ObjectProperty<BigDecimal>[][] vlrLossAcumulado) {
-        Operacoes.vlrLossAcumulado = vlrLossAcumulado;
     }
 
     public static ObjectProperty<BigDecimal>[] getVlrStkPadrao() {
@@ -2471,92 +2370,12 @@ public class Operacoes implements Initializable {
         Operacoes.vlrStkContrato = vlrStkContrato;
     }
 
-    public static IntegerProperty[] getQtdCandlesEntrada() {
-        return qtdCandlesEntrada;
+    public static ObjectProperty<BigDecimal>[][] getVlrLossAcumulado() {
+        return vlrLossAcumulado;
     }
 
-    public static void setQtdCandlesEntrada(IntegerProperty[] qtdCandlesEntrada) {
-        Operacoes.qtdCandlesEntrada = qtdCandlesEntrada;
-    }
-
-    public static PriceProposal[][] getPriceProposal() {
-        return priceProposal;
-    }
-
-    public static void setPriceProposal(PriceProposal[][] priceProposal) {
-        Operacoes.priceProposal = priceProposal;
-    }
-
-    public static Integer getTime1m() {
-        return TIME_1M;
-    }
-
-    public static Integer getTime2m() {
-        return TIME_2M;
-    }
-
-    public static Integer getTime3m() {
-        return TIME_3M;
-    }
-
-    public static Integer getTime5m() {
-        return TIME_5M;
-    }
-
-    public static Integer getTime10m() {
-        return TIME_10M;
-    }
-
-    public static Integer getTime15m() {
-        return TIME_15M;
-    }
-
-    public static Integer getSymbol01() {
-        return SYMBOL_01;
-    }
-
-    public static Integer getSymbol02() {
-        return SYMBOL_02;
-    }
-
-    public static Integer getSymbol03() {
-        return SYMBOL_03;
-    }
-
-    public static Integer getSymbol04() {
-        return SYMBOL_04;
-    }
-
-    public static Integer getSymbol05() {
-        return SYMBOL_05;
-    }
-
-    public static Integer getSymbol06() {
-        return SYMBOL_06;
-    }
-
-    public static Integer getSymbol07() {
-        return SYMBOL_07;
-    }
-
-    public static Integer getSymbol08() {
-        return SYMBOL_08;
-    }
-
-    public static Integer getSymbol09() {
-        return SYMBOL_09;
-    }
-
-    public static Integer getSymbol10() {
-        return SYMBOL_10;
-    }
-
-    public static Integer getSymbol11() {
-        return SYMBOL_11;
-    }
-
-    public static Integer getSymbol12() {
-        return SYMBOL_12;
+    public static void setVlrLossAcumulado(ObjectProperty<BigDecimal>[][] vlrLossAcumulado) {
+        Operacoes.vlrLossAcumulado = vlrLossAcumulado;
     }
 
     public AnchorPane getPnlViewBinary() {
@@ -5445,5 +5264,25 @@ public class Operacoes implements Initializable {
 
     public void setTbvTransacoes_T02_Op12(TableView tbvTransacoes_T02_Op12) {
         this.tbvTransacoes_T02_Op12 = tbvTransacoes_T02_Op12;
+    }
+
+    public static HistoricoDeTicksDAO getHistoricoDeTicksDAO() {
+        return historicoDeTicksDAO;
+    }
+
+    public static void setHistoricoDeTicksDAO(HistoricoDeTicksDAO historicoDeTicksDAO) {
+        Operacoes.historicoDeTicksDAO = historicoDeTicksDAO;
+    }
+
+    public static boolean isFirsBuy() {
+        return firsBuy.get();
+    }
+
+    public static BooleanProperty firsBuyProperty() {
+        return firsBuy;
+    }
+
+    public static void setFirsBuy(boolean firsBuy) {
+        Operacoes.firsBuy.set(firsBuy);
     }
 }

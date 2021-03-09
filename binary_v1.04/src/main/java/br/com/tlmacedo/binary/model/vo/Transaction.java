@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.math.BigDecimal;
 
+@Entity(name = "transaction")
+@Table(name = "transaction")
 public class Transaction {
     public static final long serialVersionUID = 1L;
 
@@ -35,6 +37,7 @@ public class Transaction {
     public Transaction() {
     }
 
+    @ManyToOne
     public ContaToken getContaToken() {
         return contaToken;
     }
@@ -115,6 +118,7 @@ public class Transaction {
         this.high_barrier = high_barrier;
     }
 
+    @Id
     public String getId() {
         return id;
     }
@@ -155,6 +159,7 @@ public class Transaction {
         this.stop_out = stop_out;
     }
 
+    @ManyToOne
     public Symbol getSymbol() {
         return symbol;
     }

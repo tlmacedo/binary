@@ -580,7 +580,7 @@
             </content>
         </TitledPane>
         <ScrollPane hbarPolicy="NEVER" layoutX="5.0" layoutY="352.0" pannable="true" prefHeight="1205.0"
-                    vbarPolicy="ALWAYS" vvalue="0.08">
+                    vbarPolicy="ALWAYS">
             <content>
                 <AnchorPane>
                     <children>

@@ -6,13 +6,16 @@ import java.util.List;
 
 public enum TICK_TIME {
 
-    T1M(0, "1M"),
-    T2M(1, "2M")
+    T1M(0, "1M")
+//    ,
+//    T2M(1, "2M")
+
 //    ,
 //    T3M(2, "3M"),
 //    T5M(3, "5M"),
 //    T10M(4, "10M"),
 //    T15M(5, "15M")
+
     ;
 
     private Integer cod;

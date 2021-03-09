@@ -28,6 +28,7 @@ public class Transacoes implements Serializable {
     StringProperty longcode = new SimpleStringProperty();
     ObjectProperty<BigDecimal> tickCompra = new SimpleObjectProperty<>();
     ObjectProperty<BigDecimal> tickVenda = new SimpleObjectProperty<>();
+    ObjectProperty<BigDecimal> tickNegociacaoInicio = new SimpleObjectProperty<>();
     ObjectProperty<BigDecimal> stakeCompra = new SimpleObjectProperty<>();
     ObjectProperty<BigDecimal> stakeVenda = new SimpleObjectProperty<>();
     BooleanProperty consolidado = new SimpleBooleanProperty(false);
@@ -43,9 +44,13 @@ public class Transacoes implements Serializable {
     public void isBUY(Transaction transaction) {
 
         System.out.printf("isBUY\n");
-        this.contaToken = new SimpleObjectProperty<>(Operacoes.getContaToken());
-        this.symbol = new SimpleObjectProperty<>(transaction.getSymbol());
+
         this.timeFrame = new SimpleObjectProperty<>(Service_DataTime.getTimeCandle_enum(transaction.getLongcode()));
+        this.symbol = new SimpleObjectProperty<>(transaction.getSymbol());
+
+        int t_id = getTimeFrame().getCod(), s_id = getSymbol().getS_id();
+
+        this.contaToken = new SimpleObjectProperty<>(Operacoes.getContaToken());
         this.transaction_id = new SimpleLongProperty(transaction.getTransaction_id());
         this.contract_id = new SimpleLongProperty(transaction.getContract_id());
         this.dataHoraCompra = new SimpleIntegerProperty(transaction.getTransaction_time());
@@ -62,22 +67,12 @@ public class Transacoes implements Serializable {
         this.longcode = new SimpleStringProperty(transaction.getLongcode());
         this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
+        this.tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount());
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.consolidado = new SimpleBooleanProperty(false);
 
-        int t_id = getTimeFrame().getCod(), s_id = getSymbol().getS_id();
-
-        BigDecimal tickBuy;
-        if ((tickBuy = Operacoes.getHistoricoDeTicksObservableList()[t_id].stream()
-                .filter(historicoDeTicks -> historicoDeTicks.getTime() == getDataHoraCompra())
-                .findFirst().orElse(null).getPrice()) != null) {
-            System.out.printf("tickBuy: [%s]\n", tickBuy);
-            this.tickCompra = new SimpleObjectProperty<>(tickBuy);
-        }
-
-
-        Operacoes.getTransacoesObservableList()[t_id][s_id].add(Operacoes.getTransacoesDAO().merger(this));
+        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
 
         Operacoes.getRobo().gerarNovosContratos(t_id, s_id);
 
@@ -89,7 +84,6 @@ public class Transacoes implements Serializable {
 
             int t_id = getTimeFrame().getCod(), s_id = getSymbol().getS_id();
 
-            this.setTickVenda(Operacoes.getUltimoOhlcStr()[t_id].getValue().getClose());
             this.setDataHoraVenda(transaction.getTransaction_time());
             this.setStakeVenda(transaction.getAmount());
             this.setConsolidado(true);
@@ -269,6 +263,19 @@ public class Transacoes implements Serializable {
         this.tickVenda.set(tickVenda);
     }
 
+    @Column(length = 19, scale = 4)
+    public BigDecimal getTickNegociacaoInicio() {
+        return tickNegociacaoInicio.get();
+    }
+
+    public ObjectProperty<BigDecimal> tickNegociacaoInicioProperty() {
+        return tickNegociacaoInicio;
+    }
+
+    public void setTickNegociacaoInicio(BigDecimal tickNegociacaoInicio) {
+        this.tickNegociacaoInicio.set(tickNegociacaoInicio);
+    }
+
     @Column(length = 19, scale = 2, nullable = false)
     public BigDecimal getStakeCompra() {
         return stakeCompra.get();
@@ -323,6 +330,7 @@ public class Transacoes implements Serializable {
                 ", longcode=" + longcode +
                 ", tickCompra=" + tickCompra +
                 ", tickVenda=" + tickVenda +
+                ", tickNegociacaoInicio=" + tickNegociacaoInicio +
                 ", stakeCompra=" + stakeCompra +
                 ", stakeVenda=" + stakeVenda +
                 ", consolidado=" + consolidado +

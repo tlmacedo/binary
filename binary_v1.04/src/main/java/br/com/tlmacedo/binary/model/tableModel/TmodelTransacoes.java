@@ -31,8 +31,7 @@ public class TmodelTransacoes {
     private TableColumn<Transacoes, Boolean> colConsolidado;
 
     private TableView<Transacoes> tbvTransacoes;
-    private ObservableList<Transacoes> transacoesObservableList;
-//    private FilteredList<Transacoes> transacoesFilteredList;
+    private FilteredList<Transacoes> transacoesFilteredList;
 
     private IntegerProperty n_Stakes = new SimpleIntegerProperty(0);
     private IntegerProperty n_Wins = new SimpleIntegerProperty(0);
@@ -45,13 +44,13 @@ public class TmodelTransacoes {
     public TmodelTransacoes() {
     }
 
-//    public TmodelTransacoes(FilteredList transacoesFilteredList) {
-//        this.transacoesFilteredList = transacoesFilteredList;
-//    }
-
-    public TmodelTransacoes(ObservableList<Transacoes> transacoesObservableList) {
-        this.transacoesObservableList = transacoesObservableList;
+    public TmodelTransacoes(FilteredList transacoesFilteredList) {
+        this.transacoesFilteredList = transacoesFilteredList;
     }
+
+//    public TmodelTransacoes(ObservableList<Transacoes> transacoesObservableList) {
+//        this.transacoesObservableList = transacoesObservableList;
+//    }
 
     /**
      * <p>
@@ -88,20 +87,16 @@ public class TmodelTransacoes {
         });
 
         setColTickCompra(new TableColumn<>("tick_buy"));
-        getColTickCompra().setPrefWidth(94);
+        getColTickCompra().setPrefWidth(80);
         getColTickCompra().setStyle("-fx-alignment: center-right;");
         getColTickCompra().setCellValueFactory(param ->
-                param.getValue().tickCompraProperty().asString()
-        );
+                param.getValue().tickNegociacaoInicioProperty().asString());
 
         setColTickVenda(new TableColumn<>("tick_sell"));
-        getColTickVenda().setPrefWidth(94);
+        getColTickVenda().setPrefWidth(80);
         getColTickVenda().setStyle("-fx-alignment: center-right;");
-        getColTickVenda().setCellValueFactory(param -> {
-            if (param.getValue().tickVendaProperty().getValue() != null)
-                return param.getValue().tickVendaProperty().asString();
-            return new SimpleStringProperty("");
-        });
+        getColTickVenda().setCellValueFactory(param ->
+                param.getValue().tickVendaProperty().asString());
 
         setColStakeCompra(new TableColumn<>("stake"));
         getColStakeCompra().setPrefWidth(60);
@@ -172,13 +167,7 @@ public class TmodelTransacoes {
         getTbvTransacoes().getSelectionModel().setCellSelectionEnabled(true);
         getTbvTransacoes().setEditable(true);
 
-//        getTransactionFilteredList().addListener((ListChangeListener<? super Transaction>) c -> {
-//            while (c.next()) {
-//                for (Transaction transaction : c.getAddedSubList())
-//                    System.out.printf("mudou na Transação ===>>>   %s\n", transaction);
-//            }
-//        });
-        getTbvTransacoes().setItems(getTransacoesObservableList()
+        getTbvTransacoes().setItems(getTransacoesFilteredList()
                 .sorted(Comparator.comparing(Transacoes::getDataHoraCompra).reversed()));
 
         totalizaTabelas();
@@ -187,7 +176,7 @@ public class TmodelTransacoes {
 
     public void totalizaTabelas() {
 
-        getTransacoesObservableList().addListener((ListChangeListener<? super Transacoes>) c -> {
+        getTransacoesFilteredList().addListener((ListChangeListener<? super Transacoes>) c -> {
             n_StakesProperty().setValue(c.getList().size());
             n_WinsProperty().setValue(c.getList().stream()
                     .filter(transacoes -> transacoes.isConsolidado())
@@ -296,6 +285,14 @@ public class TmodelTransacoes {
         this.colStakeVenda = colStakeVenda;
     }
 
+    public TableColumn<Transacoes, Boolean> getColConsolidado() {
+        return colConsolidado;
+    }
+
+    public void setColConsolidado(TableColumn<Transacoes, Boolean> colConsolidado) {
+        this.colConsolidado = colConsolidado;
+    }
+
     public TableView<Transacoes> getTbvTransacoes() {
         return tbvTransacoes;
     }
@@ -304,12 +301,12 @@ public class TmodelTransacoes {
         this.tbvTransacoes = tbvTransacoes;
     }
 
-    public ObservableList<Transacoes> getTransacoesObservableList() {
-        return transacoesObservableList;
+    public FilteredList<Transacoes> getTransacoesFilteredList() {
+        return transacoesFilteredList;
     }
 
-    public void setTransacoesObservableList(ObservableList<Transacoes> transacoesObservableList) {
-        this.transacoesObservableList = transacoesObservableList;
+    public void setTransacoesFilteredList(FilteredList<Transacoes> transacoesFilteredList) {
+        this.transacoesFilteredList = transacoesFilteredList;
     }
 
     public int getN_Stakes() {
@@ -382,13 +379,5 @@ public class TmodelTransacoes {
 
     public void setVlr_Diff(BigDecimal vlr_Diff) {
         this.vlr_Diff.set(vlr_Diff);
-    }
-
-    public TableColumn<Transacoes, Boolean> getColConsolidado() {
-        return colConsolidado;
-    }
-
-    public void setColConsolidado(TableColumn<Transacoes, Boolean> colConsolidado) {
-        this.colConsolidado = colConsolidado;
     }
 }

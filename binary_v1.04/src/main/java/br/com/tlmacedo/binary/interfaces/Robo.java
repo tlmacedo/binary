@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 
 public interface Robo {
 
+    void cancelarContratos();
+
     void definicaoDeContrato() throws Exception;
 
     void monitorarCondicoesParaComprar() throws Exception;
