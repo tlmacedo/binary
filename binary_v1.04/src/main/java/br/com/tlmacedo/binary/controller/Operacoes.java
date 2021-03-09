@@ -61,7 +61,7 @@ public class Operacoes implements Initializable {
     static final List<Symbol> SYMBOL_LIST = getSymbolDAO().getAll(Symbol.class, null, null);
     static final ObservableList<Symbol> SYMBOL_OBSERVABLE_LIST =
             FXCollections.observableArrayList(
-                    getSymbolDAO().getAll(Symbol.class, "id=1", null)
+                    getSymbolDAO().getAll(Symbol.class, null, null)
             );
 
     /**
@@ -811,6 +811,17 @@ public class Operacoes implements Initializable {
                 });
             }
         }
+
+//        for (int t_id = 0; t_id < TICK_TIME.values().length; t_id++) {
+//            int finalT_id = t_id;
+//            getHistoricoDeTicksObservableList()[t_id].addListener((ListChangeListener<? super HistoricoDeTicks>) c -> {
+//
+//            });
+//            for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+//                int finalS_id = s_id;
+//
+//            }
+//        }
 
         for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
             int finalS_id = s_id;
