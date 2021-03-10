@@ -108,7 +108,7 @@ public class TmodelTransacoes {
             return new SimpleStringProperty("0.00");
         });
 
-        setColConsolidado(new TableColumn<>("Consl"));
+        setColConsolidado(new TableColumn<>("C"));
         getColConsolidado().setPrefWidth(30);
         getColConsolidado().setStyle("-fx-alignment: center");
         getColConsolidado().setCellValueFactory(param -> param.getValue().consolidadoProperty());
@@ -170,43 +170,55 @@ public class TmodelTransacoes {
         getTbvTransacoes().setItems(getTransacoesFilteredList()
                 .sorted(Comparator.comparing(Transacoes::getDataHoraCompra).reversed()));
 
-        totalizaTabelas();
+        escutarTransacoesTabela();
+//        refreshTabela();
 
     }
 
+    public void escutarTransacoesTabela() {
+        getTransacoesFilteredList().addListener((ListChangeListener<? super Transacoes>) c -> {
+            totalizaTabelas();
+        });
+    }
+
+//    public void refreshTabela() {
+//        getTbvTransacoes().refresh();
+//        totalizaTabelas();
+//    }
+
     public void totalizaTabelas() {
 
-        getTransacoesFilteredList().addListener((ListChangeListener<? super Transacoes>) c -> {
-            n_StakesProperty().setValue(c.getList().size());
-            n_WinsProperty().setValue(c.getList().stream()
-                    .filter(transacoes -> transacoes.isConsolidado())
-                    .filter(transacoes -> transacoes.getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
-                    .count());
-            n_LossProperty().setValue(c.getList().stream()
-                    .filter(transacoes -> transacoes.isConsolidado())
-                    .filter(transacoes -> transacoes.getStakeVenda().compareTo(BigDecimal.ZERO) == 0)
-                    .count());
+        n_StakesProperty().setValue(getTransacoesFilteredList().size());
 
-            vlr_InProperty().setValue(
-                    c.getList().stream()
-                            .map(Transacoes::getStakeCompra).reduce(BigDecimal.ZERO, BigDecimal::add)
-                            .negate().setScale(2, RoundingMode.HALF_UP));
+        n_WinsProperty().setValue(getTransacoesFilteredList().stream()
+                .filter(transacoes -> transacoes.isConsolidado())
+                .filter(transacoes -> transacoes.getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+                .count());
 
-            vlr_OutProperty().setValue(
-                    c.getList().stream()
-                            .filter(transacoes -> transacoes.isConsolidado())
-                            .map(Transacoes::getStakeVenda).reduce(BigDecimal.ZERO, BigDecimal::add)
-                            .setScale(2, RoundingMode.HALF_UP));
+        n_LossProperty().setValue(getTransacoesFilteredList().stream()
+                .filter(transacoes -> transacoes.isConsolidado())
+                .filter(transacoes -> transacoes.getStakeVenda().compareTo(BigDecimal.ZERO) == 0)
+                .count());
 
-            vlr_DiffProperty().setValue(
-                    c.getList().stream()
-                            .filter(transacoes -> transacoes.isConsolidado())
-                            .map(transacoes -> transacoes.stakeVendaProperty().getValue()
-                                    .add(transacoes.stakeCompraProperty().getValue()))
-                            .reduce(BigDecimal.ZERO, BigDecimal::add)
-                            .setScale(2, RoundingMode.HALF_UP));
+        vlr_InProperty().setValue(
+                getTransacoesFilteredList().stream()
+                        .map(Transacoes::getStakeCompra).reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .negate().setScale(2, RoundingMode.HALF_UP));
 
-        });
+        vlr_OutProperty().setValue(
+                getTransacoesFilteredList().stream()
+                        .filter(transacoes -> transacoes.isConsolidado())
+                        .map(Transacoes::getStakeVenda).reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .setScale(2, RoundingMode.HALF_UP));
+
+        vlr_DiffProperty().setValue(
+                getTransacoesFilteredList().stream()
+                        .filter(transacoes -> transacoes.isConsolidado())
+                        .map(transacoes -> transacoes.stakeVendaProperty().getValue()
+                                .add(transacoes.stakeCompraProperty().getValue()))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .setScale(2, RoundingMode.HALF_UP));
+
     }
 
 

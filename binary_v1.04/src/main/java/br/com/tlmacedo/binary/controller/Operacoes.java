@@ -62,7 +62,7 @@ public class Operacoes implements Initializable {
     static final List<Symbol> SYMBOL_LIST = getSymbolDAO().getAll(Symbol.class, null, null);
     static final ObservableList<Symbol> SYMBOL_OBSERVABLE_LIST =
             FXCollections.observableArrayList(
-                    getSymbolDAO().getAll(Symbol.class, "id=1", null)
+                    getSymbolDAO().getAll(Symbol.class, null, null)
             );
 
 

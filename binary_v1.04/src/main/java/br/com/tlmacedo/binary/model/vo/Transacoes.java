@@ -33,17 +33,10 @@ public class Transacoes implements Serializable {
     ObjectProperty<BigDecimal> stakeVenda = new SimpleObjectProperty<>();
     BooleanProperty consolidado = new SimpleBooleanProperty(false);
 
-//    Integer activeSymbolId;
-//    CONTRACT_TYPE contractTypeLastPriceProposal;
-//    String lastBarrier;
-//    StringBuilder stbContract_Type = new StringBuilder();
-
     public Transacoes() {
     }
 
     public void isBUY(Transaction transaction) {
-
-        System.out.printf("isBUY\n");
 
         this.timeFrame = new SimpleObjectProperty<>(Service_DataTime.getTimeCandle_enum(transaction.getLongcode()));
         this.symbol = new SimpleObjectProperty<>(transaction.getSymbol());
@@ -80,27 +73,13 @@ public class Transacoes implements Serializable {
 
     public void isSELL(Transaction transaction) throws Exception {
 
-        try {
-
             int t_id = getTimeFrame().getCod(), s_id = getSymbol().getS_id();
 
             this.setDataHoraVenda(transaction.getTransaction_time());
             this.setStakeVenda(transaction.getAmount());
             this.setConsolidado(true);
 
-//            BigDecimal tickSell;
-//            if ((tickSell = Operacoes.getHistoricoDeTicksObservableList()[t_id].stream()
-//                    .filter(historicoDeTicks -> historicoDeTicks.getTime() == getDataHoraExpiry())
-//                    .findFirst().orElse(null).getPrice()) != null) {
-//                System.out.printf("tickSell: [%s]\n", tickSell);
-//                this.tickVenda = new SimpleObjectProperty<>(tickSell);
-//            }
-
             Operacoes.getTransacoesDAO().merger(this);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
     }
 
