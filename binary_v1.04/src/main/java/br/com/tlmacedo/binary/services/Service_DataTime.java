@@ -1,6 +1,7 @@
 package br.com.tlmacedo.binary.services;
 
-import br.com.tlmacedo.binary.model.enums.TICK_TIME;
+import br.com.tlmacedo.binary.controller.Operacoes;
+import br.com.tlmacedo.binary.model.vo.TimeFrame;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -32,18 +33,30 @@ public class Service_DataTime {
         return localDateTime.format(dtf);
     }
 
-    public static Integer getTimeCandle(String longcode) {
+    public static Integer getTimeMinutosCandle(String longcode) {
         int indexMin = longcode.indexOf("minute");
         int minutes = indexMin < 0 ? 0 : Integer.parseInt(longcode.substring(indexMin - 3, indexMin + 6).replaceAll("\\D", ""));
         return minutes;
     }
 
-    public static TICK_TIME getTimeCandle_enum(String longcode) {
-        return TICK_TIME.valueOf(String.format("T%dM", getTimeCandle(longcode)));
+    public static Integer getGranularityCandle(String longcode) {
+        return getTimeMinutosCandle(longcode) * 60;
     }
 
-    public static Integer getTimeCandle_id(String longcode) {
-        return getTimeCandle_enum(longcode).getCod();
+    public static Integer getTimeFrame_t_id(String longcode) {
+        int granularity = getGranularityCandle(longcode);
+        for (int t = 0; t < Operacoes.getTimeFrameObservableList().size(); t++)
+            if (Operacoes.getTimeFrameObservableList().get(t).getGranularity() == granularity)
+                return t;
+        return -1;
+    }
+
+    public static TimeFrame getTimeFrameCandle(String longcode) {
+        int granularity = getGranularityCandle(longcode);
+        for (int t = 0; t < Operacoes.getTimeFrameObservableList().size(); t++)
+            if (Operacoes.getTimeFrameObservableList().get(t).getGranularity() == granularity)
+                return Operacoes.getTimeFrameObservableList().get(t);
+        return null;
     }
 
 

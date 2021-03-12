@@ -2,17 +2,16 @@ package br.com.tlmacedo.binary.model.vo;
 
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.model.enums.TICK_STYLE;
-import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 
 import java.io.Serializable;
 
 public class Passthrough implements Serializable {
     public static final long serialVersionUID = 1L;
 
-    Symbol symbol;
-    TICK_TIME tickTime;
-    TICK_STYLE tickStyle;
-    CONTRACT_TYPE contractType;
+    int t_id;
+    int s_id;
+    int typeCandle_id;
+    int typeContract_id;
     boolean priceLoss = false;
     String mensagem;
 
@@ -20,46 +19,46 @@ public class Passthrough implements Serializable {
     public Passthrough() {
     }
 
-    public Passthrough(Symbol symbol, TICK_TIME tickTime, TICK_STYLE tickStyle, CONTRACT_TYPE contractType, boolean priceLoss, String mensagem) {
-        this.symbol = symbol;
-        this.tickTime = tickTime;
-        this.tickStyle = tickStyle;
-        this.contractType = contractType;
+    public Passthrough(int t_id, int s_id, int typeCandle_id, int typeContract_id, boolean priceLoss, String mensagem) {
+        this.t_id = t_id;
+        this.s_id = s_id;
+        this.typeCandle_id = typeCandle_id;
+        this.typeContract_id = typeContract_id;
         if (priceLoss)
             this.priceLoss = true;
         this.mensagem = mensagem;
     }
 
-    public Symbol getSymbol() {
-        return symbol;
+    public int getT_id() {
+        return t_id;
     }
 
-    public void setSymbol(Symbol symbol) {
-        this.symbol = symbol;
+    public void setT_id(int t_id) {
+        this.t_id = t_id;
     }
 
-    public TICK_TIME getTickTime() {
-        return tickTime;
+    public int getS_id() {
+        return s_id;
     }
 
-    public void setTickTime(TICK_TIME tickTime) {
-        this.tickTime = tickTime;
+    public void setS_id(int s_id) {
+        this.s_id = s_id;
     }
 
-    public TICK_STYLE getTickStyle() {
-        return tickStyle;
+    public int getTypeCandle_id() {
+        return typeCandle_id;
     }
 
-    public void setTickStyle(TICK_STYLE tickStyle) {
-        this.tickStyle = tickStyle;
+    public void setTypeCandle_id(int typeCandle_id) {
+        this.typeCandle_id = typeCandle_id;
     }
 
-    public CONTRACT_TYPE getContractType() {
-        return contractType;
+    public int getTypeContract_id() {
+        return typeContract_id;
     }
 
-    public void setContractType(CONTRACT_TYPE contractType) {
-        this.contractType = contractType;
+    public void setTypeContract_id(int typeContract_id) {
+        this.typeContract_id = typeContract_id;
     }
 
     public boolean isPriceLoss() {
@@ -81,10 +80,10 @@ public class Passthrough implements Serializable {
     @Override
     public String toString() {
         return "Passthrough{" +
-                "symbol=" + symbol +
-                ", tickTime=" + tickTime +
-                ", tickStyle=" + tickStyle +
-                ", contractType=" + contractType +
+                "t_id=" + t_id +
+                ", s_id=" + s_id +
+                ", typeCandle_id=" + typeCandle_id +
+                ", typeContract_id=" + typeContract_id +
                 ", priceLoss=" + priceLoss +
                 ", mensagem='" + mensagem + '\'' +
                 '}';

@@ -1,6 +1,7 @@
 package br.com.tlmacedo.binary.model.vo;
 
 import br.com.tlmacedo.binary.controller.Operacoes;
+import br.com.tlmacedo.binary.services.Service_DataTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -28,10 +29,13 @@ public class Transaction {
     Integer purchase_time;
     String stop_out;
     Symbol symbol;
+    TimeFrame tFrame;
     String take_profit;
     Long transaction_id;
     Integer transaction_time;
     BigDecimal payout;
+    int t_id;
+    int s_id;
 
 
     public Transaction() {
@@ -133,6 +137,8 @@ public class Transaction {
 
     public void setLongcode(String longcode) {
         this.longcode = longcode;
+        this.t_id = Service_DataTime.getTimeFrame_t_id(getLongcode());
+        this.tFrame = Operacoes.getTimeFrameObservableList().get(getT_id());
     }
 
     public String getLow_barrier() {
@@ -172,6 +178,22 @@ public class Transaction {
         this.symbol = Operacoes.getSymbolObservableList().stream()
                 .filter(symbol1 -> symbol1.getSymbol().equals(symbol))
                 .findFirst().orElse(null);
+        for (int s = 0; s < Operacoes.getSymbolObservableList().size(); s++)
+            if (Operacoes.getSymbolObservableList().get(s).getId()
+                    == getSymbol().getId()) {
+                setS_id(s);
+                break;
+            }
+    }
+
+    @ManyToOne
+    @Transient
+    public TimeFrame gettFrame() {
+        return tFrame;
+    }
+
+    public void settFrame(TimeFrame tFrame) {
+        this.tFrame = tFrame;
     }
 
     public String getTake_profit() {
@@ -206,6 +228,24 @@ public class Transaction {
         this.payout = payout;
     }
 
+    @Transient
+    public int getT_id() {
+        return t_id;
+    }
+
+    public void setT_id(int t_id) {
+        this.t_id = t_id;
+    }
+
+    @Transient
+    public int getS_id() {
+        return s_id;
+    }
+
+    public void setS_id(int s_id) {
+        this.s_id = s_id;
+    }
+
     @Override
     public String toString() {
         return "Transaction{" +
@@ -225,10 +265,13 @@ public class Transaction {
                 ", purchase_time=" + purchase_time +
                 ", stop_out='" + stop_out + '\'' +
                 ", symbol=" + symbol +
+                ", tFrame=" + tFrame +
                 ", take_profit='" + take_profit + '\'' +
                 ", transaction_id=" + transaction_id +
                 ", transaction_time=" + transaction_time +
                 ", payout=" + payout +
+                ", t_id=" + t_id +
+                ", s_id=" + s_id +
                 '}';
     }
 }

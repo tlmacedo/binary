@@ -2,9 +2,8 @@ package br.com.tlmacedo.binary.model.vo;
 
 import br.com.tlmacedo.binary.controller.Operacoes;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
-import br.com.tlmacedo.binary.model.enums.TICK_TIME;
 import br.com.tlmacedo.binary.services.Service_DataTime;
-import br.com.tlmacedo.binary.services.Service_NewVlrContrato;
+import br.com.tlmacedo.binary.services.Util_Json;
 import javafx.beans.property.*;
 
 import javax.persistence.*;
@@ -17,8 +16,10 @@ public class Transacoes implements Serializable {
     public static final long serialVersionUID = 1L;
 
     ObjectProperty<ContaToken> contaToken = new SimpleObjectProperty<>();
+    IntegerProperty t_id = new SimpleIntegerProperty();
+    ObjectProperty<TimeFrame> tFrame = new SimpleObjectProperty<>();
+    IntegerProperty s_id = new SimpleIntegerProperty();
     ObjectProperty<Symbol> symbol = new SimpleObjectProperty<>();
-    ObjectProperty<TICK_TIME> timeFrame = new SimpleObjectProperty<>();
     LongProperty transaction_id = new SimpleLongProperty();
     LongProperty contract_id = new SimpleLongProperty();
     IntegerProperty dataHoraCompra = new SimpleIntegerProperty();
@@ -32,17 +33,19 @@ public class Transacoes implements Serializable {
     ObjectProperty<BigDecimal> stakeCompra = new SimpleObjectProperty<>();
     ObjectProperty<BigDecimal> stakeVenda = new SimpleObjectProperty<>();
     BooleanProperty consolidado = new SimpleBooleanProperty(false);
+    ObjectProperty<BigDecimal> stakeResult = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
     public Transacoes() {
     }
 
     public void isBUY(Transaction transaction) {
 
-        this.timeFrame = new SimpleObjectProperty<>(Service_DataTime.getTimeCandle_enum(transaction.getLongcode()));
-        this.symbol = new SimpleObjectProperty<>(transaction.getSymbol());
-
-        int t_id = getTimeFrame().getCod(), s_id = getSymbol().getS_id();
-
+        this.t_id = new SimpleIntegerProperty(transaction.getT_id());
+        this.tFrame = new SimpleObjectProperty<>(
+                Operacoes.getTimeFrameObservableList().get(getT_id()));
+        this.s_id = new SimpleIntegerProperty(transaction.getS_id());
+        this.symbol = new SimpleObjectProperty<>(
+                Operacoes.getSymbolObservableList().get(getS_id()));
         this.contaToken = new SimpleObjectProperty<>(Operacoes.getContaToken());
         this.transaction_id = new SimpleLongProperty(transaction.getTransaction_id());
         this.contract_id = new SimpleLongProperty(transaction.getContract_id());
@@ -65,21 +68,20 @@ public class Transacoes implements Serializable {
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.consolidado = new SimpleBooleanProperty(false);
 
-        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
+        Operacoes.getTransacoesObservableList().add(this);
+        Operacoes.getTransacoesDAO().merger(this);
 
-        Operacoes.getRobo().gerarNovosContratos(t_id, s_id);
+        Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id());
 
     }
 
     public void isSELL(Transaction transaction) throws Exception {
 
-            int t_id = getTimeFrame().getCod(), s_id = getSymbol().getS_id();
+        this.setDataHoraVenda(transaction.getTransaction_time());
+        this.setStakeVenda(transaction.getAmount());
+        this.setConsolidado(true);
 
-            this.setDataHoraVenda(transaction.getTransaction_time());
-            this.setStakeVenda(transaction.getAmount());
-            this.setConsolidado(true);
-
-            Operacoes.getTransacoesDAO().merger(this);
+        Operacoes.getTransacoesDAO().merger(this);
 
     }
 
@@ -97,6 +99,45 @@ public class Transacoes implements Serializable {
         this.contaToken.set(contaToken);
     }
 
+    @Transient
+    public int getT_id() {
+        return t_id.get();
+    }
+
+    public IntegerProperty t_idProperty() {
+        return t_id;
+    }
+
+    public void setT_id(int t_id) {
+        this.t_id.set(t_id);
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    public TimeFrame gettFrame() {
+        return tFrame.get();
+    }
+
+    public ObjectProperty<TimeFrame> tFrameProperty() {
+        return tFrame;
+    }
+
+    public void settFrame(TimeFrame tFrame) {
+        this.tFrame.set(tFrame);
+    }
+
+    @Transient
+    public int getS_id() {
+        return s_id.get();
+    }
+
+    public IntegerProperty s_idProperty() {
+        return s_id;
+    }
+
+    public void setS_id(int s_id) {
+        this.s_id.set(s_id);
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "symbol_id", foreignKey = @ForeignKey(name = "fk_transacoes_symbol"), nullable = false)
     public Symbol getSymbol() {
@@ -109,19 +150,6 @@ public class Transacoes implements Serializable {
 
     public void setSymbol(Symbol symbol) {
         this.symbol.set(symbol);
-    }
-
-    @Enumerated(EnumType.STRING)
-    public TICK_TIME getTimeFrame() {
-        return timeFrame.get();
-    }
-
-    public ObjectProperty<TICK_TIME> timeFrameProperty() {
-        return timeFrame;
-    }
-
-    public void setTimeFrame(TICK_TIME timeFrame) {
-        this.timeFrame.set(timeFrame);
     }
 
     @Column(nullable = false)
@@ -294,12 +322,27 @@ public class Transacoes implements Serializable {
         this.consolidado.set(consolidado);
     }
 
+    @Transient
+    public BigDecimal getStakeResult() {
+        return stakeResult.get();
+    }
+
+    public ObjectProperty<BigDecimal> stakeResultProperty() {
+        return stakeResult;
+    }
+
+    public void setStakeResult(BigDecimal stakeResult) {
+        this.stakeResult.set(stakeResult);
+    }
+
     @Override
     public String toString() {
         return "Transacoes{" +
                 "contaToken=" + contaToken +
+                ", t_id=" + t_id +
+                ", tFrame=" + tFrame +
+                ", s_id=" + s_id +
                 ", symbol=" + symbol +
-                ", timeFrame=" + timeFrame +
                 ", transaction_id=" + transaction_id +
                 ", contract_id=" + contract_id +
                 ", dataHoraCompra=" + dataHoraCompra +
@@ -313,6 +356,7 @@ public class Transacoes implements Serializable {
                 ", stakeCompra=" + stakeCompra +
                 ", stakeVenda=" + stakeVenda +
                 ", consolidado=" + consolidado +
+                ", stakeResult=" + stakeResult +
                 '}';
     }
 }

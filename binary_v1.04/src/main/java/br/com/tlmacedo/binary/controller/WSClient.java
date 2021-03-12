@@ -4,19 +4,19 @@ import br.com.tlmacedo.binary.controller.estrategias.Abr;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.model.enums.MSG_TYPE;
 import br.com.tlmacedo.binary.model.enums.ROBOS;
-import br.com.tlmacedo.binary.model.enums.TICK_TIME;
-import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.model.vo.Error;
+import br.com.tlmacedo.binary.model.vo.*;
 import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Util_Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static br.com.tlmacedo.binary.interfaces.Constants.*;
 
@@ -38,6 +38,7 @@ public class WSClient extends WebSocketListener {
     private Proposal proposal;
     private Buy buy;
     private Transaction transaction;
+
 
     public WSClient() {
     }
@@ -71,7 +72,8 @@ public class WSClient extends WebSocketListener {
         imprime(text, getMsgType().getMsgType());
 
         if (text.contains("\"error\":")) {
-            setError((Error) Util_Json.getObject_from_String(text, Error.class));
+            JSONObject obj = new JSONObject(text);
+            setError((Error) Util_Json.getObject_from_String(obj.get("error").toString(), Error.class));
             refreshError(getError(), text);
         } else {
             if (getMsgType().getMsgType() != null) {
@@ -159,6 +161,27 @@ public class WSClient extends WebSocketListener {
 
     }
 
+    private void refreshCandles(Passthrough passthrough, String candles) {
+
+        Platform.runLater(() -> {
+            try {
+                Util_Json.addCandlesToHistorico(candles, passthrough.getT_id(), passthrough.getS_id());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+    }
+
+    private void refreshHistoryTick(Passthrough passthrough, History history) {
+
+        Platform.runLater(() -> {
+
+        });
+
+    }
+
+
     private void refreshTick(Passthrough passthrough, Tick tick) {
 
     }
@@ -167,30 +190,30 @@ public class WSClient extends WebSocketListener {
 
         Platform.runLater(() -> {
 
-            Symbol symbol = Operacoes.getSymbolList().stream()
-                    .filter(symbol1 -> symbol1.getSymbol().equals(ohlc.getSymbol()))
-                    .findFirst().orElse(null);
-            int s_id = symbol.getId().intValue() - 1;
-            int t_id = passthrough.getTickTime().getCod();
+            int t_id = passthrough.getT_id(),
+                    s_id = passthrough.getS_id();
+            TimeFrame tFrame = Operacoes.getTimeFrameObservableList().get(t_id);
+            Symbol symbol = Operacoes.getSymbolObservableList().get(s_id);
 
             if (t_id == 0) {
-                if (Operacoes.isRoboMonitorando() && !Operacoes.isRoboMonitorandoPausado())
-                    if (s_id < Operacoes.getSymbolObservableList().size())
-                        Operacoes.getHistoricoDeTicksDAO().merger(new HistoricoDeTicks(ohlc));
-                Operacoes.getHistoricoDeTicksObservableList()[s_id].add(new HistoricoDeTicks(ohlc));
+                HistoricoDeTicks hTicks = new HistoricoDeTicks(ohlc);
+                if (Operacoes.isRoboMonitorando() && !Operacoes.isRoboMonitorandoPausado()) {
+                    hTicks = Operacoes.getHistoricoDeTicksDAO().merger(hTicks);
+                }
+                Operacoes.getHistoricoDeTicksObservableList().add(hTicks);
                 Operacoes.getUltimoOhlcStr()[s_id].setValue(ohlc);
             }
 
             try {
-                boolean symbolAtivo = Operacoes.getSymbolObservableList().get(s_id) != null;
-
-                if (Operacoes.getHistoricoDeCandlesFilteredList()[t_id][s_id].size()
-                        <= Operacoes.getQtdCandlesAnalise()) {
-//                    Operacoes.getTestaLastCandle()[t_id][s_id].setValue(ohlc);
-//                    Operacoes.getTestaLastCandle()[t_id][s_id].getValue() == null
-
-                    HistoricoDeCandles hCandle = Operacoes.getHistoricoDeCandlesFilteredList()[t_id][s_id]
-                            .sorted(Comparator.comparing(HistoricoDeCandles::getEpoch).reversed()).get(0);
+                List<HistoricoDeCandles> listCandles = Operacoes.getHistoricoDeCandlesObservableList().stream()
+                        .filter(candles -> candles.getTimeFrame().getId() == tFrame.getId()
+                                && candles.getSymbol().getId() == symbol.getId())
+                        .collect(Collectors.toList());
+                if (listCandles.size() <= Operacoes.getQtdCandlesAnalise()
+                        && listCandles.size() > 0) {
+                    HistoricoDeCandles hCandle = listCandles.stream()
+                            .sorted(Comparator.comparing(HistoricoDeCandles::getEpoch).reversed())
+                            .findFirst().get();
                     if (hCandle.getEpoch() == ohlc.getOpen_time())
                         Operacoes.getHistoricoDeCandlesObservableList().remove(hCandle);
                 }
@@ -213,13 +236,20 @@ public class WSClient extends WebSocketListener {
 
         Platform.runLater(() -> {
             if (proposal == null) return;
-            int s_id = passthrough.getSymbol().getId().intValue() - 1, t_id = passthrough.getTickTime().getCod();
+
+            int t_id = passthrough.getT_id(),
+                    s_id = passthrough.getS_id();
+
             boolean priceLoss = passthrough.isPriceLoss();
-            CONTRACT_TYPE cType = passthrough.getContractType();
 
             switch (ROBOS.valueOf(Operacoes.getRobo().getClass().getSimpleName().toUpperCase())) {
                 case ABR -> {
-                    Abr.getProposal()[t_id][s_id][cType.equals(CONTRACT_TYPE.CALL) ? 0 : 1][priceLoss ? 1 : 0] = proposal;
+                    Abr.getProposal()
+                            [t_id]
+                            [s_id]
+                            [passthrough.getTypeContract_id()]
+                            [priceLoss ? 1 : 0]
+                            = proposal;
                 }
             }
         });
@@ -230,35 +260,15 @@ public class WSClient extends WebSocketListener {
 
         Platform.runLater(() -> {
 
-            if (transaction.getAction() != null)
-                Operacoes.newTransaction(Operacoes.getTransactionDAO().merger(transaction));
+            if (transaction.getAction() != null) {
+                Operacoes.newTransaction(transaction);
+                Operacoes.getTransactionDAO().merger(transaction);
+            }
 
         });
 
     }
 
-    private void refreshCandles(Passthrough passthrough, String candles) {
-
-        Platform.runLater(() -> {
-//            try {
-            int t_id = passthrough.getTickTime().getCod();
-            int s_id = passthrough.getSymbol().getId().intValue() - 1;
-            if (TICK_TIME.toEnum(t_id) != null && Operacoes.getSymbolObservableList().size() > s_id)
-                Util_Json.addCandlesToHistorico(candles, s_id, TICK_TIME.getTimeSeconds(t_id));
-//            } catch (Exception ex) {
-//
-//            }
-        });
-
-    }
-
-    private void refreshHistoryTick(Passthrough passthrough, History history) {
-
-        Platform.runLater(() -> {
-
-        });
-
-    }
 
     private void imprime(String text, MSG_TYPE msgType) {
 
@@ -412,4 +422,5 @@ public class WSClient extends WebSocketListener {
     public void setError(Error error) {
         this.error = error;
     }
+
 }

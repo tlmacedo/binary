@@ -1,5 +1,6 @@
 package br.com.tlmacedo.binary.model.vo;
 
+import br.com.tlmacedo.binary.controller.Operacoes;
 import br.com.tlmacedo.binary.model.enums.TICK_STYLE;
 
 import java.io.Serializable;
@@ -17,12 +18,12 @@ public class TicksHistory implements Serializable {
     Integer subscribe;
     Passthrough passthrough;
 
-    public TicksHistory(String symbol, Integer count, TICK_STYLE tickStyle, Integer candleTime, Passthrough passthrough, boolean subscribe) {
+    public TicksHistory(int s_id, Integer count, String tickStyle, Integer candleTime, Passthrough passthrough, boolean subscribe) {
 
-        this.ticks_history = symbol;
+        this.ticks_history = Operacoes.getSymbolObservableList().get(s_id).getSymbol();
         this.count = count;
-        this.style = tickStyle.toString();
-        if (tickStyle.equals(TICK_STYLE.CANDLES))
+        this.style = tickStyle;
+        if (tickStyle.equals("CANDLES"))
             this.granularity = candleTime;
         this.passthrough = passthrough;
         this.subscribe = null;

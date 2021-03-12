@@ -14,7 +14,7 @@ public class HistoricoDeCandles implements Serializable {
 
     LongProperty id = new SimpleLongProperty();
     ObjectProperty<Symbol> symbol = new SimpleObjectProperty<>();
-    IntegerProperty granularity = new SimpleIntegerProperty();
+    ObjectProperty<TimeFrame> timeFrame = new SimpleObjectProperty<>();
     ObjectProperty<BigDecimal> close = new SimpleObjectProperty<>();
     IntegerProperty epoch = new SimpleIntegerProperty();
     ObjectProperty<BigDecimal> high = new SimpleObjectProperty<>();
@@ -22,11 +22,11 @@ public class HistoricoDeCandles implements Serializable {
     ObjectProperty<BigDecimal> open = new SimpleObjectProperty<>();
     IntegerProperty pip_size = new SimpleIntegerProperty();
 
-    public HistoricoDeCandles(JSONObject o, int symbol_id, int granularity) {
+    public HistoricoDeCandles(JSONObject o, int t_id, int s_id) {
 
         try {
-            this.symbol = new SimpleObjectProperty<>(Operacoes.getSymbolObservableList().get(symbol_id));
-            this.granularity = new SimpleIntegerProperty(granularity);
+            this.timeFrame = new SimpleObjectProperty<>(Operacoes.getTimeFrameObservableList().get(t_id));
+            this.symbol = new SimpleObjectProperty<>(Operacoes.getSymbolObservableList().get(s_id));
             this.close = new SimpleObjectProperty<>(o.getBigDecimal("close"));
             this.epoch = new SimpleIntegerProperty(o.getInt("epoch"));
             this.high = new SimpleObjectProperty<>(o.getBigDecimal("high"));
@@ -44,7 +44,9 @@ public class HistoricoDeCandles implements Serializable {
         this.symbol = new SimpleObjectProperty(Operacoes.getSymbolObservableList().stream()
                 .filter(symbol1 -> symbol1.getSymbol().equals(ohlc.getSymbol()))
                 .findFirst().get());
-        this.granularity = new SimpleIntegerProperty(ohlc.granularity);
+        this.timeFrame = new SimpleObjectProperty<>(Operacoes.getTimeFrameObservableList().stream()
+                .filter(timeFrame1 -> timeFrame1.getGranularity() == ohlc.granularity)
+                .findFirst().get());
         this.close = new SimpleObjectProperty<>(ohlc.getClose());
         this.epoch = new SimpleIntegerProperty(ohlc.getEpoch());
         this.high = new SimpleObjectProperty<>(ohlc.getHigh());
@@ -78,16 +80,16 @@ public class HistoricoDeCandles implements Serializable {
         this.symbol.set(symbol);
     }
 
-    public int getGranularity() {
-        return granularity.get();
+    public TimeFrame getTimeFrame() {
+        return timeFrame.get();
     }
 
-    public IntegerProperty granularityProperty() {
-        return granularity;
+    public ObjectProperty<TimeFrame> timeFrameProperty() {
+        return timeFrame;
     }
 
-    public void setGranularity(int granularity) {
-        this.granularity.set(granularity);
+    public void setTimeFrame(TimeFrame timeFrame) {
+        this.timeFrame.set(timeFrame);
     }
 
     public BigDecimal getClose() {
@@ -179,7 +181,7 @@ public class HistoricoDeCandles implements Serializable {
         return "HistoricoDeCandles{" +
                 "id=" + id +
                 ", symbol=" + symbol +
-                ", granularity=" + granularity +
+                ", timeFrame=" + timeFrame +
                 ", close=" + close +
                 ", epoch=" + epoch +
                 ", high=" + high +

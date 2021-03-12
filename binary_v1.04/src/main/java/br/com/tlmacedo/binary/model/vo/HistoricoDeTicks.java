@@ -26,7 +26,7 @@ public class HistoricoDeTicks implements Serializable {
     }
 
     public HistoricoDeTicks(Ohlc ohlc) {
-        this.symbol = new SimpleObjectProperty<>(Operacoes.getSymbolList().stream()
+        this.symbol = new SimpleObjectProperty<>(Operacoes.getSymbolObservableList().stream()
                 .filter(symbol1 -> symbol1.getSymbol().equals(ohlc.getSymbol()))
                 .findFirst().get());
         this.price = new SimpleObjectProperty<>(ohlc.getClose());

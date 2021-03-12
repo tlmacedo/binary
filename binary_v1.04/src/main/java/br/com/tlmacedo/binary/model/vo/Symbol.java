@@ -24,6 +24,7 @@ public class Symbol implements Serializable {
     String symbol;
     String symbol_type;
     Integer tickTime;
+    Boolean ativo;
 
     public Symbol() {
     }
@@ -146,10 +147,13 @@ public class Symbol implements Serializable {
         this.tickTime = tickTime;
     }
 
-    @Transient
-    @JsonIgnore
-    public Integer getS_id() {
-        return getId().intValue() - 1;
+    @Column(length = 1, nullable = false)
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 
     @Override
