@@ -228,7 +228,6 @@ public class Transaction {
         this.payout = payout;
     }
 
-    @Transient
     public int getT_id() {
         return t_id;
     }
@@ -237,7 +236,6 @@ public class Transaction {
         this.t_id = t_id;
     }
 
-    @Transient
     public int getS_id() {
         return s_id;
     }

@@ -824,6 +824,7 @@ public class Operacoes implements Initializable {
                                 && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
                         .forEach(transacao -> {
                             List<HistoricoDeTicks> tmpHistory;
+//                            int index = getTransacoesObservableList().indexOf(transacao);
                             if ((tmpHistory = getHistoricoDeTicksObservableList().stream()
                                     .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
                                             == getSymbolObservableList().get(finalS_id).getId()
@@ -832,6 +833,7 @@ public class Operacoes implements Initializable {
                                 transacao.setTickCompra(tmpHistory.get(0).getPrice());
                                 transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
                                 getTransacoesDAO().merger(transacao);
+//                                getTransacoesObservableList().set(index, getTransacoesDAO().merger(transacao));
                             }
                         });
                 getTransacoesObservableList().stream()
@@ -840,6 +842,7 @@ public class Operacoes implements Initializable {
                                 && transacoes.getDataHoraExpiry() < n.getEpoch())
                         .forEach(transacao -> {
                             BigDecimal tmpTick;
+//                            int index = getTransacoesObservableList().indexOf(transacao);
                             if ((tmpTick = getHistoricoDeTicksObservableList().stream()
                                     .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
                                             == getSymbolObservableList().get(finalS_id).getId()
@@ -847,11 +850,33 @@ public class Operacoes implements Initializable {
                                     .findFirst().orElse(null).getPrice()) != null) {
                                 transacao.setTickVenda(tmpTick);
                                 getTransacoesDAO().merger(transacao);
+//                                getTransacoesObservableList().set(index, getTransacoesDAO().merger(transacao));
                             }
                         });
             });
         }
 
+        getTransacoesObservableList().addListener((ListChangeListener<? super Transacoes>) c -> {
+            setQtdStakes(c.getList().size());
+            setQtdStakesWins((int) c.getList().stream().filter(transacoes ->
+                    transacoes.isConsolidado()
+                            && transacoes.getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+                    .count());
+            setQtdStakesLoss((int) c.getList().stream().filter(transacoes -> transacoes.isConsolidado()
+                    && transacoes.getStakeVenda().compareTo(BigDecimal.ZERO) == 0)
+                    .count());
+            setVlrStakesIn(c.getList().stream()
+                    .map(Transacoes::getStakeCompra).reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .setScale(2, RoundingMode.HALF_UP));
+            setVlrStakesOut(c.getList().stream()
+                    .filter(transacoes -> transacoes.isConsolidado())
+                    .map(Transacoes::getStakeVenda).reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .setScale(2, RoundingMode.HALF_UP));
+            setVlrStakesDiff(c.getList().stream()
+                    .filter(transacoes -> transacoes.isConsolidado())
+                    .map(Transacoes::getStakeResult).reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .setScale(2, RoundingMode.HALF_UP));
+        });
 
     }
 
@@ -1060,7 +1085,6 @@ public class Operacoes implements Initializable {
         if (getAuthorize() == null) return;
         try {
             String jsonTransacoes = Util_Json.getJson_from_Object(new TransactionsStream());
-            System.out.printf("jsonTransacoes: %s\n", jsonTransacoes);
             getWsClientObjectProperty().getMyWebSocket().send(jsonTransacoes);
             getCboTpnDetalhesContaBinary().getValue().setTransactionOK(true);
             setAppAutorizado(true);
@@ -1098,7 +1122,6 @@ public class Operacoes implements Initializable {
         if (!isAppAutorizado()) return;
         try {
             String jsonPriceProposal = Util_Json.getJson_from_Object(priceProposal);
-            System.out.printf("jsonPriceProposal: %s\n", jsonPriceProposal);
             getWsClientObjectProperty().getMyWebSocket().send(jsonPriceProposal);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1111,7 +1134,6 @@ public class Operacoes implements Initializable {
         try {
             if (proposal == null) return;
             String jsonBuyContrato = Util_Json.getJson_from_Object(new BuyContract(proposal));
-            System.out.printf("jsonBuyContrato: %s\n", jsonBuyContrato);
             getWsClientObjectProperty().getMyWebSocket().send(jsonBuyContrato);
         } catch (Exception ex) {
             ex.printStackTrace();

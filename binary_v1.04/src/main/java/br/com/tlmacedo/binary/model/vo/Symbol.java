@@ -102,6 +102,11 @@ public class Symbol implements Serializable {
         this.pip = pip;
     }
 
+    @Transient
+    public Integer getPip_Size() {
+        return getPip().toString().length() - 2;
+    }
+
     @Column(length = 120, nullable = false)
     public String getSubmarket() {
         return submarket;

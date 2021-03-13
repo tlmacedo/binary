@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +19,11 @@ public class Teste {
     private static ObjectMapper mapper = new ObjectMapper();
 
     public static void main(String[] args) {
+        BigDecimal decimal = new BigDecimal("0.0001");
+        System.out.printf("decimal1: %s\n", decimal);
+        System.out.printf("decimal2: %s\n", decimal.toString());
+        System.out.printf("decimal3: %s\n", decimal.toString().length() - 2);
+
 //        String longcode0 = "Win payout if Volatility 10 Index is strictly lower than entry spot at 58 seconds after contract start time.";
 //        String longcode1 = "Win payout if Volatility 10 Index is strictly lower than entry spot at 1 minute 58 seconds after contract start time.";
 //        String text = longcode0;

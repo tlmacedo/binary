@@ -260,10 +260,8 @@ public class WSClient extends WebSocketListener {
 
         Platform.runLater(() -> {
 
-            if (transaction.getAction() != null) {
-                Operacoes.newTransaction(transaction);
-                Operacoes.getTransactionDAO().merger(transaction);
-            }
+            if (transaction.getAction() != null)
+                Operacoes.newTransaction(Operacoes.getTransactionDAO().merger(transaction));
 
         });
 

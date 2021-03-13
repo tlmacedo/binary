@@ -9,6 +9,7 @@ import javafx.beans.property.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity(name = "transacoes")
 @Table(name = "transacoes")
@@ -32,8 +33,8 @@ public class Transacoes implements Serializable {
     ObjectProperty<BigDecimal> tickNegociacaoInicio = new SimpleObjectProperty<>();
     ObjectProperty<BigDecimal> stakeCompra = new SimpleObjectProperty<>();
     ObjectProperty<BigDecimal> stakeVenda = new SimpleObjectProperty<>();
+    ObjectProperty<BigDecimal> stakeResult = new SimpleObjectProperty<>();
     BooleanProperty consolidado = new SimpleBooleanProperty(false);
-    ObjectProperty<BigDecimal> stakeResult = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
     public Transacoes() {
     }
@@ -64,12 +65,11 @@ public class Transacoes implements Serializable {
         this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
-        this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount());
+        this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.consolidado = new SimpleBooleanProperty(false);
 
-        Operacoes.getTransacoesObservableList().add(this);
-        Operacoes.getTransacoesDAO().merger(this);
+        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
 
         Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id());
 
@@ -77,11 +77,16 @@ public class Transacoes implements Serializable {
 
     public void isSELL(Transaction transaction) throws Exception {
 
-        this.setDataHoraVenda(transaction.getTransaction_time());
-        this.setStakeVenda(transaction.getAmount());
-        this.setConsolidado(true);
+        int indexTransacoes = Operacoes.getTransacoesObservableList().indexOf(this);
 
-        Operacoes.getTransacoesDAO().merger(this);
+        this.dataHoraVenda = new SimpleIntegerProperty(transaction.getTransaction_time());
+        this.stakeVenda = new SimpleObjectProperty<>(transaction.getAmount());
+        this.stakeResult = new SimpleObjectProperty<>(transaction.getAmount().add(getStakeCompra()));
+        this.consolidado = new SimpleBooleanProperty(true);
+
+        Operacoes.getTransacoesObservableList().set(indexTransacoes,
+                Operacoes.getTransacoesDAO().merger(this));
+//        Operacoes.getTransacoesDAO().merger(this);
 
     }
 
@@ -99,7 +104,7 @@ public class Transacoes implements Serializable {
         this.contaToken.set(contaToken);
     }
 
-    @Transient
+    @Column(length = 2, nullable = false)
     public int getT_id() {
         return t_id.get();
     }
@@ -125,7 +130,7 @@ public class Transacoes implements Serializable {
         this.tFrame.set(tFrame);
     }
 
-    @Transient
+    @Column(length = 2, nullable = false)
     public int getS_id() {
         return s_id.get();
     }
@@ -244,7 +249,7 @@ public class Transacoes implements Serializable {
         this.longcode.set(longcode);
     }
 
-    @Column(length = 19, scale = 4, nullable = false)
+    @Column(length = 19, scale = 4)
     public BigDecimal getTickCompra() {
         return tickCompra.get();
     }
@@ -296,7 +301,7 @@ public class Transacoes implements Serializable {
         this.stakeCompra.set(stakeCompra);
     }
 
-    @Column(length = 19, scale = 2, nullable = false)
+    @Column(length = 19, scale = 2)
     public BigDecimal getStakeVenda() {
         return stakeVenda.get();
     }
