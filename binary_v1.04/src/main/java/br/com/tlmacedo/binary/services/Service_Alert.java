@@ -29,7 +29,7 @@ public class Service_Alert {
     private Dialog dialog = new Dialog();
     private DialogPane dialogPane = dialog.getDialogPane();
     private Task<?> task;
-    private String cabecalho = null, contentText = null, strIco = null;
+    private String titulo = null, cabecalho = null, contentText = null, strIco = null;
 
     private boolean retornoWait = false;
     private boolean retornoProgressBar = false;
@@ -49,12 +49,14 @@ public class Service_Alert {
     public Service_Alert() {
     }
 
-    public Service_Alert(String cabecalho, String contentText) {
+    public Service_Alert(String titulo, String cabecalho, String contentText) {
+        this.titulo = titulo;
         this.cabecalho = cabecalho;
         this.contentText = contentText;
     }
 
-    public Service_Alert(String cabecalho, String contentText, String strIco) {
+    public Service_Alert(String titulo, String cabecalho, String contentText, String strIco) {
+        this.titulo = titulo;
         this.cabecalho = cabecalho;
         this.contentText = contentText;
         this.strIco = strIco;
@@ -298,10 +300,10 @@ public class Service_Alert {
     }
 
     private void loadDialogPane() {
-//        getDialogPane().setHeaderText(getCabecalho());
-//        getDialogPane().setContentText(getContentText());
-        getDialog().setHeaderText(getCabecalho());
-        getDialog().setContentText(getContentText());
+        getDialogPane().setHeaderText(getCabecalho());
+        getDialogPane().setContentText(getContentText());
+//        getDialog().setHeaderText(getCabecalho());
+//        getDialog().setContentText(getContentText());
         if (getStrIco() != null)
             getDialog().setGraphic(new ImageView(getClass().getResource(getStrIco()).toString()));
     }
@@ -343,6 +345,7 @@ public class Service_Alert {
         getTextField().setText(textPreloader);
 
         getvBox().setAlignment(Pos.CENTER_LEFT);
+        getvBox().getChildren().add(new Label(getContentText()));
         getvBox().getChildren().add(getTextField());
 
         getDialogPane().setContent(getvBox());
@@ -441,6 +444,14 @@ public class Service_Alert {
 
     public void setvBox(VBox vBox) {
         this.vBox = vBox;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
     public String getCabecalho() {

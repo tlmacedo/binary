@@ -18,12 +18,12 @@ public class TicksHistory implements Serializable {
     Integer subscribe;
     Passthrough passthrough;
 
-    public TicksHistory(int s_id, Integer count, String tickStyle, Integer candleTime, Passthrough passthrough, boolean subscribe) {
+    public TicksHistory(int s_id, Integer count, TICK_STYLE tickStyle, Integer candleTime, Passthrough passthrough, boolean subscribe) {
 
         this.ticks_history = Operacoes.getSymbolObservableList().get(s_id).getSymbol();
         this.count = count;
-        this.style = tickStyle;
-        if (tickStyle.equals("CANDLES"))
+        this.style = tickStyle.getDescricao();
+        if (tickStyle.equals(TICK_STYLE.CANDLES))
             this.granularity = candleTime;
         this.passthrough = passthrough;
         this.subscribe = null;
@@ -111,17 +111,11 @@ public class TicksHistory implements Serializable {
                 ", end='" + end + '\'' +
                 ", adjust_start_time=" + adjust_start_time +
                 ", count=" + count +
-                granularity != null
-                ? ", granularity=" + granularity
-                : "" +
+                ", granularity=" + granularity +
                 ", start=" + start +
                 ", style='" + style + '\'' +
-                subscribe != null
-                ? ", subscribe=" + subscribe
-                : "" +
-                passthrough != null
-                ? ", passthrough=" + passthrough
-                : "" +
+                ", subscribe=" + subscribe +
+                ", passthrough=" + passthrough +
                 '}';
     }
 }

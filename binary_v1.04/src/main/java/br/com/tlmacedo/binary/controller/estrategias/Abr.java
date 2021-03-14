@@ -32,27 +32,36 @@ public class Abr extends Operacoes implements Robo {
     @Override
     public void definicaoDeContrato() throws Exception {
 
-        BigDecimal vlr, martingale;
-        Integer qtd;
-        Service_Alert alert = new Service_Alert();
-        alert.setCabecalho("Stake");
-        alert.setContentText("Qual o valor da stake padrão para operações?");
-        vlr = new BigDecimal(alert.alertTextField("#,##0.00", "0.35", "").get());
+        Service_Alert alert;
+        BigDecimal vlr[] = new BigDecimal[getTimeFrameObservableList().size()],
+                martingale[] = new BigDecimal[getTimeFrameObservableList().size()];
+        Integer qtd[] = new Integer[getTimeFrameObservableList().size()];
+//        BigDecimal vlr, martingale;
+//        Integer qtd;
 
-        alert = new Service_Alert();
-        alert.setContentText("Espera quantas candles seguidas em pull ou call?");
-        qtd = Integer.valueOf(alert.alertTextField("#,##0.*0", "2", "").get()
-                .replaceAll("\\D", ""));
+        for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
+            if (!getTimeAtivo()[t_id].get()) continue;
+            alert = new Service_Alert();
+            alert.setTitulo("vlr stake.");
+            alert.setCabecalho(String.format("Stake %s", getAuthorize().getCurrency()));
+            alert.setContentText(String.format("Qual o valor da stake padrão para operações [%s]?", getTimeFrameObservableList().get(t_id)));
+            vlr[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "0.35", "").get());
 
-        alert = new Service_Alert();
-        alert.setContentText("Qual a porcentagem do martingale em cima do loss acumulado?");
-        martingale = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
+            alert = new Service_Alert();
+            alert.setCabecalho(String.format("Espera quantas candles seguidas em pull ou call [%s]?", getTimeFrameObservableList().get(t_id)));
+            qtd[t_id] = Integer.valueOf(alert.alertTextField("#,##0.*0", "2", "").get()
+                    .replaceAll("\\D", ""));
+
+            alert = new Service_Alert();
+            alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado [%s]?", getTimeFrameObservableList().get(t_id)));
+            martingale[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
+        }
 
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             if (!getTimeAtivo()[t_id].getValue()) continue;
-            getVlrStkPadrao()[t_id].setValue(vlr);
-            getQtdCandlesEntrada()[t_id].setValue(qtd);
-            getPorcMartingale()[t_id].setValue(martingale);
+            getVlrStkPadrao()[t_id].setValue(vlr[t_id]);
+            getQtdCandlesEntrada()[t_id].setValue(qtd[t_id]);
+            getPorcMartingale()[t_id].setValue(martingale[t_id]);
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 getVlrStkContrato()[t_id][s_id]
                         .setValue(getVlrStkPadrao()[t_id].getValue());
@@ -67,7 +76,7 @@ public class Abr extends Operacoes implements Robo {
         }
 
         setParametrosUtilizadosRobo(String.format("Robô: %s\nvlr_Stake: %s %s\tqtd_Candles: %s\tmart: %s%%",
-                getRobo().getClass().getSimpleName(), getAuthorize().getCurrency(), vlr, qtd, martingale));
+                getRobo().getClass().getSimpleName(), getAuthorize().getCurrency(), vlr[0], qtd[0], martingale[0]));
 
     }
 
@@ -86,11 +95,11 @@ public class Abr extends Operacoes implements Robo {
                     if (maior || igual) {
                         Proposal proposal;
                         if (getFirstBuy()[finalT_id][finalS_id].getValue()) {
-                            System.out.printf("isFirstBuy[%s][%s]:n[%s]\n", finalS_id, finalS_id,
+                            System.out.printf("isFirstBuy[%s][%s]:n[%s]\n", finalT_id, finalS_id,
                                     n.intValue());
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1][0];
                         } else {
-                            System.out.printf("NoFirstBuy[%s][%s]: n[%s] maior[%s]\n", finalS_id, finalS_id,
+                            System.out.printf("NoFirstBuy[%s][%s]: n[%s] maior[%s]\n", finalT_id, finalS_id,
                                     n.intValue(), maior);
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1]
                                     [maior ? 1 : 0];
