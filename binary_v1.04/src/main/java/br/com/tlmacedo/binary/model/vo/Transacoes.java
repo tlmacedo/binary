@@ -69,7 +69,9 @@ public class Transacoes implements Serializable {
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.consolidado = new SimpleBooleanProperty(false);
 
-        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
+//        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
+
+        Operacoes.getTransacoesObservableList().add(this);
 
         Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id());
 
@@ -84,9 +86,10 @@ public class Transacoes implements Serializable {
         this.stakeResult = new SimpleObjectProperty<>(transaction.getAmount().add(getStakeCompra()));
         this.consolidado = new SimpleBooleanProperty(true);
 
-        Operacoes.getTransacoesObservableList().set(indexTransacoes,
-                Operacoes.getTransacoesDAO().merger(this));
-//        Operacoes.getTransacoesDAO().merger(this);
+//        Operacoes.getTransacoesObservableList().set(indexTransacoes,
+//                Operacoes.getTransacoesDAO().merger(this));
+
+        Operacoes.getTransacoesObservableList().set(indexTransacoes, this);
 
     }
 
