@@ -94,18 +94,12 @@ public class Abr extends Operacoes implements Robo {
                             igual = Math.abs(n.intValue()) == getQtdCandlesEntrada()[finalT_id].getValue();
                     if (maior || igual) {
                         Proposal proposal;
-                        if (getFirstBuy()[finalT_id][finalS_id].getValue()) {
-                            System.out.printf("isFirstBuy[%s][%s]:n[%s]\n", finalT_id, finalS_id,
-                                    n.intValue());
+                        if (getFirstBuy()[finalT_id][finalS_id].getValue())
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1][0];
-                        } else {
-                            System.out.printf("NoFirstBuy[%s][%s]: n[%s] maior[%s]\n", finalT_id, finalS_id,
-                                    n.intValue(), maior);
+                        else
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1]
                                     [maior ? 1 : 0];
-                        }
                         if (proposal != null) {
-                            System.out.printf("buyProposal: %s\n", proposal);
                             getVlrStkContrato()[finalT_id][finalS_id].setValue(proposal.getAsk_price());
                             solicitarCompraContrato(proposal);
                             getFirstBuy()[finalT_id][finalS_id].setValue(false);
@@ -118,14 +112,23 @@ public class Abr extends Operacoes implements Robo {
     }
 
     @Override
-    public void gerarNovosContratos(int t_id, int s_id) {
+    public void gerarNovosContratos(int t_id, int s_id, CONTRACT_TYPE typeContract, Boolean winLoss) {
 
         try {
-            for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++) {
-                for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++) {
-                    gerarContrato(t_id, s_id, typeContract_id, winLoss_id == 0
+            if (typeContract == null && winLoss == null) {
+                for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++)
+                    for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++)
+                        gerarContrato(t_id, s_id, typeContract_id, winLoss_id == 0
+                                ? null : Service_NewVlrContrato.getVlrTmpLoss(t_id, s_id));
+            } else if (typeContract == null) {
+                for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++)
+                    gerarContrato(t_id, s_id, typeContract_id, winLoss
                             ? null : Service_NewVlrContrato.getVlrTmpLoss(t_id, s_id));
-                }
+            } else {
+                for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++)
+                    if (getTypeContract()[typeContract_id] == typeContract)
+                        gerarContrato(t_id, s_id, typeContract_id, winLoss
+                                ? null : Service_NewVlrContrato.getVlrTmpLoss(t_id, s_id));
             }
         } catch (Exception ex) {
             ex.printStackTrace();

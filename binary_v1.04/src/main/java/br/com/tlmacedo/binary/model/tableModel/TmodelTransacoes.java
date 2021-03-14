@@ -29,6 +29,7 @@ public class TmodelTransacoes {
     private TableColumn<Transacoes, String> colTickNegociacaoInicio;
     private TableColumn<Transacoes, String> colTickVenda;
     private TableColumn<Transacoes, String> colStakeCompra;
+    private TableColumn<Transacoes, String> colStakeVenda;
     private TableColumn<Transacoes, String> colStakeResult;
 //    private TableColumn<Transacoes, Boolean> colConsolidado;
 
@@ -81,50 +82,42 @@ public class TmodelTransacoes {
         setColTickNegociacaoInicio(new TableColumn<>("tick_buy"));
         getColTickNegociacaoInicio().setPrefWidth(80);
         getColTickNegociacaoInicio().setStyle("-fx-alignment: center-right;");
-        getColTickNegociacaoInicio().setCellValueFactory(param -> param.getValue().tickNegociacaoInicioProperty().asString());
-//        getColTickNegociacaoInicio().setCellValueFactory(param -> {
-//            System.out.printf("tickNegociacaoInicioProperty: %s\n", param.getValue().tickNegociacaoInicioProperty().getValue());
-//            if (param.getValue().tickNegociacaoInicioProperty().getValue() != null)
-//                param.getValue().tickNegociacaoInicioProperty().asString();
-////                return new SimpleStringProperty(Service_Mascara.getValorFormatado(
-////                        param.getValue().getSymbol().getPip_Size(),
-////                        param.getValue().tickNegociacaoInicioProperty().getValue()));
-//            else
-//                return new SimpleStringProperty("1");
-//            return new SimpleStringProperty("2");
-//        });
+//        getColTickNegociacaoInicio().setCellValueFactory(param -> param.getValue().tickNegociacaoInicioProperty().asString());
+        getColTickNegociacaoInicio().setCellValueFactory(param -> {
+            if (param.getValue().tickNegociacaoInicioProperty().getValue() != null)
+                return param.getValue().tickNegociacaoInicioProperty().asString();
+            return new SimpleStringProperty("");
+        });
 
         setColTickVenda(new TableColumn<>("tick_sell"));
         getColTickVenda().setPrefWidth(80);
         getColTickVenda().setStyle("-fx-alignment: center-right;");
-        getColTickVenda().setCellValueFactory(param -> param.getValue().tickVendaProperty().asString());
-//        getColTickVenda().setCellValueFactory(param -> {
-//            if (param.getValue().tickVendaProperty().getValue() != null)
-//                return new SimpleStringProperty(Service_Mascara.getValorFormatado(
-//                        param.getValue().getSymbol().getPip_Size(),
-//                        param.getValue().tickVendaProperty().getValue()
-//                ));
-//            return new SimpleStringProperty("0");
-//        });
+//        getColTickVenda().setCellValueFactory(param -> param.getValue().tickVendaProperty().asString());
+        getColTickVenda().setCellValueFactory(param -> {
+            if (param.getValue().tickVendaProperty().getValue() != null)
+                return param.getValue().tickVendaProperty().asString();
+            return new SimpleStringProperty("");
+        });
 
-        setColStakeCompra(new TableColumn<>("stake"));
+        setColStakeCompra(new TableColumn<>("payIn"));
         getColStakeCompra().setPrefWidth(60);
         getColStakeCompra().setStyle("-fx-alignment: center-right;");
-        getColStakeCompra().setCellValueFactory(param ->
-                        param.getValue().stakeCompraProperty().asString()
-//            if (param.getValue().stakeCompraProperty().getValue().compareTo(BigDecimal.ZERO) != 0)
-//                new SimpleStringProperty(Service_Mascara.getValorMoeda(
-//                        param.getValue().stakeCompraProperty().getValue()));
-//            return new SimpleStringProperty("0.00");
-        );
+//        getColStakeCompra().setCellValueFactory(param -> param.getValue().stakeCompraProperty().asString());
+        getColStakeCompra().setCellValueFactory(param -> {
+            if (param.getValue().stakeCompraProperty().getValue() != null)
+                return param.getValue().stakeCompraProperty().asString();
+            return new SimpleStringProperty("");
+        });
 
-//        setColConsolidado(new TableColumn<>("C"));
-//        getColConsolidado().setPrefWidth(30);
-//        getColConsolidado().setStyle("-fx-alignment: center");
-//        getColConsolidado().setCellValueFactory(param -> {
-//            totalizaLinha(param.getValue());
-//            return param.getValue().consolidadoProperty();
-//        });
+        setColStakeVenda(new TableColumn<>("payOut"));
+        getColStakeVenda().setPrefWidth(60);
+        getColStakeVenda().setStyle("-fx-alignment: center-right;");
+//        getColStakeVenda().setCellValueFactory(param -> param.getValue().stakeVendaProperty().asString());
+        getColStakeVenda().setCellValueFactory(param -> {
+            if (param.getValue().stakeVendaProperty().getValue() != null)
+                return param.getValue().stakeVendaProperty().asString();
+            return new SimpleStringProperty("");
+        });
 
         setColStakeResult(new TableColumn<>("result"));
         getColStakeResult().setPrefWidth(60);
@@ -133,7 +126,7 @@ public class TmodelTransacoes {
             if (param.getValue().consolidadoProperty().getValue())
                 return new SimpleStringProperty(Service_Mascara.getValorMoeda(
                         param.getValue().stakeResultProperty().getValue()));
-            return new SimpleStringProperty("0.00");
+            return new SimpleStringProperty("");
         });
         getColStakeResult().setCellFactory(param ->
                 new TableCell<Transacoes, String>() {
@@ -173,9 +166,7 @@ public class TmodelTransacoes {
 
         getTbvTransacoes().getColumns().setAll(
                 getColNegociacao(), getColTickNegociacaoInicio(), getColTickVenda(), getColStakeCompra(),
-                getColStakeResult(),
-//                getColConsolidado(),
-                getColDataHoraCompra(), getColTransaction_id()
+                getColStakeVenda(), getColStakeResult(), getColDataHoraCompra(), getColTransaction_id()
         );
         getTbvTransacoes().getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         getTbvTransacoes().getSelectionModel().setCellSelectionEnabled(true);
@@ -346,4 +337,11 @@ public class TmodelTransacoes {
         this.transacoesFilteredList = transacoesFilteredList;
     }
 
+    public TableColumn<Transacoes, String> getColStakeVenda() {
+        return colStakeVenda;
+    }
+
+    public void setColStakeVenda(TableColumn<Transacoes, String> colStakeVenda) {
+        this.colStakeVenda = colStakeVenda;
+    }
 }

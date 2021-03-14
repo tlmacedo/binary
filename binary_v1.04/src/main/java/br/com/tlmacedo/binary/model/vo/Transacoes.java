@@ -53,27 +53,30 @@ public class Transacoes implements Serializable {
         this.dataHoraCompra = new SimpleIntegerProperty(transaction.getTransaction_time());
         //this.dataHoraVenda = dataHoraCompra;
         this.dataHoraExpiry = new SimpleIntegerProperty(transaction.getDate_expiry());
+        CONTRACT_TYPE contract = null;
         if (transaction.getBarrier().equals("S0P")) {
-            String contract;
             if (transaction.getLongcode().toLowerCase().contains(" higher "))
-                contract = CONTRACT_TYPE.CALL.toString();
+                contract = CONTRACT_TYPE.CALL;
             else
-                contract = CONTRACT_TYPE.PUT.toString();
-            this.contract_type = new SimpleStringProperty(contract);
+                contract = CONTRACT_TYPE.PUT;
+            this.contract_type = new SimpleStringProperty(contract.getDescricao());
         }
         this.longcode = new SimpleStringProperty(transaction.getLongcode());
-        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
-        this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
-        this.tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
+//        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
+//        this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
+//        this.tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
-        this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
+//        this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.consolidado = new SimpleBooleanProperty(false);
 
 //        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
 
         Operacoes.getTransacoesObservableList().add(this);
 
-        Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id());
+        if (Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() >= 2)
+            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(), contract, false);
+        else
+            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(), null, null);
 
     }
 
@@ -86,10 +89,11 @@ public class Transacoes implements Serializable {
         this.stakeResult = new SimpleObjectProperty<>(transaction.getAmount().add(getStakeCompra()));
         this.consolidado = new SimpleBooleanProperty(true);
 
-//        Operacoes.getTransacoesObservableList().set(indexTransacoes,
-//                Operacoes.getTransacoesDAO().merger(this));
-
         Operacoes.getTransacoesObservableList().set(indexTransacoes, this);
+
+        if (Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() >= 2 && getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
+                    CONTRACT_TYPE.valueOf(getContract_type()), true);
 
     }
 

@@ -1503,37 +1503,34 @@ public class Operacoes implements Initializable {
                 if (o == null || n == null) return;
                 getTransacoesObservableList().stream()
                         .filter(transacoes -> transacoes.getS_id() == finalS_id
-                                && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) == 0
-                                && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
+                                && transacoes.getTickNegociacaoInicio() == null
+                                && transacoes.getTickVenda() == null)
                         .forEach(transacao -> {
                             List<HistoricoDeTicks> tmpHistory;
-//                            int index = getTransacoesObservableList().indexOf(transacao);
-                            if ((tmpHistory = getHistoricoDeTicksObservableList().stream()
+                            if ((tmpHistory = Objects.requireNonNull(getHistoricoDeTicksObservableList().stream()
                                     .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
                                             == getSymbolObservableList().get(finalS_id).getId()
-                                            && historicoDeTicks.getTime() >= transacao.getDataHoraCompra())
+                                            && historicoDeTicks.getTime() >= transacao.getDataHoraCompra()))
                                     .collect(Collectors.toList())).size() > 1) {
                                 transacao.setTickCompra(tmpHistory.get(0).getPrice());
                                 transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
                                 getTransacoesDAO().merger(transacao);
-//                                getTransacoesObservableList().set(index, getTransacoesDAO().merger(transacao));
                             }
                         });
                 getTransacoesObservableList().stream()
                         .filter(transacoes -> transacoes.getS_id() == finalS_id
-                                && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0
+                                && transacoes.getTickNegociacaoInicio() != null
+                                && transacoes.getTickVenda() == null
                                 && transacoes.getDataHoraExpiry() < n.getEpoch())
                         .forEach(transacao -> {
                             BigDecimal tmpTick;
-//                            int index = getTransacoesObservableList().indexOf(transacao);
-                            if ((tmpTick = getHistoricoDeTicksObservableList().stream()
+                            if ((tmpTick = Objects.requireNonNull(getHistoricoDeTicksObservableList().stream()
                                     .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
                                             == getSymbolObservableList().get(finalS_id).getId()
                                             && historicoDeTicks.getTime() == transacao.getDataHoraExpiry())
-                                    .findFirst().orElse(null).getPrice()) != null) {
+                                    .findFirst()).orElse(null).getPrice()) != null) {
                                 transacao.setTickVenda(tmpTick);
                                 getTransacoesDAO().merger(transacao);
-//                                getTransacoesObservableList().set(index, getTransacoesDAO().merger(transacao));
                             }
                         });
             });
@@ -1647,6 +1644,10 @@ public class Operacoes implements Initializable {
     }
 
     private void objetos_Bindings() {
+
+        getCboTpnDetalhesContaBinary().disableProperty().bind(roboMonitorandoProperty());
+        getCboTpnNegociacaoQtdCandlesAnalise().disableProperty().bind(roboMonitorandoProperty());
+        getCboNegociacaoRobos().disableProperty().bind(roboMonitorandoProperty());
 
         getLblDetalhesSaldoInicial().textProperty().bind(Bindings.createStringBinding(() ->
                         Service_Mascara.getValorMoeda(saldoInicialProperty().getValue()),
