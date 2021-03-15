@@ -5,6 +5,7 @@ import br.com.tlmacedo.binary.model.vo.TimeFrame;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -31,6 +32,35 @@ public class Service_DataTime {
 
     public static String getCarimboStr(LocalDateTime localDateTime, DateTimeFormatter dtf) {
         return localDateTime.format(dtf);
+    }
+
+    public static String getStrHoraMinutoSegundo(Integer intDateTime) {
+
+        if (intDateTime == null || intDateTime == 0) return "0 s";
+        Duration tempo = Duration.ofSeconds(intDateTime);
+        StringBuilder stbPeriodo = new StringBuilder("");
+        if (tempo.toDaysPart() >= 1)
+            stbPeriodo.append(String.format("%d d",
+                    tempo.toDaysPart()));
+        if (tempo.toHoursPart() >= 1) {
+            if (!stbPeriodo.toString().equals("")) stbPeriodo.append(" ");
+            stbPeriodo.append(String.format("%d h",
+                    tempo.toHoursPart()));
+        }
+        if (tempo.toMinutesPart() >= 1) {
+            if (!stbPeriodo.toString().equals("")) stbPeriodo.append(" ");
+            stbPeriodo.append(String.format("%d m",
+                    tempo.toMinutesPart()));
+        }
+        if (tempo.toSecondsPart() >= 1) {
+            if (!stbPeriodo.toString().equals("")) stbPeriodo.append(" ");
+            stbPeriodo.append(String.format("%d s",
+                    tempo.toSecondsPart()));
+        }
+        if (tempo.isZero() || stbPeriodo.toString().equals(""))
+            stbPeriodo.append("0 s");
+        return stbPeriodo.toString();
+
     }
 
     public static Integer getTimeMinutosCandle(String longcode) {

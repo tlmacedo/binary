@@ -1445,12 +1445,7 @@ public class Operacoes implements Initializable {
         });
 
         tempoUsoAppProperty().addListener((ov, o, n) -> {
-            String tempoUso;
-            if (n == null)
-                tempoUso = "";
-            else
-                tempoUso = Service_DataTime.getCarimboStr(n.intValue(), DTF_MINUTOS_SEGUNDOS);
-            getLblTpnNegociacaoTempoUso().setText(tempoUso);
+            getLblTpnNegociacaoTempoUso().setText(Service_DataTime.getStrHoraMinutoSegundo(n.intValue()));
         });
 
         authorizeProperty().addListener((ov, o, n) -> {
@@ -1696,6 +1691,12 @@ public class Operacoes implements Initializable {
         getCboTpnDetalhesContaBinary().disableProperty().bind(roboMonitorandoProperty());
         getCboTpnNegociacaoQtdCandlesAnalise().disableProperty().bind(roboMonitorandoProperty());
         getCboNegociacaoRobos().disableProperty().bind(roboMonitorandoProperty());
+        getChkTpn_T01_TimeAtivo().disableProperty().bind(roboMonitorandoProperty());
+        getChkTpn_T02_TimeAtivo().disableProperty().bind(roboMonitorandoProperty());
+        getChkTpn_T03_TimeAtivo().disableProperty().bind(roboMonitorandoProperty());
+        getChkTpn_T04_TimeAtivo().disableProperty().bind(roboMonitorandoProperty());
+        getChkTpn_T05_TimeAtivo().disableProperty().bind(roboMonitorandoProperty());
+        getChkTpn_T06_TimeAtivo().disableProperty().bind(roboMonitorandoProperty());
 
         getLblDetalhesSaldoInicial().textProperty().bind(Bindings.createStringBinding(() ->
                         Service_Mascara.getValorMoeda(saldoInicialProperty().getValue()),
@@ -1770,7 +1771,8 @@ public class Operacoes implements Initializable {
                     setRoboMonitorandoPausado(false);
                 } else {
                     getRobo().monitorarCondicoesParaComprar();
-                    setDtHoraInicial(Service_DataTime.getIntegerDateNow().intValue());
+                    //setDtHoraInicial(Service_DataTime.getIntegerDateNow().intValue());
+                    getLblTpnNegociacaoDtHoraInicial().setText(LocalDateTime.now().format(DTF_DATA_HORA_SEGUNDOS));
                     setRoboMonitorando(true);
                     getLogSistemaStartDAO().merger(
                             new LogSistemaStart(getCboTpnDetalhesContaBinary().getValue(),
@@ -1956,42 +1958,65 @@ public class Operacoes implements Initializable {
 
     private void escutaTitledTab() {
 
+        getTpn_Detalhes().expandedProperty().addListener((ov, o, n) -> {
+            int diff = (int) getTpn_Detalhes().getHeight() - 33;
+            if (!n) diff = (diff * -1);
+            setLayoutTpn_Negociacao(diff);
+        });
+
+        getTpn_Negociacao().expandedProperty().addListener((ov, o, n) -> {
+            int diff = (int) getTpn_Negociacao().getHeight() - 33;
+            if (!n) diff = (diff * -1);
+            setLayoutTpn_LastTicks(diff);
+        });
+
+        getTpn_LastTicks().expandedProperty().addListener((ov, o, n) -> {
+            int diff = (int) getTpn_LastTicks().getHeight() - 24;
+            if (!n) diff = (diff * -1);
+            setLayoutScrollPaneTpn(diff);
+        });
+
         getTpn_T01().expandedProperty().addListener((ov, o, n) -> {
-            int diff = (getTpn_T01().getHeight() == 0) ? 1130 : (int) getTpn_T01().getHeight() - 36;
+            int diff = (int) getTpn_T01().getHeight() - 36;
             if (!n) diff = (diff * -1);
             setLayoutTpn_T02(diff);
         });
         getTpn_T02().expandedProperty().addListener((ov, o, n) -> {
-            int diff = (getTpn_T02().getHeight() == 0) ? 1130 : (int) getTpn_T02().getHeight() - 36;
+            int diff = (int) getTpn_T02().getHeight() - 36;
             if (!n) diff = (diff * -1);
             setLayoutTpn_T03(diff);
         });
         getTpn_T03().expandedProperty().addListener((ov, o, n) -> {
-            int diff = (getTpn_T03().getHeight() == 0) ? 1130 : (int) getTpn_T03().getHeight() - 36;
+            int diff = (int) getTpn_T03().getHeight() - 36;
             if (!n) diff = (diff * -1);
             setLayoutTpn_T04(diff);
         });
         getTpn_T04().expandedProperty().addListener((ov, o, n) -> {
-            int diff = (getTpn_T04().getHeight() == 0) ? 1130 : (int) getTpn_T04().getHeight() - 36;
+            int diff = (int) getTpn_T04().getHeight() - 36;
             if (!n) diff = (diff * -1);
             setLayoutTpn_T05(diff);
         });
         getTpn_T05().expandedProperty().addListener((ov, o, n) -> {
-            int diff = (getTpn_T05().getHeight() == 0) ? 1130 : (int) getTpn_T05().getHeight() - 36;
+            int diff = (int) getTpn_T05().getHeight() - 36;
             if (!n) diff = (diff * -1);
             setLayoutTpn_T06(diff);
         });
-//        getTpn_T06().expandedProperty().addListener((ov, o, n) -> {
-//            int diff = (getTpn_T06().getHeight() == 0) ? 1130 : (int) getTpn_T06().getHeight() - 36;
-//            if (!n) diff = (diff * -1);
-//            setHeightTpn(diff);
-//        });
 
     }
 
-//    private void setHeightTpn(int diff) {
-//        getScrollPaneTpn().setPrefHeight(getScrollPaneTpn().getPrefHeight() + diff);
-//    }
+    private void setLayoutTpn_Negociacao(int diff) {
+        getTpn_Negociacao().setLayoutY(getTpn_Negociacao().getLayoutY() + diff);
+        setLayoutTpn_LastTicks(diff);
+    }
+
+    private void setLayoutTpn_LastTicks(int diff) {
+        getTpn_LastTicks().setLayoutY(getTpn_LastTicks().getLayoutY() + diff);
+        setLayoutScrollPaneTpn(diff);
+    }
+
+    private void setLayoutScrollPaneTpn(int diff) {
+        getScrollPaneTpn().setLayoutY(getScrollPaneTpn().getLayoutY() + diff);
+    }
 
     private void setLayoutTpn_T02(int diff) {
         getTpn_T02().setLayoutY(getTpn_T02().getLayoutY() + diff);
@@ -3526,22 +3551,22 @@ public class Operacoes implements Initializable {
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             if (t_id == 0) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T01_TimeAtivo().selectedProperty());
-                getChkTpn_T01_TimeAtivo().setSelected(false);
+                getChkTpn_T01_TimeAtivo().setSelected(true);
             } else if (t_id == 1) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T02_TimeAtivo().selectedProperty());
-                getChkTpn_T02_TimeAtivo().setSelected(false);
+                getChkTpn_T02_TimeAtivo().setSelected(true);
             } else if (t_id == 2) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T03_TimeAtivo().selectedProperty());
-                getChkTpn_T03_TimeAtivo().setSelected(false);
+                getChkTpn_T03_TimeAtivo().setSelected(true);
             } else if (t_id == 3) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T04_TimeAtivo().selectedProperty());
-                getChkTpn_T04_TimeAtivo().setSelected(false);
+                getChkTpn_T04_TimeAtivo().setSelected(true);
             } else if (t_id == 4) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T05_TimeAtivo().selectedProperty());
-                getChkTpn_T05_TimeAtivo().setSelected(false);
+                getChkTpn_T05_TimeAtivo().setSelected(true);
             } else if (t_id == 5) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T06_TimeAtivo().selectedProperty());
-                getChkTpn_T06_TimeAtivo().setSelected(false);
+                getChkTpn_T06_TimeAtivo().setSelected(true);
             }
         }
 

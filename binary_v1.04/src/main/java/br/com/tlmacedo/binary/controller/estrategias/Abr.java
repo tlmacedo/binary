@@ -9,6 +9,7 @@ import br.com.tlmacedo.binary.services.Service_NewVlrContrato;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.scene.control.ButtonType;
 
 import java.math.BigDecimal;
 
@@ -38,25 +39,51 @@ public class Abr extends Operacoes implements Robo {
         Integer qtd[] = new Integer[getTimeFrameObservableList().size()];
 //        BigDecimal vlr, martingale;
 //        Integer qtd;
+        alert = new Service_Alert();
+        alert.setTitulo("Configuração");
+        alert.setCabecalho("Todos times frames terão a mesma configuração?");
+        boolean retorno = alert.alertYesNo().get().equals(ButtonType.YES);
 
-        for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
-            if (!getTimeAtivo()[t_id].get()) continue;
+        if (retorno) {
             alert = new Service_Alert();
             alert.setTitulo("vlr stake.");
             alert.setCabecalho(String.format("Stake %s", getAuthorize().getCurrency()));
-            alert.setContentText(String.format("Qual o valor da stake padrão para operações [%s]?", getTimeFrameObservableList().get(t_id)));
-            vlr[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "0.35", "").get());
+            alert.setContentText("Qual o valor da stake padrão para operações?");
+            vlr[0] = new BigDecimal(alert.alertTextField("#,##0.00", "0.35", "").get());
 
             alert = new Service_Alert();
-            alert.setCabecalho(String.format("Espera quantas candles seguidas em pull ou call [%s]?", getTimeFrameObservableList().get(t_id)));
-            qtd[t_id] = Integer.valueOf(alert.alertTextField("#,##0.*0", "2", "").get()
+            alert.setCabecalho("Espera quantas candles seguidas em pull ou call?");
+            qtd[0] = Integer.valueOf(alert.alertTextField("#,##0.*0", "2", "").get()
                     .replaceAll("\\D", ""));
 
             alert = new Service_Alert();
-            alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado [%s]?", getTimeFrameObservableList().get(t_id)));
-            martingale[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
-        }
+            alert.setCabecalho("Qual a porcentagem do martingale em cima do loss acumulado?");
+            martingale[0] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
 
+            for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
+                vlr[t_id] = vlr[0];
+                qtd[t_id] = qtd[0];
+                martingale[t_id] = martingale[0];
+            }
+        } else {
+            for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
+                if (!getTimeAtivo()[t_id].get()) continue;
+                alert = new Service_Alert();
+                alert.setTitulo("vlr stake.");
+                alert.setCabecalho(String.format("Stake %s", getAuthorize().getCurrency()));
+                alert.setContentText(String.format("Qual o valor da stake padrão para operações [%s]?", getTimeFrameObservableList().get(t_id)));
+                vlr[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "0.35", "").get());
+
+                alert = new Service_Alert();
+                alert.setCabecalho(String.format("Espera quantas candles seguidas em pull ou call [%s]?", getTimeFrameObservableList().get(t_id)));
+                qtd[t_id] = Integer.valueOf(alert.alertTextField("#,##0.*0", "2", "").get()
+                        .replaceAll("\\D", ""));
+
+                alert = new Service_Alert();
+                alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado [%s]?", getTimeFrameObservableList().get(t_id)));
+                martingale[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
+            }
+        }
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             if (!getTimeAtivo()[t_id].getValue()) continue;
             getVlrStkPadrao()[t_id].setValue(vlr[t_id]);

@@ -47,7 +47,7 @@ public interface Constants {
     Boolean CONSOLE_BINARY_AUTHORIZE = false;
     Boolean CONSOLE_BINARY_ERROR = true;
     Boolean CONSOLE_BINARY_TICK = false;
-    Boolean CONSOLE_BINARY_PROPOSAL = false;
+    Boolean CONSOLE_BINARY_PROPOSAL = true;
     Boolean CONSOLE_BINARY_BUY = false;
     Boolean CONSOLE_BINARY_TRANSACTION = true;
     Boolean CONSOLE_BINARY_HISTORY = false;
