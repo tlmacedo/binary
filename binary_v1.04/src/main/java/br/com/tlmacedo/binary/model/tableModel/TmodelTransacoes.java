@@ -63,12 +63,12 @@ public class TmodelTransacoes {
 
         setColDataHoraCompra(new TableColumn<>("data hora"));
         getColDataHoraCompra().setPrefWidth(140);
-        getColDataHoraCompra().setStyle("-fx-alignment: center-right;");
+        getColDataHoraCompra().setStyle("-fx-alignment: center-left;");
         getColDataHoraCompra().setCellValueFactory(param -> Service_DataTime
                 .getCarimboStrProperty(param.getValue().dataHoraCompraProperty().getValue(), Constants.DTF_TMODEL_DATA_TRANSACTION));
 
         setColNegociacao(new TableColumn<>("Type"));
-        getColNegociacao().setPrefWidth(50);
+        getColNegociacao().setPrefWidth(45);
         getColNegociacao().setStyle("-fx-alignment: center-left;");
         getColNegociacao().setCellValueFactory(param -> {
             CONTRACT_TYPE op = null;
@@ -80,52 +80,52 @@ public class TmodelTransacoes {
         });
 
         setColTickNegociacaoInicio(new TableColumn<>("tick_buy"));
-        getColTickNegociacaoInicio().setPrefWidth(80);
+        getColTickNegociacaoInicio().setPrefWidth(85);
         getColTickNegociacaoInicio().setStyle("-fx-alignment: center-right;");
-//        getColTickNegociacaoInicio().setCellValueFactory(param -> param.getValue().tickNegociacaoInicioProperty().asString());
-        getColTickNegociacaoInicio().setCellValueFactory(param -> {
-            if (param.getValue().tickNegociacaoInicioProperty().getValue() != null)
-                return param.getValue().tickNegociacaoInicioProperty().asString();
-            return new SimpleStringProperty("");
-        });
+        getColTickNegociacaoInicio().setCellValueFactory(param -> param.getValue().tickNegociacaoInicioProperty().asString());
+//        getColTickNegociacaoInicio().setCellValueFactory(param -> {
+//            System.out.printf("getTickNegociacaoInicio(): %s\n", param.getValue().getTickNegociacaoInicio());
+//            if (param.getValue().tickNegociacaoInicioProperty().getValue() == null)
+//                return new SimpleStringProperty("");
+//            return param.getValue().tickNegociacaoInicioProperty().asString();
+//        });
 
         setColTickVenda(new TableColumn<>("tick_sell"));
-        getColTickVenda().setPrefWidth(80);
+        getColTickVenda().setPrefWidth(85);
         getColTickVenda().setStyle("-fx-alignment: center-right;");
 //        getColTickVenda().setCellValueFactory(param -> param.getValue().tickVendaProperty().asString());
         getColTickVenda().setCellValueFactory(param -> {
-            if (param.getValue().tickVendaProperty().getValue() != null)
+            if (param.getValue().isConsolidado())
                 return param.getValue().tickVendaProperty().asString();
             return new SimpleStringProperty("");
         });
 
-        setColStakeCompra(new TableColumn<>("payIn"));
-        getColStakeCompra().setPrefWidth(60);
+        setColStakeCompra(new TableColumn<>("pay_In"));
+        getColStakeCompra().setPrefWidth(55);
         getColStakeCompra().setStyle("-fx-alignment: center-right;");
-//        getColStakeCompra().setCellValueFactory(param -> param.getValue().stakeCompraProperty().asString());
-        getColStakeCompra().setCellValueFactory(param -> {
-            if (param.getValue().stakeCompraProperty().getValue() != null)
-                return param.getValue().stakeCompraProperty().asString();
-            return new SimpleStringProperty("");
-        });
+        getColStakeCompra().setCellValueFactory(param -> param.getValue().stakeCompraProperty().asString());
+//        getColStakeCompra().setCellValueFactory(param -> {
+//            if (param.getValue().getStakeVenda() != null)
+//                return param.getValue().stakeCompraProperty().asString();
+//            return new SimpleStringProperty("");
+//        });
 
-        setColStakeVenda(new TableColumn<>("payOut"));
+        setColStakeVenda(new TableColumn<>("pay_Out"));
         getColStakeVenda().setPrefWidth(60);
         getColStakeVenda().setStyle("-fx-alignment: center-right;");
 //        getColStakeVenda().setCellValueFactory(param -> param.getValue().stakeVendaProperty().asString());
         getColStakeVenda().setCellValueFactory(param -> {
-            if (param.getValue().stakeVendaProperty().getValue() != null)
+            if (param.getValue().isConsolidado())
                 return param.getValue().stakeVendaProperty().asString();
             return new SimpleStringProperty("");
         });
 
         setColStakeResult(new TableColumn<>("result"));
-        getColStakeResult().setPrefWidth(60);
+        getColStakeResult().setPrefWidth(50);
         getColStakeResult().setStyle("-fx-alignment: center-right;");
         getColStakeResult().setCellValueFactory(param -> {
-            if (param.getValue().consolidadoProperty().getValue())
-                return new SimpleStringProperty(Service_Mascara.getValorMoeda(
-                        param.getValue().stakeResultProperty().getValue()));
+            if (param.getValue().isConsolidado())
+                return param.getValue().stakeResultProperty().asString();
             return new SimpleStringProperty("");
         });
         getColStakeResult().setCellFactory(param ->

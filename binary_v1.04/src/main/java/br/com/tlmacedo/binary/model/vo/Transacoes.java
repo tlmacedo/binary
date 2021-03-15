@@ -62,11 +62,11 @@ public class Transacoes implements Serializable {
             this.contract_type = new SimpleStringProperty(contract.getDescricao());
         }
         this.longcode = new SimpleStringProperty(transaction.getLongcode());
-//        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
-//        this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
-//        this.tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
+        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
+        this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
+        this.tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
-//        this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
+        this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
         this.consolidado = new SimpleBooleanProperty(false);
 
 //        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
@@ -85,15 +85,18 @@ public class Transacoes implements Serializable {
         int indexTransacoes = Operacoes.getTransacoesObservableList().indexOf(this);
 
         this.dataHoraVenda = new SimpleIntegerProperty(transaction.getTransaction_time());
-        this.stakeVenda = new SimpleObjectProperty<>(transaction.getAmount());
-        this.stakeResult = new SimpleObjectProperty<>(transaction.getAmount().add(getStakeCompra()));
+        this.stakeVenda = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
+        this.stakeResult = new SimpleObjectProperty<>(transaction.getAmount().add(getStakeCompra()).setScale(2, RoundingMode.HALF_UP));
         this.consolidado = new SimpleBooleanProperty(true);
 
         Operacoes.getTransacoesObservableList().set(indexTransacoes, this);
 
-        if (Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() >= 2 && getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
-            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
-                    CONTRACT_TYPE.valueOf(getContract_type()), true);
+        if (Operacoes.isRoboMonitorando())
+            if (!Operacoes.isRoboMonitorandoPausado()
+                    && Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() >= 2
+                    && getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+                Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
+                        CONTRACT_TYPE.valueOf(getContract_type()), true);
 
     }
 

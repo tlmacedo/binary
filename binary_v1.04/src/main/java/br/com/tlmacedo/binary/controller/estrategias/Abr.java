@@ -65,14 +65,15 @@ public class Abr extends Operacoes implements Robo {
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 getVlrStkContrato()[t_id][s_id]
                         .setValue(getVlrStkPadrao()[t_id].getValue());
-                for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++) {
-                    for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++) {
-                        getProposal()[t_id][s_id][typeContract_id][winLoss_id] = new Proposal();
-                        if (winLoss_id == 0)
-                            gerarContrato(t_id, s_id, typeContract_id, null);
-                    }
-                }
+//                for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++) {
+//                    for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++) {
+//                        getProposal()[t_id][s_id][typeContract_id][winLoss_id] = new Proposal();
+//                        if (winLoss_id == 0)
+//                            gerarContrato(t_id, s_id, typeContract_id, null);
+//                    }
+//                }
             }
+//            Thread.sleep(3000);
         }
 
         setParametrosUtilizadosRobo(String.format("Robô: %s\nvlr_Stake: %s %s\tqtd_Candles: %s\tmart: %s%%",
@@ -90,6 +91,22 @@ public class Abr extends Operacoes implements Robo {
                 int finalS_id = s_id;
                 getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
                     if (n == null || isRoboMonitorandoPausado() || !isContratoGerado()) return;
+                    if (getFirstBuy()[finalT_id][finalS_id].getValue()
+                            && Math.abs(n.intValue()) == getQtdCandlesEntrada()[finalT_id].getValue() - 1) {
+                        for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++) {
+                            for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++) {
+                                getProposal()[finalT_id][finalS_id][typeContract_id][winLoss_id] = new Proposal();
+                                if (winLoss_id == 0) {
+                                    try {
+                                        gerarContrato(finalT_id, finalS_id, typeContract_id, null);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     boolean maior = Math.abs(n.intValue()) > getQtdCandlesEntrada()[finalT_id].getValue(),
                             igual = Math.abs(n.intValue()) == getQtdCandlesEntrada()[finalT_id].getValue();
                     if (maior || igual) {

@@ -604,9 +604,9 @@
                     <children>
                         <!--            </content>-->
                         <!--        </TitledPane>-->
-                        <TitledPane fx:id="tpn_T01" animated="false" contentDisplay="RIGHT" layoutY="3.0"
-                                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0" prefWidth="890.0"
-                                    text="T1M - ">
+                        <TitledPane fx:id="tpn_T01" animated="false" contentDisplay="RIGHT" expanded="false"
+                                    layoutY="3.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0"
+                                    prefWidth="890.0" text="T1M - ">
                             <content>
                                 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="1090.0"
                                             prefWidth="890.0">
@@ -3387,9 +3387,9 @@
                                 </HBox>
                             </graphic>
                         </TitledPane>
-                        <TitledPane fx:id="tpn_T02" animated="false" contentDisplay="RIGHT" layoutY="1140.0"
-                                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0" prefWidth="890.0"
-                                    text="T2M - ">
+                        <TitledPane fx:id="tpn_T02" animated="false" contentDisplay="RIGHT" expanded="false"
+                                    layoutY="40.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0"
+                                    prefWidth="890.0" text="T2M - ">
                             <content>
                                 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="1090.0"
                                             prefWidth="890.0">
@@ -6170,9 +6170,9 @@
                                 </HBox>
                             </graphic>
                         </TitledPane>
-                        <TitledPane fx:id="tpn_T03" animated="false" contentDisplay="RIGHT" layoutY="2280.0"
-                                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0" prefWidth="890.0"
-                                    text="T3M - ">
+                        <TitledPane fx:id="tpn_T03" animated="false" contentDisplay="RIGHT" expanded="false"
+                                    layoutY="80.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0"
+                                    prefWidth="890.0" text="T3M - ">
                             <content>
                                 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="1090.0"
                                             prefWidth="890.0">
@@ -8953,9 +8953,9 @@
                                 </HBox>
                             </graphic>
                         </TitledPane>
-                        <TitledPane fx:id="tpn_T04" animated="false" contentDisplay="RIGHT" layoutY="3420.0"
-                                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0" prefWidth="890.0"
-                                    text="T4M - ">
+                        <TitledPane fx:id="tpn_T04" animated="false" contentDisplay="RIGHT" expanded="false"
+                                    layoutY="120.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0"
+                                    prefWidth="890.0" text="T4M - ">
                             <content>
                                 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="1090.0"
                                             prefWidth="890.0">
@@ -11736,9 +11736,9 @@
                                 </HBox>
                             </graphic>
                         </TitledPane>
-                        <TitledPane fx:id="tpn_T05" animated="false" contentDisplay="RIGHT" layoutY="4560.0"
-                                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0" prefWidth="890.0"
-                                    text="T5M - ">
+                        <TitledPane fx:id="tpn_T05" animated="false" contentDisplay="RIGHT" expanded="false"
+                                    layoutY="160.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0"
+                                    prefWidth="890.0" text="T5M - ">
                             <content>
                                 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="1090.0"
                                             prefWidth="890.0">
@@ -14519,9 +14519,9 @@
                                 </HBox>
                             </graphic>
                         </TitledPane>
-                        <TitledPane fx:id="tpn_T06" animated="false" contentDisplay="RIGHT" layoutY="5700.0"
-                                    minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0" prefWidth="890.0"
-                                    text="T6M - ">
+                        <TitledPane fx:id="tpn_T06" animated="false" contentDisplay="RIGHT" expanded="false"
+                                    layoutY="200.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1130.0"
+                                    prefWidth="890.0" text="T6M - ">
                             <content>
                                 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="1090.0"
                                             prefWidth="890.0">

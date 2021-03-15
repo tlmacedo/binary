@@ -12,6 +12,9 @@ import br.com.tlmacedo.binary.services.Service_Mascara;
 import br.com.tlmacedo.binary.services.Util_Json;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -25,10 +28,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -90,6 +96,9 @@ public class Operacoes implements Initializable {
     static StringProperty parametrosUtilizadosRobo = new SimpleStringProperty("");
     static ObjectProperty<BigDecimal> saldoInicial = new SimpleObjectProperty<>(BigDecimal.ZERO);
     static ObjectProperty<BigDecimal> saldoFinal = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    static IntegerProperty dtHoraInicial = new SimpleIntegerProperty();
+    static IntegerProperty tempoUsoApp = new SimpleIntegerProperty();
+    static Timeline tLineRelogio, tLineUsoApp;
 
     /**
      * Variaveis de informações para operadores
@@ -1268,21 +1277,26 @@ public class Operacoes implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
-            getTimeAtivo()[t_id] = new SimpleBooleanProperty(false);
+        try {
+            for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
+                getTimeAtivo()[t_id] = new SimpleBooleanProperty(false);
+            }
+
+            escutaTitledTab();
+
+            conectarTimesAtivos();
+
+            variaveis_Carregar();
+
+            objetos_Carregar();
+
+            conectarObjetosEmVariaveis();
+
+//            setTpnsExpandedFalse(false);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
-        escutaTitledTab();
-
-//        setTpnsExpandedFalse(false);
-
-        conectarTimesAtivos();
-
-        variaveis_Carregar();
-
-        objetos_Carregar();
-
-        conectarObjetosEmVariaveis();
 
     }
 
@@ -1397,6 +1411,15 @@ public class Operacoes implements Initializable {
 
     private void variaveis_Listener() {
 
+        dtHoraInicialProperty().addListener((ov, o, n) -> {
+            String hora;
+            if (n == null)
+                hora = "";
+            else
+                hora = Service_DataTime.getCarimboStr(n.intValue(), DTF_DATA_HORA_SEGUNDOS);
+            getLblTpnNegociacaoDtHoraInicial().setText(hora);
+        });
+
         appAutorizadoProperty().addListener((ov, o, n) -> {
             getHboxDetalhesSaldoConta().getStyleClass().clear();
             if (n != null && n) {
@@ -1405,6 +1428,29 @@ public class Operacoes implements Initializable {
                 else
                     getHboxDetalhesSaldoConta().getStyleClass().add("vlr-conta-real");
             }
+        });
+
+        roboMonitorandoProperty().addListener((ov, o, n) -> {
+            if (n == null || !n)
+                gettLineUsoApp().stop();
+            if (n)
+                gettLineUsoApp().play();
+        });
+
+        roboMonitorandoPausadoProperty().addListener((ov, o, n) -> {
+            if (n == null || n)
+                gettLineUsoApp().pause();
+            if (!n)
+                gettLineUsoApp().play();
+        });
+
+        tempoUsoAppProperty().addListener((ov, o, n) -> {
+            String tempoUso;
+            if (n == null)
+                tempoUso = "";
+            else
+                tempoUso = Service_DataTime.getCarimboStr(n.intValue(), DTF_MINUTOS_SEGUNDOS);
+            getLblTpnNegociacaoTempoUso().setText(tempoUso);
         });
 
         authorizeProperty().addListener((ov, o, n) -> {
@@ -1503,34 +1549,36 @@ public class Operacoes implements Initializable {
                 if (o == null || n == null) return;
                 getTransacoesObservableList().stream()
                         .filter(transacoes -> transacoes.getS_id() == finalS_id
-                                && transacoes.getTickNegociacaoInicio() == null
-                                && transacoes.getTickVenda() == null)
+                                && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) == 0
+                                && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
                         .forEach(transacao -> {
                             List<HistoricoDeTicks> tmpHistory;
+                            Transacoes finalTransacao = transacao;
                             if ((tmpHistory = Objects.requireNonNull(getHistoricoDeTicksObservableList().stream()
                                     .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
                                             == getSymbolObservableList().get(finalS_id).getId()
-                                            && historicoDeTicks.getTime() >= transacao.getDataHoraCompra()))
+                                            && historicoDeTicks.getTime() >= finalTransacao.getDataHoraCompra()))
                                     .collect(Collectors.toList())).size() > 1) {
                                 transacao.setTickCompra(tmpHistory.get(0).getPrice());
                                 transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
-                                getTransacoesDAO().merger(transacao);
+                                transacao = getTransacoesDAO().merger(transacao);
                             }
                         });
                 getTransacoesObservableList().stream()
                         .filter(transacoes -> transacoes.getS_id() == finalS_id
-                                && transacoes.getTickNegociacaoInicio() != null
-                                && transacoes.getTickVenda() == null
+                                && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) != 0
+                                && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0
                                 && transacoes.getDataHoraExpiry() < n.getEpoch())
                         .forEach(transacao -> {
                             BigDecimal tmpTick;
+                            Transacoes finalTransacao = transacao;
                             if ((tmpTick = Objects.requireNonNull(getHistoricoDeTicksObservableList().stream()
                                     .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
                                             == getSymbolObservableList().get(finalS_id).getId()
-                                            && historicoDeTicks.getTime() == transacao.getDataHoraExpiry())
+                                            && historicoDeTicks.getTime() == finalTransacao.getDataHoraExpiry())
                                     .findFirst()).orElse(null).getPrice()) != null) {
                                 transacao.setTickVenda(tmpTick);
-                                getTransacoesDAO().merger(transacao);
+                                transacao = getTransacoesDAO().merger(transacao);
                             }
                         });
             });
@@ -1722,6 +1770,7 @@ public class Operacoes implements Initializable {
                     setRoboMonitorandoPausado(false);
                 } else {
                     getRobo().monitorarCondicoesParaComprar();
+                    setDtHoraInicial(Service_DataTime.getIntegerDateNow().intValue());
                     setRoboMonitorando(true);
                     getLogSistemaStartDAO().merger(
                             new LogSistemaStart(getCboTpnDetalhesContaBinary().getValue(),
@@ -1750,8 +1799,6 @@ public class Operacoes implements Initializable {
         conectarObjetosEmVariaveis_LastTicks();
 
         conectarObjetosEmVariaveis_Timers();
-
-        //preencherTabelas();
 
     }
 
@@ -1889,13 +1936,22 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-    private void setTpnsExpandedFalse(boolean isExpanded) {
-        getTpn_T01().setExpanded(isExpanded);
-        getTpn_T02().setExpanded(isExpanded);
-        getTpn_T03().setExpanded(isExpanded);
-        getTpn_T04().setExpanded(isExpanded);
-        getTpn_T05().setExpanded(isExpanded);
-        getTpn_T06().setExpanded(isExpanded);
+    private void setTpnsExpandedFalse(boolean isExpanded) throws InterruptedException {
+        for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
+            if (t_id == 0)
+                getTpn_T01().setExpanded(isExpanded);
+            if (t_id == 1)
+                getTpn_T02().setExpanded(isExpanded);
+            if (t_id == 2)
+                getTpn_T03().setExpanded(isExpanded);
+            if (t_id == 3)
+                getTpn_T04().setExpanded(isExpanded);
+            if (t_id == 4)
+                getTpn_T05().setExpanded(isExpanded);
+            if (t_id == 5)
+                getTpn_T06().setExpanded(isExpanded);
+            Thread.sleep(1000);
+        }
     }
 
     private void escutaTitledTab() {
@@ -2124,6 +2180,17 @@ public class Operacoes implements Initializable {
     }
 
     private void conectarObjetosEmVariaveis_Timers() {
+
+        settLineRelogio(new Timeline(new KeyFrame(Duration.seconds(1),
+                event -> getLblTpnNegociacaoDtHoraAtual().setText(LocalDateTime.now()
+                        .format(DTF_DATA_HORA_SEGUNDOS)))));
+        gettLineRelogio().setCycleCount(Animation.INDEFINITE);
+        gettLineRelogio().play();
+
+        settLineUsoApp(new Timeline(new KeyFrame(Duration.seconds(1),
+                event -> setTempoUsoApp(getTempoUsoApp() + 1))));
+        gettLineUsoApp().setCycleCount(Animation.INDEFINITE);
+
 
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             int finalT_id = t_id;
@@ -3459,22 +3526,22 @@ public class Operacoes implements Initializable {
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             if (t_id == 0) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T01_TimeAtivo().selectedProperty());
-                getChkTpn_T01_TimeAtivo().setSelected(true);
+                getChkTpn_T01_TimeAtivo().setSelected(false);
             } else if (t_id == 1) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T02_TimeAtivo().selectedProperty());
-                getChkTpn_T02_TimeAtivo().setSelected(true);
+                getChkTpn_T02_TimeAtivo().setSelected(false);
             } else if (t_id == 2) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T03_TimeAtivo().selectedProperty());
-                getChkTpn_T03_TimeAtivo().setSelected(true);
+                getChkTpn_T03_TimeAtivo().setSelected(false);
             } else if (t_id == 3) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T04_TimeAtivo().selectedProperty());
-                getChkTpn_T04_TimeAtivo().setSelected(true);
+                getChkTpn_T04_TimeAtivo().setSelected(false);
             } else if (t_id == 4) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T05_TimeAtivo().selectedProperty());
-                getChkTpn_T05_TimeAtivo().setSelected(true);
+                getChkTpn_T05_TimeAtivo().setSelected(false);
             } else if (t_id == 5) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T06_TimeAtivo().selectedProperty());
-                getChkTpn_T06_TimeAtivo().setSelected(true);
+                getChkTpn_T06_TimeAtivo().setSelected(false);
             }
         }
 
@@ -12105,5 +12172,45 @@ public class Operacoes implements Initializable {
 
     public void setScrollPaneTpn(ScrollPane scrollPaneTpn) {
         this.scrollPaneTpn = scrollPaneTpn;
+    }
+
+    public static int getDtHoraInicial() {
+        return dtHoraInicial.get();
+    }
+
+    public static IntegerProperty dtHoraInicialProperty() {
+        return dtHoraInicial;
+    }
+
+    public static void setDtHoraInicial(int dtHoraInicial) {
+        Operacoes.dtHoraInicial.set(dtHoraInicial);
+    }
+
+    public static int getTempoUsoApp() {
+        return tempoUsoApp.get();
+    }
+
+    public static IntegerProperty tempoUsoAppProperty() {
+        return tempoUsoApp;
+    }
+
+    public static void setTempoUsoApp(int tempoUsoApp) {
+        Operacoes.tempoUsoApp.set(tempoUsoApp);
+    }
+
+    public static Timeline gettLineUsoApp() {
+        return tLineUsoApp;
+    }
+
+    public static void settLineUsoApp(Timeline tLineUsoApp) {
+        Operacoes.tLineUsoApp = tLineUsoApp;
+    }
+
+    public static Timeline gettLineRelogio() {
+        return tLineRelogio;
+    }
+
+    public static void settLineRelogio(Timeline tLineRelogio) {
+        Operacoes.tLineRelogio = tLineRelogio;
     }
 }
