@@ -46,47 +46,25 @@ public class Abr extends Operacoes implements Robo {
                 martingale[] = new BigDecimal[getTimeFrameObservableList().size()];
         Integer qtd[] = new Integer[getTimeFrameObservableList().size()];
 
-        if (retIsEqualsConfig = alert.alertYesNo().get().equals(ButtonType.YES)) {
+        retIsEqualsConfig = alert.alertYesNo().get().equals(ButtonType.YES);
+        for (int t_id = 0; t_id < (retIsEqualsConfig ? 1 : getTimeFrameObservableList().size()); t_id++) {
+            if (!getTimeAtivo()[t_id].get()) continue;
             alert = new Service_Alert();
             alert.setTitulo("vlr stake.");
             alert.setCabecalho(String.format("Stake %s", getAuthorize().getCurrency()));
-            alert.setContentText("Qual o valor da stake padrão para operações?");
-            vlr[0] = new BigDecimal(alert.alertTextField("#,##0.00", "0.35", "").get());
+            alert.setContentText(String.format("Qual o valor da stake padrão para operações [%s]?", getTimeFrameObservableList().get(t_id)));
+            vlr[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "0.35", "").get());
 
             alert = new Service_Alert();
-            alert.setCabecalho("Espera quantas candles seguidas em pull ou call?");
-            qtd[0] = Integer.valueOf(alert.alertTextField("#,##0.*0", "2", "").get()
+            alert.setCabecalho(String.format("Espera quantas candles seguidas em pull ou call [%s]?", getTimeFrameObservableList().get(t_id)));
+            qtd[t_id] = Integer.valueOf(alert.alertTextField("#,##0.*0", "12", "").get()
                     .replaceAll("\\D", ""));
 
             alert = new Service_Alert();
-            alert.setCabecalho("Qual a porcentagem do martingale em cima do loss acumulado?");
-            martingale[0] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
-
-            for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
-                vlr[t_id] = vlr[0];
-                qtd[t_id] = qtd[0];
-                martingale[t_id] = martingale[0];
-            }
-        } else {
-            for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
-                if (!getTimeAtivo()[t_id].get()) continue;
-                alert = new Service_Alert();
-                alert.setTitulo("vlr stake.");
-                alert.setCabecalho(String.format("Stake %s", getAuthorize().getCurrency()));
-                alert.setContentText(String.format("Qual o valor da stake padrão para operações [%s]?", getTimeFrameObservableList().get(t_id)));
-                vlr[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "0.35", "").get());
-
-                alert = new Service_Alert();
-                alert.setCabecalho(String.format("Espera quantas candles seguidas em pull ou call [%s]?", getTimeFrameObservableList().get(t_id)));
-                qtd[t_id] = Integer.valueOf(alert.alertTextField("#,##0.*0", "2", "").get()
-                        .replaceAll("\\D", ""));
-
-                alert = new Service_Alert();
-                alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado [%s]?", getTimeFrameObservableList().get(t_id)));
-                martingale[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
-            }
+            alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado [%s]?", getTimeFrameObservableList().get(t_id)));
+            martingale[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
         }
-        for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
+        for (int t_id = 0; t_id < (retIsEqualsConfig ? 1 : getTimeFrameObservableList().size()); t_id++) {
             if (!getTimeAtivo()[t_id].getValue()) continue;
             getVlrStkPadrao()[t_id].setValue(vlr[t_id]);
             getQtdCandlesEntrada()[t_id].setValue(qtd[t_id]);

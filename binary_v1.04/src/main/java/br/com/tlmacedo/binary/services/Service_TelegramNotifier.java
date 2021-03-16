@@ -67,7 +67,7 @@ public class Service_TelegramNotifier extends Operacoes {
                 Service_Mascara.getValorMoeda(getSaldoInicial()), getAuthorize().getCurrency());
         String msgParam = getParametrosUtilizadosRobo();
         String msgTelegram = String.format(msgModelo, msgDtHora, msgConta, msgParam);
-        sendMenssage(msgTelegram);
+        sendMenssageAndPrintResult(msgTelegram);
     }
 
 
