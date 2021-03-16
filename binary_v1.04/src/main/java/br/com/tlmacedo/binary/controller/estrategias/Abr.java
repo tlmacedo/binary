@@ -64,11 +64,11 @@ public class Abr extends Operacoes implements Robo {
             alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado [%s]?", getTimeFrameObservableList().get(t_id)));
             martingale[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
         }
-        for (int t_id = 0; t_id < (retIsEqualsConfig ? 1 : getTimeFrameObservableList().size()); t_id++) {
+        for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             if (!getTimeAtivo()[t_id].getValue()) continue;
-            getVlrStkPadrao()[t_id].setValue(vlr[t_id]);
-            getQtdCandlesEntrada()[t_id].setValue(qtd[t_id]);
-            getPorcMartingale()[t_id].setValue(martingale[t_id]);
+            getVlrStkPadrao()[t_id].setValue(vlr[retIsEqualsConfig ? 0 : t_id]);
+            getQtdCandlesEntrada()[t_id].setValue(qtd[retIsEqualsConfig ? 0 : t_id]);
+            getPorcMartingale()[t_id].setValue(martingale[retIsEqualsConfig ? 0 : t_id]);
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 getVlrStkContrato()[t_id][s_id]
                         .setValue(getVlrStkPadrao()[t_id].getValue());
