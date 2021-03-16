@@ -19,12 +19,13 @@ import static br.com.tlmacedo.binary.interfaces.Constants.*;
 public class Service_TelegramNotifier extends Operacoes {
     static URL url;
     static URLConnection conn;
+    static String retorno;
 
     public static void sendMenssageAndPrintResult(String msg) {
 
         try {
             sendMenssage(msg);
-            printRetorno(getConn().getInputStream());
+            printRetorno();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,17 +40,18 @@ public class Service_TelegramNotifier extends Operacoes {
                     .replace("\t", "    ");
             setUrl(new URL(urlString));
             setConn(getUrl().openConnection());
+            setRetorno(getStrRetorno(getConn().getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    public static void printRetorno(InputStream result) throws IOException {
-        System.out.printf("Telegram_sendMenssage: %s\n", getRetorno(result));
+    public static void printRetorno() throws IOException {
+        System.out.printf("Telegram_sendMenssage: %s\n", getRetorno());
     }
 
-    public static String getRetorno(InputStream result) throws IOException {
+    public static String getStrRetorno(InputStream result) throws IOException {
         StringBuilder sb = new StringBuilder();
         InputStream is = new BufferedInputStream(result);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -67,7 +69,7 @@ public class Service_TelegramNotifier extends Operacoes {
                 Service_Mascara.getValorMoeda(getSaldoInicial()), getAuthorize().getCurrency());
         String msgParam = getParametrosUtilizadosRobo();
         String msgTelegram = String.format(msgModelo, msgDtHora, msgConta, msgParam);
-        sendMenssageAndPrintResult(msgTelegram);
+        sendMenssage(msgTelegram);
     }
 
 
@@ -93,5 +95,13 @@ public class Service_TelegramNotifier extends Operacoes {
 
     public static void setConn(URLConnection conn) {
         Service_TelegramNotifier.conn = conn;
+    }
+
+    public static String getRetorno() {
+        return retorno;
+    }
+
+    public static void setRetorno(String retorno) {
+        Service_TelegramNotifier.retorno = retorno;
     }
 }
