@@ -6,6 +6,7 @@ import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.model.vo.Proposal;
 import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Service_NewVlrContrato;
+import br.com.tlmacedo.binary.services.Service_TelegramNotifier;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -19,6 +20,7 @@ public class Abr extends Operacoes implements Robo {
     static Boolean[] Win_Loss = new Boolean[]{true, false};
     static Proposal[][][][] proposal = new Proposal[getTimeFrameObservableList().size()]
             [getSymbolObservableList().size()][getTypeContract().length][getWin_Loss().length];
+    static Boolean[][] firstContratoGerado = new Boolean[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     ChangeListener<? super Number> listener;
 
     @Override
@@ -33,18 +35,18 @@ public class Abr extends Operacoes implements Robo {
     @Override
     public void definicaoDeContrato() throws Exception {
 
-        Service_Alert alert;
+        Service_Alert alert = new Service_Alert("configuração", "Todos frames terão a mesma configuração?", "");
+        boolean retIsEqualsConfig;
+
+        String msgParamRobo = "Robô: %s\n";
+        String msgParamTime = "TimeFrame: %s\n";
+        String msgParam = "vlrStake: %s%s\twaitCandles: %s\tmartingale: %s%%";
+
         BigDecimal vlr[] = new BigDecimal[getTimeFrameObservableList().size()],
                 martingale[] = new BigDecimal[getTimeFrameObservableList().size()];
         Integer qtd[] = new Integer[getTimeFrameObservableList().size()];
-//        BigDecimal vlr, martingale;
-//        Integer qtd;
-        alert = new Service_Alert();
-        alert.setTitulo("Configuração");
-        alert.setCabecalho("Todos times frames terão a mesma configuração?");
-        boolean retorno = alert.alertYesNo().get().equals(ButtonType.YES);
 
-        if (retorno) {
+        if (retIsEqualsConfig = alert.alertYesNo().get().equals(ButtonType.YES)) {
             alert = new Service_Alert();
             alert.setTitulo("vlr stake.");
             alert.setCabecalho(String.format("Stake %s", getAuthorize().getCurrency()));
@@ -92,19 +94,19 @@ public class Abr extends Operacoes implements Robo {
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 getVlrStkContrato()[t_id][s_id]
                         .setValue(getVlrStkPadrao()[t_id].getValue());
-//                for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++) {
-//                    for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++) {
-//                        getProposal()[t_id][s_id][typeContract_id][winLoss_id] = new Proposal();
-//                        if (winLoss_id == 0)
-//                            gerarContrato(t_id, s_id, typeContract_id, null);
-//                    }
-//                }
             }
-//            Thread.sleep(3000);
         }
 
-        setParametrosUtilizadosRobo(String.format("Robô: %s\nvlr_Stake: %s %s\tqtd_Candles: %s\tmart: %s%%",
-                getRobo().getClass().getSimpleName(), getAuthorize().getCurrency(), vlr[0], qtd[0], martingale[0]));
+        if (retIsEqualsConfig)
+            msgParamRobo = msgParamRobo.replace("\n", "\t");
+        StringBuilder stbParametros = new StringBuilder(String.format(msgParamRobo, this.getClass().getSimpleName()));
+        for (int t_id = 0; t_id < (retIsEqualsConfig ? 1 : getTimeFrameObservableList().size()); t_id++) {
+            stbParametros.append(String.format(msgParamTime, retIsEqualsConfig ? "Todas" : getTimeFrameObservableList().get(t_id)));
+            stbParametros.append(String.format(msgParam, vlr[t_id], getAuthorize().getCurrency(), qtd[t_id],
+                    martingale[t_id]));
+        }
+
+        setParametrosUtilizadosRobo(stbParametros.toString());
 
     }
 
@@ -116,24 +118,12 @@ public class Abr extends Operacoes implements Robo {
             int finalT_id = t_id;
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 int finalS_id = s_id;
+                monitorarGerandoPrimeiroContrato(t_id, s_id);
                 getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
                     if (n == null || isRoboMonitorandoPausado() || !isContratoGerado()) return;
                     if (getFirstBuy()[finalT_id][finalS_id].getValue()
-                            && Math.abs(n.intValue()) == getQtdCandlesEntrada()[finalT_id].getValue() - 1) {
-                        for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++) {
-                            for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++) {
-                                getProposal()[finalT_id][finalS_id][typeContract_id][winLoss_id] = new Proposal();
-                                if (winLoss_id == 0) {
-                                    try {
-                                        gerarContrato(finalT_id, finalS_id, typeContract_id, null);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        }
-                    }
-
+                            && !getFirstContratoGerado()[finalT_id][finalS_id])
+                        monitorarGerandoPrimeiroContrato(finalT_id, finalS_id);
                     boolean maior = Math.abs(n.intValue()) > getQtdCandlesEntrada()[finalT_id].getValue(),
                             igual = Math.abs(n.intValue()) == getQtdCandlesEntrada()[finalT_id].getValue();
                     if (maior || igual) {
@@ -152,6 +142,8 @@ public class Abr extends Operacoes implements Robo {
                 });
             }
         }
+
+        Service_TelegramNotifier.sendMsgInicioRobo();
 
     }
 
@@ -180,6 +172,10 @@ public class Abr extends Operacoes implements Robo {
 
     }
 
+    public Abr(boolean isTeste) {
+
+    }
+
     public Abr() {
 
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
@@ -192,6 +188,27 @@ public class Abr extends Operacoes implements Robo {
                 for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                     getVlrStkContrato()[t_id][s_id] = new SimpleObjectProperty<>();
                     getVlrLossAcumulado()[t_id][s_id] = new SimpleObjectProperty<>(BigDecimal.ZERO);
+                }
+            }
+        }
+
+    }
+
+    public static void monitorarGerandoPrimeiroContrato(int t_id, int s_id) {
+
+        if (getFirstBuy()[t_id][s_id].getValue()
+                && Math.abs(getQtdCallOrPut()[t_id][s_id].intValue()) >= getQtdCandlesEntrada()[t_id].getValue() - 1) {
+            for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++) {
+                for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++) {
+                    getProposal()[t_id][s_id][typeContract_id][winLoss_id] = new Proposal();
+                    if (winLoss_id == 0) {
+                        try {
+                            gerarContrato(t_id, s_id, typeContract_id, null);
+                            getFirstContratoGerado()[t_id][s_id] = true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
@@ -239,5 +256,13 @@ public class Abr extends Operacoes implements Robo {
 
     public static void setWin_Loss(Boolean[] win_Loss) {
         Win_Loss = win_Loss;
+    }
+
+    public static Boolean[][] getFirstContratoGerado() {
+        return firstContratoGerado;
+    }
+
+    public static void setFirstContratoGerado(Boolean[][] firstContratoGerado) {
+        Abr.firstContratoGerado = firstContratoGerado;
     }
 }

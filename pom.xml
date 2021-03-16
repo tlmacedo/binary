@@ -128,6 +128,13 @@
         <!--        </dependency>-->
 
 
+        <!--        <dependency>-->
+        <!--            <groupId>com.github.pengrad</groupId>-->
+        <!--            <artifactId>java-telegram-bot-api</artifactId>-->
+        <!--            <version>5.1.0</version>-->
+        <!--        </dependency>-->
+
+
     </dependencies>
 
 

@@ -197,9 +197,6 @@ public class WSClient extends WebSocketListener {
 
             if (t_id == 0) {
                 HistoricoDeTicks hTicks = new HistoricoDeTicks(ohlc);
-                if (Operacoes.isRoboMonitorando() && !Operacoes.isRoboMonitorandoPausado()) {
-                    hTicks = Operacoes.getHistoricoDeTicksDAO().merger(hTicks);
-                }
                 Operacoes.getHistoricoDeTicksObservableList().add(hTicks);
                 Operacoes.getUltimoOhlcStr()[s_id].setValue(ohlc);
                 while (Operacoes.getHistoricoDeTicksObservableList().size() > 200) {

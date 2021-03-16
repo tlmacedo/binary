@@ -12,6 +12,18 @@ public interface Constants {
     String CONECT_URL_BINARY = URL_BINARY + APP_BINARY;
 
 
+    String TELEGRAM_TOKEN = "1559825573:AAEgXlAZv7lDL-9S6C4XskI10-RmVYGPrHc";
+    String TELEGRAM_CHAT_ID = "1025551558";
+    String TELEGRAM_URL = String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=",
+            TELEGRAM_TOKEN, TELEGRAM_CHAT_ID);
+
+
+//                    .fromUri("https://api.telegram.org")
+//                .path("/{token}/sendMessage")
+//                .queryParam("chat_id", CHAT_ID)
+//                .queryParam("text", message);
+
+
     /**
      * Detalhes de Contrato Padrao
      */
@@ -47,7 +59,7 @@ public interface Constants {
     Boolean CONSOLE_BINARY_AUTHORIZE = false;
     Boolean CONSOLE_BINARY_ERROR = true;
     Boolean CONSOLE_BINARY_TICK = false;
-    Boolean CONSOLE_BINARY_PROPOSAL = true;
+    Boolean CONSOLE_BINARY_PROPOSAL = false;
     Boolean CONSOLE_BINARY_BUY = false;
     Boolean CONSOLE_BINARY_TRANSACTION = true;
     Boolean CONSOLE_BINARY_HISTORY = false;

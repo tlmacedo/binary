@@ -10,8 +10,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Entity(name = "historicoDeTicks")
-@Table(name = "historioco_de_ticks")
+//@Entity(name = "historicoDeTicks")
+//@Table(name = "historioco_de_ticks")
 public class HistoricoDeTicks implements Serializable {
     public static final long serialVersionUID = 1L;
 

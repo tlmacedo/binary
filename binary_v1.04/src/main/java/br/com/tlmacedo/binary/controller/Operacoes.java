@@ -56,7 +56,6 @@ public class Operacoes implements Initializable {
     static ContaTokenDAO contaTokenDAO = new ContaTokenDAO();
     static TransacoesDAO transacoesDAO = new TransacoesDAO();
     static TransactionDAO transactionDAO = new TransactionDAO();
-    static HistoricoDeTicksDAO historicoDeTicksDAO = new HistoricoDeTicksDAO();
     static LogSistemaStartDAO logSistemaStartDAO = new LogSistemaStartDAO();
 
 
@@ -1547,13 +1546,15 @@ public class Operacoes implements Initializable {
                                 && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) == 0
                                 && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
                         .forEach(transacao -> {
+//                            System.out.printf("Buy_transação_001: %s\n", transacao);
                             List<HistoricoDeTicks> tmpHistory;
                             Transacoes finalTransacao = transacao;
-                            if ((tmpHistory = Objects.requireNonNull(getHistoricoDeTicksObservableList().stream()
+                            if ((tmpHistory = getHistoricoDeTicksObservableList().stream()
                                     .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
                                             == getSymbolObservableList().get(finalS_id).getId()
-                                            && historicoDeTicks.getTime() >= finalTransacao.getDataHoraCompra()))
+                                            && historicoDeTicks.getTime() >= finalTransacao.getDataHoraCompra())
                                     .collect(Collectors.toList())).size() > 1) {
+//                                System.out.printf("\t\tBuy_transação_002: %s\n", tmpHistory);
                                 transacao.setTickCompra(tmpHistory.get(0).getPrice());
                                 transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
                                 transacao = getTransacoesDAO().merger(transacao);
@@ -1565,14 +1566,15 @@ public class Operacoes implements Initializable {
                                 && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0
                                 && transacoes.getDataHoraExpiry() < n.getEpoch())
                         .forEach(transacao -> {
-                            BigDecimal tmpTick;
+//                            System.out.printf("Sell_transação_001: %s\n", transacao);
+                            HistoricoDeCandles tmpHistory;
                             Transacoes finalTransacao = transacao;
-                            if ((tmpTick = Objects.requireNonNull(getHistoricoDeTicksObservableList().stream()
-                                    .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
-                                            == getSymbolObservableList().get(finalS_id).getId()
-                                            && historicoDeTicks.getTime() == finalTransacao.getDataHoraExpiry())
-                                    .findFirst()).orElse(null).getPrice()) != null) {
-                                transacao.setTickVenda(tmpTick);
+                            if ((tmpHistory = getHistoricoDeCandlesFilteredList()[transacao.getT_id()][transacao.getS_id()].stream()
+                                    .filter(candles -> candles.getEpoch() == finalTransacao.getDataHoraExpiry())
+                                    .findFirst().orElse(null)) != null) {
+//                                System.out.printf("\t\tSell_transação_002: %s\n", tmpHistory);
+                                transacao.setTickCompra(tmpHistory.getOpen());
+                                transacao.setTickVenda(tmpHistory.getClose());
                                 transacao = getTransacoesDAO().merger(transacao);
                             }
                         });
@@ -3733,14 +3735,6 @@ public class Operacoes implements Initializable {
 
     public static void setTransactionDAO(TransactionDAO transactionDAO) {
         Operacoes.transactionDAO = transactionDAO;
-    }
-
-    public static HistoricoDeTicksDAO getHistoricoDeTicksDAO() {
-        return historicoDeTicksDAO;
-    }
-
-    public static void setHistoricoDeTicksDAO(HistoricoDeTicksDAO historicoDeTicksDAO) {
-        Operacoes.historicoDeTicksDAO = historicoDeTicksDAO;
     }
 
     public static LogSistemaStartDAO getLogSistemaStartDAO() {

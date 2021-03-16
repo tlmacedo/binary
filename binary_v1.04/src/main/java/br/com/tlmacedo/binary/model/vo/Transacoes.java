@@ -1,8 +1,10 @@
 package br.com.tlmacedo.binary.model.vo;
 
 import br.com.tlmacedo.binary.controller.Operacoes;
+import br.com.tlmacedo.binary.model.enums.ACTION;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.services.Service_DataTime;
+import br.com.tlmacedo.binary.services.Service_TelegramNotifier;
 import br.com.tlmacedo.binary.services.Util_Json;
 import javafx.beans.property.*;
 
@@ -78,6 +80,8 @@ public class Transacoes implements Serializable {
         else
             Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(), null, null);
 
+        Service_TelegramNotifier.sendMsgTransacoesAction(this, transaction.getBalance(), ACTION.BUY);
+
     }
 
     public void isSELL(Transaction transaction) throws Exception {
@@ -94,9 +98,12 @@ public class Transacoes implements Serializable {
         if (Operacoes.isRoboMonitorando())
             if (!Operacoes.isRoboMonitorandoPausado()
                     && Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() >= 2
-                    && getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+                    && getStakeVenda().compareTo(BigDecimal.ZERO) > 0) {
                 Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
                         CONTRACT_TYPE.valueOf(getContract_type()), true);
+            }
+
+        Service_TelegramNotifier.sendMsgTransacoesAction(this, transaction.getBalance(), ACTION.SELL);
 
     }
 
