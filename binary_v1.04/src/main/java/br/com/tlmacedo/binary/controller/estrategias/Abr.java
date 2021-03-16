@@ -188,6 +188,7 @@ public class Abr extends Operacoes implements Robo {
                 for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                     getVlrStkContrato()[t_id][s_id] = new SimpleObjectProperty<>();
                     getVlrLossAcumulado()[t_id][s_id] = new SimpleObjectProperty<>(BigDecimal.ZERO);
+                    getFirstContratoGerado()[t_id][s_id] = false;
                 }
             }
         }
