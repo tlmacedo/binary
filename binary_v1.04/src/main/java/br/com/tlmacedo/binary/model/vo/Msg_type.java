@@ -12,6 +12,10 @@ public class Msg_type implements Serializable {
     public Msg_type() {
     }
 
+    public Msg_type(MSG_TYPE msgType) {
+        this.msgType = msgType;
+    }
+
     public Msg_type(String strMsgType) {
         this.msgType = MSG_TYPE.valueOf(strMsgType.toUpperCase());
     }

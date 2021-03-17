@@ -7,6 +7,7 @@ import br.com.tlmacedo.binary.model.vo.Proposal;
 import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Service_NewVlrContrato;
 import br.com.tlmacedo.binary.services.Service_TelegramNotifier;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 public class Abr extends Operacoes implements Robo {
 
     static CONTRACT_TYPE[] typeContract = new CONTRACT_TYPE[]{CONTRACT_TYPE.CALL, CONTRACT_TYPE.PUT};
+    static Integer qtdLossPause = 2;
     static Boolean[] Win_Loss = new Boolean[]{true, false};
     static Proposal[][][][] proposal = new Proposal[getTimeFrameObservableList().size()]
             [getSymbolObservableList().size()][getTypeContract().length][getWin_Loss().length];
@@ -52,16 +54,19 @@ public class Abr extends Operacoes implements Robo {
             alert = new Service_Alert();
             alert.setTitulo("vlr stake.");
             alert.setCabecalho(String.format("Stake %s", getAuthorize().getCurrency()));
-            alert.setContentText(String.format("Qual o valor da stake padrão para operações [%s]?", getTimeFrameObservableList().get(t_id)));
+            alert.setContentText(String.format("Qual o valor da stake padrão para operações%s?",
+                    !retIsEqualsConfig ? String.format(" [%s]", getTimeFrameObservableList().get(t_id)) : ""));
             vlr[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "0.35", "").get());
 
             alert = new Service_Alert();
-            alert.setCabecalho(String.format("Espera quantas candles seguidas em pull ou call [%s]?", getTimeFrameObservableList().get(t_id)));
+            alert.setCabecalho(String.format("Espera quantas candles seguidas em pull ou call%s?",
+                    !retIsEqualsConfig ? String.format(" [%s]", getTimeFrameObservableList().get(t_id)) : ""));
             qtd[t_id] = Integer.valueOf(alert.alertTextField("#,##0.*0", "12", "").get()
                     .replaceAll("\\D", ""));
 
             alert = new Service_Alert();
-            alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado [%s]?", getTimeFrameObservableList().get(t_id)));
+            alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado?",
+                    !retIsEqualsConfig ? String.format(" [%s]", getTimeFrameObservableList().get(t_id)) : ""));
             martingale[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
         }
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
@@ -99,22 +104,32 @@ public class Abr extends Operacoes implements Robo {
                 monitorarGerandoPrimeiroContrato(t_id, s_id);
                 getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
                     if (n == null || isRoboMonitorandoPausado() || !isContratoGerado()) return;
+                    Integer qtdAbsoluto = Math.abs(n.intValue());
                     if (getFirstBuy()[finalT_id][finalS_id].getValue()
                             && !getFirstContratoGerado()[finalT_id][finalS_id])
                         monitorarGerandoPrimeiroContrato(finalT_id, finalS_id);
-                    boolean maior = Math.abs(n.intValue()) > getQtdCandlesEntrada()[finalT_id].getValue(),
-                            igual = Math.abs(n.intValue()) == getQtdCandlesEntrada()[finalT_id].getValue();
+                    boolean maior = qtdAbsoluto > getQtdCandlesEntrada()[finalT_id].getValue(),
+                            igual = qtdAbsoluto == getQtdCandlesEntrada()[finalT_id].getValue();
+                    if ((qtdAbsoluto - getQtdCandlesEntrada()[finalT_id].getValue()) >= qtdLossPause) {
+                        if (getProposal()[finalT_id][finalS_id][n.intValue() > 0 ? 0 : 1][1] == null)
+                            gerarNovosContratos(finalT_id, finalS_id, getTypeContract()[n.intValue() > 0 ? 0 : 1], false);
+                        return;
+                    }
                     if (maior || igual) {
                         Proposal proposal;
-                        if (getFirstBuy()[finalT_id][finalS_id].getValue())
+                        if (getFirstBuy()[finalT_id][finalS_id].getValue()) {
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1][0];
-                        else
+                        } else {
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1]
                                     [maior ? 1 : 0];
+                        }
                         if (proposal != null) {
                             getVlrStkContrato()[finalT_id][finalS_id].setValue(proposal.getAsk_price());
-                            solicitarCompraContrato(proposal);
                             getFirstBuy()[finalT_id][finalS_id].setValue(false);
+                            solicitarCompraContrato(proposal);
+                            for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++)
+                                for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++)
+                                    getProposal()[finalT_id][finalS_id][typeContract_id][winLoss_id] = new Proposal();
                         }
                     }
                 });
@@ -205,28 +220,20 @@ public class Abr extends Operacoes implements Robo {
      * <p>
      */
 
-    public static Proposal[][][][] getProposal() {
-        return proposal;
-    }
-
-    public static void setProposal(Proposal[][][][] proposal) {
-        Abr.proposal = proposal;
-    }
-
-    public ChangeListener<? super Number> getListener() {
-        return listener;
-    }
-
-    public void setListener(ChangeListener<? super Number> listener) {
-        this.listener = listener;
-    }
-
     public static CONTRACT_TYPE[] getTypeContract() {
         return typeContract;
     }
 
     public static void setTypeContract(CONTRACT_TYPE[] typeContract) {
         Abr.typeContract = typeContract;
+    }
+
+    public static Integer getQtdLossPause() {
+        return qtdLossPause;
+    }
+
+    public static void setQtdLossPause(Integer qtdLossPause) {
+        Abr.qtdLossPause = qtdLossPause;
     }
 
     public static Boolean[] getWin_Loss() {
@@ -237,11 +244,27 @@ public class Abr extends Operacoes implements Robo {
         Win_Loss = win_Loss;
     }
 
+    public static Proposal[][][][] getProposal() {
+        return proposal;
+    }
+
+    public static void setProposal(Proposal[][][][] proposal) {
+        Abr.proposal = proposal;
+    }
+
     public static Boolean[][] getFirstContratoGerado() {
         return firstContratoGerado;
     }
 
     public static void setFirstContratoGerado(Boolean[][] firstContratoGerado) {
         Abr.firstContratoGerado = firstContratoGerado;
+    }
+
+    public ChangeListener<? super Number> getListener() {
+        return listener;
+    }
+
+    public void setListener(ChangeListener<? super Number> listener) {
+        this.listener = listener;
     }
 }

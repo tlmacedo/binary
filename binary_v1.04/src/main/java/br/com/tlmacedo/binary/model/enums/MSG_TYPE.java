@@ -15,7 +15,9 @@ public enum MSG_TYPE {
     TRANSACTION(6, "transaction"),
     ACTIVE_SYMBOLS(7, "active_symbols"),
     CANDLES(8, "candles"),
-    OHLC(9, "ohlc");
+    OHLC(9, "ohlc"),
+    SELL_EXPIRED(10, "sell_expired"),
+    CANCEL(11, "cancel");
 
 
     private Integer cod;

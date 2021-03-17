@@ -248,13 +248,14 @@
             </content>
         </TitledPane>
         <TitledPane fx:id="tpn_Negociacao" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="92.0"
-                    minWidth="-Infinity" prefHeight="87.0" prefWidth="890.0" text="Negociação:" wrapText="true">
+                    minWidth="-Infinity" prefHeight="95.0" prefWidth="890.0" text="Negociação:" wrapText="true">
             <content>
                 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="53.0" prefWidth="890.0">
                     <children>
                         <HBox layoutX="5.0" layoutY="2.0">
                             <children>
-                                <VBox alignment="CENTER_LEFT" prefWidth="200.0" styleClass="informacoes">
+                                <VBox alignment="CENTER_LEFT" prefHeight="55.0" prefWidth="200.0"
+                                      styleClass="informacoes">
                                     <children>
                                         <Label prefHeight="22.0" prefWidth="195.0" text="Robos:" textAlignment="CENTER"
                                                wrapText="true"/>
@@ -267,13 +268,19 @@
                                         </ComboBox>
                                     </children>
                                 </VBox>
-                                <VBox alignment="CENTER_LEFT" prefWidth="550.0" styleClass="informacoes">
+                                <VBox alignment="CENTER_LEFT" minHeight="0.0" prefHeight="55.0" prefWidth="550.0"
+                                      styleClass="informacoes">
                                     <children>
-                                        <Label prefHeight="22.0" prefWidth="545.0" text="Parametros: "
-                                               textAlignment="CENTER" wrapText="true"/>
-                                        <Label fx:id="lblNegociacaoParametros" alignment="CENTER_LEFT"
-                                               maxHeight="-Infinity" minHeight="-Infinity" prefHeight="23.0"
-                                               prefWidth="545.0"/>
+                                        <Label prefWidth="545.0" text="Parametros: " textAlignment="CENTER"
+                                               wrapText="true"/>
+                                        <ScrollPane hbarPolicy="NEVER" minHeight="0.0" prefHeight="40.0"
+                                                    vbarPolicy="ALWAYS">
+                                            <content>
+                                                <Label fx:id="lblNegociacaoParametros" alignment="CENTER_LEFT"
+                                                       maxHeight="-Infinity" minHeight="-Infinity" prefHeight="23.0"
+                                                       prefWidth="545.0"/>
+                                            </content>
+                                        </ScrollPane>
                                     </children>
                                 </VBox>
                                 <VBox prefWidth="65.0">
@@ -399,7 +406,7 @@
                 </HBox>
             </graphic>
         </TitledPane>
-        <TitledPane fx:id="tpn_LastTicks" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="181.0"
+        <TitledPane fx:id="tpn_LastTicks" animated="false" contentDisplay="RIGHT" layoutX="5.0" layoutY="190.0"
                     minWidth="-Infinity" prefHeight="170.0" prefWidth="890.0" text="LastTicks">
             <content>
                 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="145.0" prefWidth="890.0">
@@ -597,7 +604,7 @@
                 </AnchorPane>
             </content>
         </TitledPane>
-        <ScrollPane fx:id="scrollPaneTpn" hbarPolicy="NEVER" layoutX="5.0" layoutY="352.0" pannable="true"
+        <ScrollPane fx:id="scrollPaneTpn" hbarPolicy="NEVER" layoutX="5.0" layoutY="360.0" pannable="true"
                     prefHeight="1205.0" vbarPolicy="ALWAYS">
             <content>
                 <AnchorPane>
@@ -3210,7 +3217,7 @@
                                 <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="820.0" styleClass="main">
                                     <children>
                                         <JFXCheckBox fx:id="chkTpn_T01_TimeAtivo" alignment="CENTER"
-                                                     contentDisplay="GRAPHIC_ONLY" graphicTextGap="2.0" selected="true"
+                                                     contentDisplay="GRAPHIC_ONLY" disable="true" graphicTextGap="2.0"
                                                      text=" "/>
                                         <HBox alignment="CENTER_LEFT" layoutX="15.0" layoutY="10.0" prefWidth="150.0">
                                             <children>
@@ -5993,7 +6000,7 @@
                                 <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="820.0" styleClass="main">
                                     <children>
                                         <JFXCheckBox fx:id="chkTpn_T02_TimeAtivo" alignment="CENTER"
-                                                     contentDisplay="GRAPHIC_ONLY" graphicTextGap="2.0" selected="true"
+                                                     contentDisplay="GRAPHIC_ONLY" disable="true" graphicTextGap="2.0"
                                                      text=" "/>
                                         <HBox alignment="CENTER_LEFT" layoutX="15.0" layoutY="10.0" prefWidth="150.0">
                                             <children>
@@ -8776,7 +8783,7 @@
                                 <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="820.0" styleClass="main">
                                     <children>
                                         <JFXCheckBox fx:id="chkTpn_T03_TimeAtivo" alignment="CENTER"
-                                                     contentDisplay="GRAPHIC_ONLY" graphicTextGap="2.0" selected="true"
+                                                     contentDisplay="GRAPHIC_ONLY" disable="true" graphicTextGap="2.0"
                                                      text=" "/>
                                         <HBox alignment="CENTER_LEFT" layoutX="15.0" layoutY="10.0" prefWidth="150.0">
                                             <children>
@@ -11559,7 +11566,7 @@
                                 <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="820.0" styleClass="main">
                                     <children>
                                         <JFXCheckBox fx:id="chkTpn_T04_TimeAtivo" alignment="CENTER"
-                                                     contentDisplay="GRAPHIC_ONLY" graphicTextGap="2.0" selected="true"
+                                                     contentDisplay="GRAPHIC_ONLY" disable="true" graphicTextGap="2.0"
                                                      text=" "/>
                                         <HBox alignment="CENTER_LEFT" layoutX="15.0" layoutY="10.0" prefWidth="150.0">
                                             <children>
@@ -14342,7 +14349,7 @@
                                 <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="820.0" styleClass="main">
                                     <children>
                                         <JFXCheckBox fx:id="chkTpn_T05_TimeAtivo" alignment="CENTER"
-                                                     contentDisplay="GRAPHIC_ONLY" graphicTextGap="2.0" selected="true"
+                                                     contentDisplay="GRAPHIC_ONLY" disable="true" graphicTextGap="2.0"
                                                      text=" "/>
                                         <HBox alignment="CENTER_LEFT" layoutX="15.0" layoutY="10.0" prefWidth="150.0">
                                             <children>
@@ -17125,7 +17132,7 @@
                                 <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="820.0" styleClass="main">
                                     <children>
                                         <JFXCheckBox fx:id="chkTpn_T06_TimeAtivo" alignment="CENTER"
-                                                     contentDisplay="GRAPHIC_ONLY" graphicTextGap="2.0" selected="true"
+                                                     contentDisplay="GRAPHIC_ONLY" disable="true" graphicTextGap="2.0"
                                                      text=" "/>
                                         <HBox alignment="CENTER_LEFT" layoutX="15.0" layoutY="10.0" prefWidth="150.0">
                                             <children>

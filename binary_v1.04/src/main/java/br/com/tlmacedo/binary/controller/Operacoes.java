@@ -1557,14 +1557,14 @@ public class Operacoes implements Initializable {
 //                                System.out.printf("\t\tBuy_transação_002: %s\n", tmpHistory);
                                 transacao.setTickCompra(tmpHistory.get(0).getPrice());
                                 transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
-                                transacao = getTransacoesDAO().merger(transacao);
+                                getTransacoesDAO().merger(transacao);
                             }
                         });
                 getTransacoesObservableList().stream()
                         .filter(transacoes -> transacoes.getS_id() == finalS_id
                                 && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) != 0
                                 && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0
-                                && transacoes.getDataHoraExpiry() < n.getEpoch())
+                                && transacoes.dataHoraVendaProperty().getValue() != null)
                         .forEach(transacao -> {
 //                            System.out.printf("Sell_transação_001: %s\n", transacao);
                             HistoricoDeCandles tmpHistory;
@@ -1575,7 +1575,7 @@ public class Operacoes implements Initializable {
 //                                System.out.printf("\t\tSell_transação_002: %s\n", tmpHistory);
                                 transacao.setTickCompra(tmpHistory.getOpen());
                                 transacao.setTickVenda(tmpHistory.getClose());
-                                transacao = getTransacoesDAO().merger(transacao);
+                                getTransacoesDAO().merger(transacao);
                             }
                         });
             });
@@ -1773,7 +1773,6 @@ public class Operacoes implements Initializable {
                     setRoboMonitorandoPausado(false);
                 } else {
                     getRobo().monitorarCondicoesParaComprar();
-                    //setDtHoraInicial(Service_DataTime.getIntegerDateNow().intValue());
                     getLblTpnNegociacaoDtHoraInicial().setText(LocalDateTime.now().format(DTF_DATA_HORA_SEGUNDOS));
                     setRoboMonitorando(true);
                     getLogSistemaStartDAO().merger(
@@ -1789,6 +1788,7 @@ public class Operacoes implements Initializable {
         getBtnTpnNegociacao_Pausar().setOnAction(event -> setRoboMonitorandoPausado(true));
 
         getBtnTpnNegociacao_Stop().setOnAction(event -> {
+            getWsClientObjectProperty().getMyWebSocket().send("{\"sell_expired\": 1}");
             getCboNegociacaoRobos().getSelectionModel().select(0);
             setRoboMonitorando(false);
             setRoboMonitorandoPausado(false);
@@ -3553,21 +3553,27 @@ public class Operacoes implements Initializable {
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             if (t_id == 0) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T01_TimeAtivo().selectedProperty());
+                getChkTpn_T01_TimeAtivo().setDisable(false);
                 getChkTpn_T01_TimeAtivo().setSelected(true);
             } else if (t_id == 1) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T02_TimeAtivo().selectedProperty());
+                getChkTpn_T02_TimeAtivo().setDisable(false);
                 getChkTpn_T02_TimeAtivo().setSelected(true);
             } else if (t_id == 2) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T03_TimeAtivo().selectedProperty());
+                getChkTpn_T03_TimeAtivo().setDisable(false);
                 getChkTpn_T03_TimeAtivo().setSelected(true);
             } else if (t_id == 3) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T04_TimeAtivo().selectedProperty());
+                getChkTpn_T04_TimeAtivo().setDisable(false);
                 getChkTpn_T04_TimeAtivo().setSelected(true);
             } else if (t_id == 4) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T05_TimeAtivo().selectedProperty());
+                getChkTpn_T05_TimeAtivo().setDisable(false);
                 getChkTpn_T05_TimeAtivo().setSelected(true);
             } else if (t_id == 5) {
                 getTimeAtivo()[t_id].bind(getChkTpn_T06_TimeAtivo().selectedProperty());
+                getChkTpn_T06_TimeAtivo().setDisable(false);
                 getChkTpn_T06_TimeAtivo().setSelected(true);
             }
         }

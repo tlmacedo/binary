@@ -25,9 +25,9 @@ public class Transacoes implements Serializable {
     ObjectProperty<Symbol> symbol = new SimpleObjectProperty<>();
     LongProperty transaction_id = new SimpleLongProperty();
     LongProperty contract_id = new SimpleLongProperty();
-    IntegerProperty dataHoraCompra = new SimpleIntegerProperty();
-    IntegerProperty dataHoraVenda = new SimpleIntegerProperty();
-    IntegerProperty dataHoraExpiry = new SimpleIntegerProperty();
+    IntegerProperty dataHoraCompra = new SimpleIntegerProperty(0);
+    IntegerProperty dataHoraVenda = new SimpleIntegerProperty(0);
+    IntegerProperty dataHoraExpiry = new SimpleIntegerProperty(0);
     StringProperty contract_type = new SimpleStringProperty();
     StringProperty longcode = new SimpleStringProperty();
     ObjectProperty<BigDecimal> tickCompra = new SimpleObjectProperty<>();
@@ -71,9 +71,9 @@ public class Transacoes implements Serializable {
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
         this.consolidado = new SimpleBooleanProperty(false);
 
-//        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
+        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
 
-        Operacoes.getTransacoesObservableList().add(this);
+//        Operacoes.getTransacoesObservableList().add(this);
 
         if (Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() >= 2)
             Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(), contract, false);
@@ -93,7 +93,7 @@ public class Transacoes implements Serializable {
         this.stakeResult = new SimpleObjectProperty<>(transaction.getAmount().add(getStakeCompra()).setScale(2, RoundingMode.HALF_UP));
         this.consolidado = new SimpleBooleanProperty(true);
 
-        Operacoes.getTransacoesObservableList().set(indexTransacoes, this);
+        Operacoes.getTransacoesObservableList().set(indexTransacoes, Operacoes.getTransacoesDAO().merger(this));
 
         if (Operacoes.isRoboMonitorando())
             if (!Operacoes.isRoboMonitorandoPausado()
