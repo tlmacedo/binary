@@ -7,7 +7,6 @@ import br.com.tlmacedo.binary.model.vo.Proposal;
 import br.com.tlmacedo.binary.services.Service_Alert;
 import br.com.tlmacedo.binary.services.Service_NewVlrContrato;
 import br.com.tlmacedo.binary.services.Service_TelegramNotifier;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -19,6 +18,7 @@ public class Abr extends Operacoes implements Robo {
 
     static CONTRACT_TYPE[] typeContract = new CONTRACT_TYPE[]{CONTRACT_TYPE.CALL, CONTRACT_TYPE.PUT};
     static Integer qtdLossPause = 2;
+    static Boolean[][] lossPaused = new Boolean[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     static Boolean[] Win_Loss = new Boolean[]{true, false};
     static Proposal[][][][] proposal = new Proposal[getTimeFrameObservableList().size()]
             [getSymbolObservableList().size()][getTypeContract().length][getWin_Loss().length];
@@ -110,10 +110,10 @@ public class Abr extends Operacoes implements Robo {
                         monitorarGerandoPrimeiroContrato(finalT_id, finalS_id);
                     boolean maior = qtdAbsoluto > getQtdCandlesEntrada()[finalT_id].getValue(),
                             igual = qtdAbsoluto == getQtdCandlesEntrada()[finalT_id].getValue();
-                    if ((qtdAbsoluto - getQtdCandlesEntrada()[finalT_id].getValue()) >= qtdLossPause) {
-                        if (getProposal()[finalT_id][finalS_id][n.intValue() > 0 ? 0 : 1][1] == null)
-                            gerarNovosContratos(finalT_id, finalS_id, getTypeContract()[n.intValue() > 0 ? 0 : 1], false);
-                        return;
+                    if ((qtdAbsoluto - getQtdCandlesEntrada()[finalT_id].getValue()) >= getQtdLossPause()) {
+                        if (getLossPaused()[finalT_id][finalS_id])
+                            return;
+                        getLossPaused()[finalT_id][finalS_id] = true;
                     }
                     if (maior || igual) {
                         Proposal proposal;
@@ -121,11 +121,12 @@ public class Abr extends Operacoes implements Robo {
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1][0];
                         } else {
                             proposal = getProposal()[finalT_id][finalS_id][n.intValue() < 0 ? 0 : 1]
-                                    [maior ? 1 : 0];
+                                    [(maior || getLossPaused()[finalT_id][finalS_id]) ? 1 : 0];
                         }
                         if (proposal != null) {
                             getVlrStkContrato()[finalT_id][finalS_id].setValue(proposal.getAsk_price());
                             getFirstBuy()[finalT_id][finalS_id].setValue(false);
+                            getLossPaused()[finalT_id][finalS_id] = false;
                             solicitarCompraContrato(proposal);
                             for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++)
                                 for (int winLoss_id = 0; winLoss_id < getWin_Loss().length; winLoss_id++)
@@ -182,6 +183,7 @@ public class Abr extends Operacoes implements Robo {
                     getVlrStkContrato()[t_id][s_id] = new SimpleObjectProperty<>();
                     getVlrLossAcumulado()[t_id][s_id] = new SimpleObjectProperty<>(BigDecimal.ZERO);
                     getFirstContratoGerado()[t_id][s_id] = false;
+                    getLossPaused()[t_id][s_id] = false;
                 }
             }
         }
@@ -266,5 +268,13 @@ public class Abr extends Operacoes implements Robo {
 
     public void setListener(ChangeListener<? super Number> listener) {
         this.listener = listener;
+    }
+
+    public static Boolean[][] getLossPaused() {
+        return lossPaused;
+    }
+
+    public static void setLossPaused(Boolean[][] lossPaused) {
+        Abr.lossPaused = lossPaused;
     }
 }

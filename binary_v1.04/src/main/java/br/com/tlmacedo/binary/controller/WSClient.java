@@ -115,7 +115,6 @@ public class WSClient extends WebSocketListener {
                 }
                 case BUY -> {
                     setBuy((Buy) Util_Json.getObject_from_String(text, Buy.class));
-                    //refreshBuy();
                 }
                 case TRANSACTION -> {
                     setTransaction((Transaction) Util_Json.getObject_from_String(text, Transaction.class));
@@ -166,7 +165,8 @@ public class WSClient extends WebSocketListener {
     private void refreshCancel(Passthrough passthrough, Cancel cancel) {
 
         Platform.runLater(() -> {
-
+            System.out.printf("Cancelou o contrato de n %s da time: %s e symbol: %s\n",
+                    cancel.getContract_id(), Operacoes.getTimeFrameObservableList());
         });
 
     }
@@ -276,9 +276,9 @@ public class WSClient extends WebSocketListener {
     private void refreshTransaction(Transaction transaction) {
 
         Platform.runLater(() -> {
-
-            if (transaction.getAction() != null)
-                Operacoes.newTransaction(Operacoes.getTransactionDAO().merger(transaction));
+            if (Operacoes.isRoboMonitorando())
+                if (transaction.getAction() != null)
+                    Operacoes.newTransaction(Operacoes.getTransactionDAO().merger(transaction));
 
         });
 

@@ -1,6 +1,7 @@
 package br.com.tlmacedo.binary.model.vo;
 
 import br.com.tlmacedo.binary.controller.Operacoes;
+import br.com.tlmacedo.binary.controller.estrategias.Abr;
 import br.com.tlmacedo.binary.model.enums.ACTION;
 import br.com.tlmacedo.binary.model.enums.CONTRACT_TYPE;
 import br.com.tlmacedo.binary.services.Service_DataTime;
@@ -76,7 +77,10 @@ public class Transacoes implements Serializable {
 //        Operacoes.getTransacoesObservableList().add(this);
 
         if (Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() >= 2)
-            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(), contract, false);
+            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
+                    (Operacoes.getQtdCallOrPut()[getT_id()][getT_id()].getValue()
+                            < (Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() + Abr.getQtdLossPause())
+                            ? contract : null), false);
         else
             Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(), null, null);
 
