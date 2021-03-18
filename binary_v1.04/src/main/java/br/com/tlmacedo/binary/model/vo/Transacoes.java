@@ -91,7 +91,10 @@ public class Transacoes implements Serializable {
         this.stakeVenda = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
         this.stakeResult = new SimpleObjectProperty<>(getStakeVenda().add(getStakeCompra()).setScale(2, RoundingMode.HALF_UP));
 
-        Operacoes.getTransacoesObservableList().set(indexTransacoes, Operacoes.getTransacoesDAO().merger(this));
+        if (Operacoes.getContaToken().iscReal())
+            Operacoes.getTransacoesObservableList().set(indexTransacoes, Operacoes.getTransacoesDAO().merger(this));
+        else
+            Operacoes.getTransacoesObservableList().set(indexTransacoes, this);
 
         if (Operacoes.isRoboMonitorando()) {
             Operacoes.getQtdLossSymbol()[getT_id()][getS_id()].setValue(getStakeVenda().compareTo(BigDecimal.ZERO) > 0

@@ -238,11 +238,8 @@ public class WSClient extends WebSocketListener {
 
                 Operacoes.getTimeCandleToClose()[t_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
 
-                if (Operacoes.getTimeCandleToClose()[t_id].getValue().compareTo(symbol.getTickTime()) == 0) {
-//                    Operacoes.getHistoricoDeCandlesObservableList().add(new HistoricoDeCandles(ohlc));
-                    Operacoes.getHistoricoDeCandlesObservableList().add(
-                            Operacoes.getHistoricoDeCandlesDAO().merger(new HistoricoDeCandles(ohlc)));
-                }
+                if (Operacoes.getTimeCandleToClose()[t_id].getValue().compareTo(symbol.getTickTime()) == 0)
+                    Operacoes.getHistoricoDeCandlesObservableList().add(new HistoricoDeCandles(ohlc));
             } catch (Exception ex) {
                 if (!(ex instanceof IndexOutOfBoundsException))
                     ex.printStackTrace();
@@ -279,9 +276,10 @@ public class WSClient extends WebSocketListener {
 
         Platform.runLater(() -> {
             if (Operacoes.isRoboMonitorando())
-                if (transaction.getAction() != null)
-                    Operacoes.newTransaction(Operacoes.getTransactionDAO().merger(transaction));
-
+                if (transaction.getAction() != null) {
+                    Transaction transac = Operacoes.getTransactionDAO().merger(transaction);
+                    Operacoes.newTransaction(transac);
+                }
         });
 
     }

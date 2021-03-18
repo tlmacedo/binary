@@ -1573,7 +1573,8 @@ public class Operacoes implements Initializable {
                                     .collect(Collectors.toList())).size() > 1) {
                                 transacao.setTickCompra(tmpHistory.get(0).getPrice());
                                 transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
-                                getTransacoesDAO().merger(transacao);
+                                if (getContaToken().iscReal())
+                                    getTransacoesDAO().merger(transacao);
                             }
                         });
                 getTransacoesObservableList().stream()
@@ -1589,7 +1590,8 @@ public class Operacoes implements Initializable {
                                     ).findFirst().orElse(null)) != null) {
                                 transacao.setTickVenda(tmpHistory.getPrice());
                                 transacao.setConsolidado(true);
-                                getTransacoesDAO().merger(transacao);
+                                if (getContaToken().iscReal())
+                                    getTransacoesDAO().merger(transacao);
 
 //                            if ((tmpHistory = getHistoricoDeCandlesObservableList().stream()
 //                                    .filter(candles -> candles.getTimeFrame().getId()
@@ -1809,10 +1811,11 @@ public class Operacoes implements Initializable {
                     getRobo().monitorarCondicoesParaComprar();
                     getLblTpnNegociacaoDtHoraInicial().setText(LocalDateTime.now().format(DTF_DATA_HORA_SEGUNDOS));
                     setRoboMonitorando(true);
-                    getLogSistemaStartDAO().merger(
-                            new LogSistemaStart(getCboTpnDetalhesContaBinary().getValue(),
-                                    Service_DataTime.getIntegerDateNow(),
-                                    Service_Mascara.getParametrosToDB()));
+                    if (getContaToken().iscReal())
+                        getLogSistemaStartDAO().merger(
+                                new LogSistemaStart(getCboTpnDetalhesContaBinary().getValue(),
+                                        Service_DataTime.getIntegerDateNow(),
+                                        Service_Mascara.getParametrosToDB()));
                     Service_TelegramNotifier.sendMsgInicioRobo();
                 }
             } catch (Exception ex) {
