@@ -17,6 +17,10 @@ public class Cancel implements Serializable {
     public Cancel() {
     }
 
+    public Cancel(Proposal proposal) {
+        this.contract_id = Integer.valueOf(proposal.getId());
+    }
+
     public BigDecimal getBalance_after() {
         return balance_after;
     }

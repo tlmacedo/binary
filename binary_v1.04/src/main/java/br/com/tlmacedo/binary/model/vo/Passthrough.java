@@ -12,20 +12,20 @@ public class Passthrough implements Serializable {
     int s_id;
     int typeCandle_id;
     int typeContract_id;
-    boolean priceLoss = false;
+    Integer priceProposal_id = -1;
     String mensagem;
 
 
     public Passthrough() {
     }
 
-    public Passthrough(int t_id, int s_id, int typeCandle_id, int typeContract_id, boolean priceLoss, String mensagem) {
+    public Passthrough(int t_id, int s_id, int typeCandle_id, int typeContract_id, Integer priceProposal_id, String mensagem) {
         this.t_id = t_id;
         this.s_id = s_id;
         this.typeCandle_id = typeCandle_id;
         this.typeContract_id = typeContract_id;
-        if (priceLoss)
-            this.priceLoss = true;
+        if (priceProposal_id != null)
+            this.priceProposal_id = priceProposal_id;
         this.mensagem = mensagem;
     }
 
@@ -61,12 +61,12 @@ public class Passthrough implements Serializable {
         this.typeContract_id = typeContract_id;
     }
 
-    public boolean isPriceLoss() {
-        return priceLoss;
+    public int getPriceProposal_id() {
+        return priceProposal_id;
     }
 
-    public void setPriceLoss(boolean priceLoss) {
-        this.priceLoss = priceLoss;
+    public void setPriceProposal_id(int priceProposal_id) {
+        this.priceProposal_id = priceProposal_id;
     }
 
     public String getMensagem() {
@@ -84,7 +84,7 @@ public class Passthrough implements Serializable {
                 ", s_id=" + s_id +
                 ", typeCandle_id=" + typeCandle_id +
                 ", typeContract_id=" + typeContract_id +
-                ", priceLoss=" + priceLoss +
+                ", priceProposal_id=" + priceProposal_id +
                 ", mensagem='" + mensagem + '\'' +
                 '}';
     }

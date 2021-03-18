@@ -28,7 +28,15 @@ public class Util_Json {
                     .replace(",\"granularity\":null", "")
                     .replace(",\"passthrough\":null", "")
                     .replace(",\"subscribe\":null", "")
-                    .replace("\"barrier\":null,", "");
+                    .replace("\"barrier\":null,", "")
+
+
+                    .replace("\"balance_after\":null,", "")
+                    .replace("\"reference_id\":null,", "")
+                    .replace("\"sold_for\":null,", "")
+                    .replace("\"transaction_id\":null,", "")
+
+                    ;
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;

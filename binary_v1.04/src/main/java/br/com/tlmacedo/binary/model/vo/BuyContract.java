@@ -7,6 +7,7 @@ public class BuyContract implements Serializable {
     public static final long serialVersionUID = 1L;
 
     String buy;
+    Passthrough passthrough;
     BigDecimal price = new BigDecimal(10000);
 
     public BuyContract(String buy) {
@@ -25,6 +26,14 @@ public class BuyContract implements Serializable {
         this.buy = buy;
     }
 
+    public Passthrough getPassthrough() {
+        return passthrough;
+    }
+
+    public void setPassthrough(Passthrough passthrough) {
+        this.passthrough = passthrough;
+    }
+
     public BigDecimal getPrice() {
         return price;
     }
@@ -37,6 +46,7 @@ public class BuyContract implements Serializable {
     public String toString() {
         return "BuyContract{" +
                 "buy='" + buy + '\'' +
+                ", passthrough=" + passthrough +
                 ", price=" + price +
                 '}';
     }

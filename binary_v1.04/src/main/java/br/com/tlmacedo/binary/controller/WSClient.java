@@ -257,15 +257,14 @@ public class WSClient extends WebSocketListener {
             int t_id = passthrough.getT_id(),
                     s_id = passthrough.getS_id();
 
-            boolean priceLoss = passthrough.isPriceLoss();
+            int priceProposal_id = passthrough.getPriceProposal_id();
 
             switch (ROBOS.valueOf(Operacoes.getRobo().getClass().getSimpleName().toUpperCase())) {
                 case ABR -> {
                     Abr.getProposal()
                             [t_id]
                             [s_id]
-                            [passthrough.getTypeContract_id()]
-                            [priceLoss ? 1 : 0]
+                            [priceProposal_id]
                             = proposal;
                 }
             }

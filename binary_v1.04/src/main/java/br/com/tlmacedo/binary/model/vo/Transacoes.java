@@ -72,17 +72,11 @@ public class Transacoes implements Serializable {
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
         this.consolidado = new SimpleBooleanProperty(false);
 
-        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
+//        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
 
-//        Operacoes.getTransacoesObservableList().add(this);
+        Operacoes.getTransacoesObservableList().add(this);
 
-        if (Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() >= 2)
-            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
-                    (Operacoes.getQtdCallOrPut()[getT_id()][getT_id()].getValue()
-                            < (Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() + Abr.getQtdLossPause())
-                            ? contract : null), false);
-        else
-            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(), null, null);
+        Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(), contract.getCod(), 2);
 
         Service_TelegramNotifier.sendMsgTransacoesAction(this, transaction.getBalance(), ACTION.BUY);
 
@@ -100,12 +94,9 @@ public class Transacoes implements Serializable {
         Operacoes.getTransacoesObservableList().set(indexTransacoes, Operacoes.getTransacoesDAO().merger(this));
 
         if (Operacoes.isRoboMonitorando())
-            if (!Operacoes.isRoboMonitorandoPausado()
-                    && Operacoes.getQtdCandlesEntrada()[getT_id()].getValue() >= 2
-                    && getStakeVenda().compareTo(BigDecimal.ZERO) > 0) {
-                Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
-                        CONTRACT_TYPE.valueOf(getContract_type()), true);
-            }
+            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
+                    null,
+                    getStakeVenda().compareTo(BigDecimal.ZERO) > 0 ? 0 : 2);
 
         Service_TelegramNotifier.sendMsgTransacoesAction(this, transaction.getBalance(), ACTION.SELL);
 

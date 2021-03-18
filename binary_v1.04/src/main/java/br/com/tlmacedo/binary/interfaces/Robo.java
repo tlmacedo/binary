@@ -7,12 +7,16 @@ import java.math.BigDecimal;
 
 public interface Robo {
 
-    void cancelarContratos();
+    boolean variaveisIniciais();
 
-    void definicaoDeContrato() throws Exception;
+    boolean definicaoDeContrato() throws Exception;
+
+    void gerarContratosPendentes(Integer ft_id, Integer fs_id);
 
     void monitorarCondicoesParaComprar() throws Exception;
 
-    void gerarNovosContratos(int t_id, int s_id, CONTRACT_TYPE typeContract, Boolean winLoss);
+    void gerarNovosContratos(int t_id, int s_id, Integer typeContract, Integer proposal_id);
+
+    void cancelarContratosNaoUsados(int t_id, int s_id);
 
 }

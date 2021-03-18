@@ -15,6 +15,7 @@ public class Proposal implements Serializable {
     BigDecimal spot;
     Integer spot_time;
     Error error;
+    Passthrough passthrough;
 
     public Proposal() {
     }
@@ -91,6 +92,14 @@ public class Proposal implements Serializable {
         this.error = error;
     }
 
+    public Passthrough getPassthrough() {
+        return passthrough;
+    }
+
+    public void setPassthrough(Passthrough passthrough) {
+        this.passthrough = passthrough;
+    }
+
     @Override
     public String toString() {
         return "Proposal{" +
@@ -103,6 +112,7 @@ public class Proposal implements Serializable {
                 ", spot=" + spot +
                 ", spot_time=" + spot_time +
                 ", error=" + error +
+                ", passthrough=" + passthrough +
                 '}';
     }
 }

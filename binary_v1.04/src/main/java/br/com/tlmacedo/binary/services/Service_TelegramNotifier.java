@@ -29,6 +29,7 @@ public class Service_TelegramNotifier extends Operacoes {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     public static void sendMenssage(String msg) {
@@ -48,10 +49,13 @@ public class Service_TelegramNotifier extends Operacoes {
     }
 
     public static void printRetorno() throws IOException {
+
         System.out.printf("Telegram_sendMenssage: %s\n", getRetorno());
+
     }
 
     public static String getStrRetorno(InputStream result) throws IOException {
+
         StringBuilder sb = new StringBuilder();
         InputStream is = new BufferedInputStream(result);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -60,9 +64,11 @@ public class Service_TelegramNotifier extends Operacoes {
             sb.append(inputLine);
         }
         return sb.toString();
+
     }
 
     public static void sendMsgInicioRobo() {
+
         String msgModelo = "Iniciando: %s\n%s\n%s";
         String msgDtHora = LocalDateTime.now().format(DTF_HORA_MINUTOS_SEGUNDOS);
         String msgConta = String.format("conta: %s\tsaldoInicial: %s%s", getContaToken(),
@@ -70,15 +76,18 @@ public class Service_TelegramNotifier extends Operacoes {
         String msgParam = getParametrosUtilizadosRobo();
         String msgTelegram = String.format(msgModelo, msgDtHora, msgConta, msgParam);
         sendMenssage(msgTelegram);
+
     }
 
 
     public static void sendMsgTransacoesAction(Transacoes transacao, BigDecimal balance, ACTION action) {
+
         String msg = "Tf_%s Symbol_%s Action_%s cType_%s Stake_%s balance_%s";
         String msgTelegram = String.format(msg, transacao.gettFrame(), transacao.getSymbol(),
                 action, CONTRACT_TYPE.valueOf(transacao.getContract_type().toUpperCase()),
                 transacao.getStakeCompra(), balance.setScale(2, RoundingMode.HALF_UP));
         sendMenssage(msgTelegram);
+
     }
 
     public static URL getUrl() {

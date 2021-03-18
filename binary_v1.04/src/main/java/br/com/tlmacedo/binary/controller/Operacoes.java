@@ -6,10 +6,7 @@ import br.com.tlmacedo.binary.model.dao.*;
 import br.com.tlmacedo.binary.model.enums.*;
 import br.com.tlmacedo.binary.model.tableModel.TmodelTransacoes;
 import br.com.tlmacedo.binary.model.vo.*;
-import br.com.tlmacedo.binary.services.Service_Alert;
-import br.com.tlmacedo.binary.services.Service_DataTime;
-import br.com.tlmacedo.binary.services.Service_Mascara;
-import br.com.tlmacedo.binary.services.Util_Json;
+import br.com.tlmacedo.binary.services.*;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import javafx.animation.Animation;
@@ -109,7 +106,6 @@ public class Operacoes implements Initializable {
     static StringProperty[] timeCandleStart = new StringProperty[getTimeFrameObservableList().size()];
     static IntegerProperty[] timeCandleToClose = new IntegerProperty[getTimeFrameObservableList().size()];
 
-    static BooleanProperty[][] firstBuy = new BooleanProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     static IntegerProperty[][] qtdCallOrPut = new IntegerProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     static IntegerProperty[][] qtdCall = new IntegerProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     static IntegerProperty[][] qtdPut = new IntegerProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
@@ -143,6 +139,13 @@ public class Operacoes implements Initializable {
     static ObjectProperty<BigDecimal>[] vlrStkPadrao = new ObjectProperty[getTimeFrameObservableList().size()];
     static ObjectProperty<BigDecimal>[][] vlrStkContrato = new ObjectProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     static ObjectProperty<BigDecimal>[][] vlrLossAcumulado = new ObjectProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
+
+    static ObjectProperty<CONTRACT_TYPE>[] typeContract;
+    static IntegerProperty qtdContractsProposal = new SimpleIntegerProperty();
+    static IntegerProperty qtdLossPause = new SimpleIntegerProperty();
+    static BooleanProperty[][] symbolLossPaused = new BooleanProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
+    static BooleanProperty[][] firstBuy = new BooleanProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
+    static BooleanProperty[][] firstContratoGerado = new BooleanProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
 
 
     static IntegerProperty qtdStakes = new SimpleIntegerProperty(0);
@@ -1357,7 +1360,6 @@ public class Operacoes implements Initializable {
                 if (t_id == 0)
                     getUltimoOhlcStr()[s_id] = new SimpleObjectProperty<>();
 
-                getFirstBuy()[t_id][s_id] = new SimpleBooleanProperty(true);
                 getQtdCallOrPut()[t_id][s_id] = new SimpleIntegerProperty(0);
                 getQtdCall()[t_id][s_id] = new SimpleIntegerProperty(0);
                 getQtdPut()[t_id][s_id] = new SimpleIntegerProperty(0);
@@ -1557,7 +1559,7 @@ public class Operacoes implements Initializable {
 //                                System.out.printf("\t\tBuy_transação_002: %s\n", tmpHistory);
                                 transacao.setTickCompra(tmpHistory.get(0).getPrice());
                                 transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
-                                getTransacoesDAO().merger(transacao);
+                                //getTransacoesDAO().merger(transacao);
                             }
                         });
                 getTransacoesObservableList().stream()
@@ -1568,6 +1570,7 @@ public class Operacoes implements Initializable {
                         .forEach(transacao -> {
 //                            System.out.printf("Sell_transação_001: %s\n", transacao);
                             HistoricoDeCandles tmpHistory;
+                            int index = getTransacoesObservableList().indexOf(transacao);
                             Transacoes finalTransacao = transacao;
                             if ((tmpHistory = getHistoricoDeCandlesFilteredList()[transacao.getT_id()][transacao.getS_id()].stream()
                                     .filter(candles -> candles.getEpoch() == finalTransacao.getDataHoraExpiry())
@@ -1575,7 +1578,8 @@ public class Operacoes implements Initializable {
 //                                System.out.printf("\t\tSell_transação_002: %s\n", tmpHistory);
                                 transacao.setTickCompra(tmpHistory.getOpen());
                                 transacao.setTickVenda(tmpHistory.getClose());
-                                getTransacoesDAO().merger(transacao);
+                                getTransacoesObservableList().set(index,
+                                        getTransacoesDAO().merger(transacao));
                             }
                         });
             });
@@ -1755,11 +1759,10 @@ public class Operacoes implements Initializable {
 
         getBtnTpnNegociacao_Contratos().setOnAction(event -> {
             try {
+                if (!getRobo().definicaoDeContrato()) return;
                 if (!getCboTpnDetalhesContaBinary().getValue().isTransactionOK())
                     solicitarTransacoes();
-                getRobo().definicaoDeContrato();
                 setContratoGerado(true);
-                setFirstBuy(true);
             } catch (Exception ex) {
                 if (ex instanceof NoSuchElementException)
                     return;
@@ -1779,6 +1782,7 @@ public class Operacoes implements Initializable {
                             new LogSistemaStart(getCboTpnDetalhesContaBinary().getValue(),
                                     Service_DataTime.getIntegerDateNow(),
                                     Service_Mascara.getParametrosToDB()));
+                    Service_TelegramNotifier.sendMsgInicioRobo();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -1834,13 +1838,11 @@ public class Operacoes implements Initializable {
      * <p>
      */
 
-    public static void gerarContrato(int t_id, int s_id, int typeContract_id, BigDecimal vlrPriceProposal) throws Exception {
-
-        boolean priceLoss = vlrPriceProposal != null;
+    public static void gerarContrato(int t_id, int s_id, int typeContract_id, BigDecimal vlrPriceProposal, Integer priceProposal_id) throws Exception {
 
         PriceProposal priceProposal = new PriceProposal();
         Passthrough passthrough = new Passthrough(t_id, s_id, getTypeCandle_id(),
-                typeContract_id, priceLoss, "");
+                typeContract_id, priceProposal_id, "");
 
         priceProposal.setProposal(1);
         priceProposal.setAmount(vlrPriceProposal != null
@@ -1921,11 +1923,19 @@ public class Operacoes implements Initializable {
 
     }
 
-    public void solicitarCompraContrato(Proposal proposal) {
+    public void solicitarCompraContrato(Proposal proposal, Passthrough passthrough) {
 
         if (proposal == null) return;
         String jsonBuyContrato = Util_Json.getJson_from_Object(new BuyContract(proposal));
         getWsClientObjectProperty().getMyWebSocket().send(Objects.requireNonNull(jsonBuyContrato));
+
+    }
+
+    public void solicitarCancelContrato(Proposal proposal) {
+
+        if (proposal == null) return;
+        String jsonCancelContrato = Util_Json.getJson_from_Object(new Cancel(proposal));
+        getWsClientObjectProperty().getMyWebSocket().send(Objects.requireNonNull(jsonCancelContrato));
 
     }
 
@@ -2043,14 +2053,6 @@ public class Operacoes implements Initializable {
     private void setLayoutTpn_T06(int diff) {
         getTpn_T06().setLayoutY(getTpn_T06().getLayoutY() + diff);
 //        setHeightTpn(diff);
-    }
-
-    public void setFirstBuy(Boolean isTrue) {
-
-        for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++)
-            for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++)
-                getFirstBuy()[t_id][s_id].setValue(isTrue);
-
     }
 
     public Image getImagemCandle(int t_id, int s_id) {
@@ -3909,14 +3911,6 @@ public class Operacoes implements Initializable {
 
     public static void setTimeCandleToClose(IntegerProperty[] timeCandleToClose) {
         Operacoes.timeCandleToClose = timeCandleToClose;
-    }
-
-    public static BooleanProperty[][] getFirstBuy() {
-        return firstBuy;
-    }
-
-    public static void setFirstBuy(BooleanProperty[][] firstBuy) {
-        Operacoes.firstBuy = firstBuy;
     }
 
     public static IntegerProperty[][] getQtdCallOrPut() {
@@ -12237,5 +12231,61 @@ public class Operacoes implements Initializable {
 
     public static void settLineRelogio(Timeline tLineRelogio) {
         Operacoes.tLineRelogio = tLineRelogio;
+    }
+
+    public static ObjectProperty<CONTRACT_TYPE>[] getTypeContract() {
+        return typeContract;
+    }
+
+    public static void setTypeContract(ObjectProperty<CONTRACT_TYPE>[] typeContract) {
+        Operacoes.typeContract = typeContract;
+    }
+
+    public static int getQtdContractsProposal() {
+        return qtdContractsProposal.get();
+    }
+
+    public static IntegerProperty qtdContractsProposalProperty() {
+        return qtdContractsProposal;
+    }
+
+    public static void setQtdContractsProposal(int qtdContractsProposal) {
+        Operacoes.qtdContractsProposal.set(qtdContractsProposal);
+    }
+
+    public static int getQtdLossPause() {
+        return qtdLossPause.get();
+    }
+
+    public static IntegerProperty qtdLossPauseProperty() {
+        return qtdLossPause;
+    }
+
+    public static void setQtdLossPause(int qtdLossPause) {
+        Operacoes.qtdLossPause.set(qtdLossPause);
+    }
+
+    public static BooleanProperty[][] getSymbolLossPaused() {
+        return symbolLossPaused;
+    }
+
+    public static void setSymbolLossPaused(BooleanProperty[][] symbolLossPaused) {
+        Operacoes.symbolLossPaused = symbolLossPaused;
+    }
+
+    public static BooleanProperty[][] getFirstContratoGerado() {
+        return firstContratoGerado;
+    }
+
+    public static void setFirstContratoGerado(BooleanProperty[][] firstContratoGerado) {
+        Operacoes.firstContratoGerado = firstContratoGerado;
+    }
+
+    public static BooleanProperty[][] getFirstBuy() {
+        return firstBuy;
+    }
+
+    public static void setFirstBuy(BooleanProperty[][] firstBuy) {
+        Operacoes.firstBuy = firstBuy;
     }
 }
