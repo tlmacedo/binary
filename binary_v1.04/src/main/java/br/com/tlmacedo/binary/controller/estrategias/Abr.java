@@ -259,6 +259,17 @@ public class Abr extends Operacoes implements Robo {
                     if (n.intValue() >= getQtdLossPause())
                         getSymbolLossPaused()[finalT_id][finalS_id].setValue(true);
                 });
+                getSymbolLossPaused()[t_id][s_id].addListener((ov, o, n) -> {
+                    if (n == null) return;
+                    try {
+                        if (!o && n) {
+                            Operacoes.getRobo().gerarNovosContratos(finalT_id, finalS_id,
+                                    null, 2);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
             }
         }
 

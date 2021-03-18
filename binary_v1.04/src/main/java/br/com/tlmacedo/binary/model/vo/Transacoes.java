@@ -94,17 +94,14 @@ public class Transacoes implements Serializable {
         Operacoes.getTransacoesObservableList().set(indexTransacoes, Operacoes.getTransacoesDAO().merger(this));
 
         if (Operacoes.isRoboMonitorando()) {
-            if (getStakeVenda().compareTo(BigDecimal.ZERO) > 0) {
-                Operacoes.getSymbolLossPaused()[getT_id()][getS_id()].setValue(false);
-                Operacoes.getQtdLossSymbol()[getT_id()][getS_id()].setValue(0);
-            } else {
-                Operacoes.getQtdLossSymbol()[getT_id()][getS_id()].setValue(Operacoes.getQtdLossSymbol()[getT_id()][getS_id()].getValue() + 1);
-            }
-            if (Operacoes.getSymbolLossPaused()[getT_id()][getS_id()].getValue()
-                    || getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+            Operacoes.getQtdLossSymbol()[getT_id()][getS_id()].setValue(getStakeVenda().compareTo(BigDecimal.ZERO) > 0
+                    ? 0 : Operacoes.getQtdLossSymbol()[getT_id()][getS_id()].getValue() + 1);
+
+//            if (Operacoes.getSymbolLossPaused()[getT_id()][getS_id()].getValue()
+//                    || getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+            if (getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
                 Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
-                        null,
-                        getStakeVenda().compareTo(BigDecimal.ZERO) > 0 ? 0 : 2);
+                        null, getStakeVenda().compareTo(BigDecimal.ZERO) > 0 ? 0 : 2);
         }
 
         Service_TelegramNotifier.sendMsgTransacoesAction(this, transaction.getBalance(), ACTION.SELL);
