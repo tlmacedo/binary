@@ -31,12 +31,12 @@ public class Transacoes implements Serializable {
     IntegerProperty dataHoraExpiry = new SimpleIntegerProperty(0);
     StringProperty contract_type = new SimpleStringProperty();
     StringProperty longcode = new SimpleStringProperty();
-    ObjectProperty<BigDecimal> tickCompra = new SimpleObjectProperty<>();
-    ObjectProperty<BigDecimal> tickVenda = new SimpleObjectProperty<>();
-    ObjectProperty<BigDecimal> tickNegociacaoInicio = new SimpleObjectProperty<>();
-    ObjectProperty<BigDecimal> stakeCompra = new SimpleObjectProperty<>();
-    ObjectProperty<BigDecimal> stakeVenda = new SimpleObjectProperty<>();
-    ObjectProperty<BigDecimal> stakeResult = new SimpleObjectProperty<>();
+    ObjectProperty<BigDecimal> tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    ObjectProperty<BigDecimal> tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    ObjectProperty<BigDecimal> tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    ObjectProperty<BigDecimal> stakeCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    ObjectProperty<BigDecimal> stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    ObjectProperty<BigDecimal> stakeResult = new SimpleObjectProperty<>(BigDecimal.ZERO);
     BooleanProperty consolidado = new SimpleBooleanProperty(false);
 
     public Transacoes() {
@@ -65,11 +65,12 @@ public class Transacoes implements Serializable {
             this.contract_type = new SimpleStringProperty(contract.getDescricao());
         }
         this.longcode = new SimpleStringProperty(transaction.getLongcode());
-        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
-        this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
-        this.tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
+//        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
+//        this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
+//        this.tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+//        this.stakeResult = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.consolidado = new SimpleBooleanProperty(false);
 
 //        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
@@ -88,15 +89,23 @@ public class Transacoes implements Serializable {
 
         this.dataHoraVenda = new SimpleIntegerProperty(transaction.getTransaction_time());
         this.stakeVenda = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
-        this.stakeResult = new SimpleObjectProperty<>(transaction.getAmount().add(getStakeCompra()).setScale(2, RoundingMode.HALF_UP));
-        this.consolidado = new SimpleBooleanProperty(true);
+        this.stakeResult = new SimpleObjectProperty<>(getStakeVenda().add(getStakeCompra()).setScale(2, RoundingMode.HALF_UP));
 
         Operacoes.getTransacoesObservableList().set(indexTransacoes, Operacoes.getTransacoesDAO().merger(this));
 
-        if (Operacoes.isRoboMonitorando())
-            Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
-                    null,
-                    getStakeVenda().compareTo(BigDecimal.ZERO) > 0 ? 0 : 2);
+        if (Operacoes.isRoboMonitorando()) {
+            if (getStakeVenda().compareTo(BigDecimal.ZERO) > 0) {
+                Operacoes.getSymbolLossPaused()[getT_id()][getS_id()].setValue(false);
+                Operacoes.getQtdLossSymbol()[getT_id()][getS_id()].setValue(0);
+            } else {
+                Operacoes.getQtdLossSymbol()[getT_id()][getS_id()].setValue(Operacoes.getQtdLossSymbol()[getT_id()][getS_id()].getValue() + 1);
+            }
+            if (Operacoes.getSymbolLossPaused()[getT_id()][getS_id()].getValue()
+                    || getStakeVenda().compareTo(BigDecimal.ZERO) > 0)
+                Operacoes.getRobo().gerarNovosContratos(getT_id(), getS_id(),
+                        null,
+                        getStakeVenda().compareTo(BigDecimal.ZERO) > 0 ? 0 : 2);
+        }
 
         Service_TelegramNotifier.sendMsgTransacoesAction(this, transaction.getBalance(), ACTION.SELL);
 
@@ -339,7 +348,7 @@ public class Transacoes implements Serializable {
         this.consolidado.set(consolidado);
     }
 
-    @Transient
+    @Column(length = 19, scale = 2)
     public BigDecimal getStakeResult() {
         return stakeResult.get();
     }

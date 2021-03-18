@@ -45,6 +45,7 @@ public class Abr extends Operacoes implements Robo {
                     getSymbolLossPaused()[t_id][s_id] = new SimpleBooleanProperty(false);
                     getFirstBuy()[t_id][s_id] = new SimpleBooleanProperty(true);
                     getFirstContratoGerado()[t_id][s_id] = new SimpleBooleanProperty(false);
+                    getQtdLossSymbol()[t_id][s_id] = new SimpleIntegerProperty(0);
                     for (int proposal_id = 0; proposal_id < getQtdContractsProposal(); proposal_id++) {
                         getProposal()[t_id][s_id][proposal_id] = new Proposal();
                     }
@@ -173,7 +174,7 @@ public class Abr extends Operacoes implements Robo {
                     int qtdCandlesAbsoluto = Math.abs(n.intValue());
                     boolean maior = qtdCandlesAbsoluto > getQtdCandlesEntrada()[finalT_id].getValue(),
                             igual = qtdCandlesAbsoluto == getQtdCandlesEntrada()[finalT_id].getValue();
-                    getSymbolLossPaused()[finalT_id][finalS_id].setValue(qtdCandlesAbsoluto >= (getQtdCandlesEntrada()[finalT_id].getValue() + getQtdLossPause()));
+//                    getSymbolLossPaused()[finalT_id][finalS_id].setValue(getQtdLossSymbol()[finalT_id][finalS_id].getValue() >= getQtdLossPause());
                     if (getSymbolLossPaused()[finalT_id][finalS_id].getValue()) return;
                     if (getFirstBuy()[finalT_id][finalS_id].getValue()
                             && qtdCandlesAbsoluto >= getQtdCandlesEntrada()[finalT_id].getValue() - 1)
@@ -184,12 +185,12 @@ public class Abr extends Operacoes implements Robo {
                                 ? (!getFirstBuy()[finalT_id][finalS_id].getValue() ? 2 : (n.intValue() < 0 ? 0 : 1))
                                 : (n.intValue() < 0 ? 0 : 1));
                         proposal = getProposal()[finalT_id][finalS_id][proposal_id];
-                        Passthrough passthrough = new Passthrough(finalT_id, finalS_id, getTypeCandle_id(), (n.intValue() < 0 ? 0 : 1),
-                                proposal_id, "");
+//                        Passthrough passthrough = new Passthrough(finalT_id, finalS_id, getTypeCandle_id(), (n.intValue() < 0 ? 0 : 1),
+//                                proposal_id, "");
                         if (proposal != null) {
                             getVlrStkContrato()[finalT_id][finalS_id].setValue(proposal.getAsk_price());
                             getFirstBuy()[finalT_id][finalS_id].setValue(false);
-                            solicitarCompraContrato(proposal, passthrough);
+                            solicitarCompraContrato(proposal);
                         }
                     }
                 });
@@ -252,18 +253,11 @@ public class Abr extends Operacoes implements Robo {
             int finalT_id = t_id;
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 int finalS_id = s_id;
-                getSymbolLossPaused()[t_id][s_id].addListener((ov, o, n) -> {
-                    if (n == null) return;
-                    try {
-                        if (!o && n) {
-                            cancelarContratosNaoUsados(finalT_id, finalS_id);
-                            for (int typeContract_id = 0; typeContract_id < getTypeContract().length; typeContract_id++)
-                                gerarContrato(finalT_id, finalS_id, typeContract_id, Service_NewVlrContrato
-                                        .getVlrTmpLoss(finalT_id, finalS_id), typeContract_id);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                getQtdLossSymbol()[t_id][s_id].addListener((ov, o, n) -> {
+                    if (n == null)
+                        getSymbolLossPaused()[finalT_id][finalS_id].setValue(false);
+                    if (n.intValue() >= getQtdLossPause())
+                        getSymbolLossPaused()[finalT_id][finalS_id].setValue(true);
                 });
             }
         }

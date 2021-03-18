@@ -6,21 +6,27 @@ import br.com.tlmacedo.binary.services.Service_Mascara;
 import javafx.beans.property.*;
 import org.json.JSONObject;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+@Entity(name = "HistoricoDeCandles")
+@Table(name = "historico_de_candles")
 public class HistoricoDeCandles implements Serializable {
     public static final long serialVersionUID = 1L;
 
     LongProperty id = new SimpleLongProperty();
     ObjectProperty<Symbol> symbol = new SimpleObjectProperty<>();
     ObjectProperty<TimeFrame> timeFrame = new SimpleObjectProperty<>();
-    ObjectProperty<BigDecimal> close = new SimpleObjectProperty<>();
-    IntegerProperty epoch = new SimpleIntegerProperty();
+    ObjectProperty<BigDecimal> close = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    IntegerProperty epoch = new SimpleIntegerProperty(0);
     ObjectProperty<BigDecimal> high = new SimpleObjectProperty<>();
     ObjectProperty<BigDecimal> low = new SimpleObjectProperty<>();
     ObjectProperty<BigDecimal> open = new SimpleObjectProperty<>();
     IntegerProperty pip_size = new SimpleIntegerProperty();
+
+    public HistoricoDeCandles() {
+    }
 
     public HistoricoDeCandles(JSONObject o, int t_id, int s_id) {
 
@@ -56,6 +62,8 @@ public class HistoricoDeCandles implements Serializable {
 
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public long getId() {
         return id.get();
     }
@@ -68,6 +76,7 @@ public class HistoricoDeCandles implements Serializable {
         this.id.set(id);
     }
 
+    @ManyToOne
     public Symbol getSymbol() {
         return symbol.get();
     }
@@ -80,6 +89,7 @@ public class HistoricoDeCandles implements Serializable {
         this.symbol.set(symbol);
     }
 
+    @ManyToOne
     public TimeFrame getTimeFrame() {
         return timeFrame.get();
     }
@@ -164,6 +174,7 @@ public class HistoricoDeCandles implements Serializable {
         this.pip_size.set(pip_size);
     }
 
+    @Transient
     public String getQuoteCompleto() {
         return Service_Mascara.getValorFormatado(getPip_size(), getClose());
     }

@@ -33,6 +33,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static br.com.tlmacedo.binary.interfaces.Constants.*;
@@ -53,6 +54,7 @@ public class Operacoes implements Initializable {
     static ContaTokenDAO contaTokenDAO = new ContaTokenDAO();
     static TransacoesDAO transacoesDAO = new TransacoesDAO();
     static TransactionDAO transactionDAO = new TransactionDAO();
+    static HistoricoDeCandlesDAO historicoDeCandlesDAO = new HistoricoDeCandlesDAO();
     static LogSistemaStartDAO logSistemaStartDAO = new LogSistemaStartDAO();
 
 
@@ -92,6 +94,7 @@ public class Operacoes implements Initializable {
     static StringProperty parametrosUtilizadosRobo = new SimpleStringProperty("");
     static ObjectProperty<BigDecimal> saldoInicial = new SimpleObjectProperty<>(BigDecimal.ZERO);
     static ObjectProperty<BigDecimal> saldoFinal = new SimpleObjectProperty<>(BigDecimal.ZERO);
+    static ObjectProperty<BigDecimal> saldoFinalPorc = new SimpleObjectProperty<>(BigDecimal.ZERO);
     static IntegerProperty dtHoraInicial = new SimpleIntegerProperty();
     static IntegerProperty tempoUsoApp = new SimpleIntegerProperty();
     static Timeline tLineRelogio, tLineUsoApp;
@@ -143,10 +146,11 @@ public class Operacoes implements Initializable {
     static ObjectProperty<CONTRACT_TYPE>[] typeContract;
     static IntegerProperty qtdContractsProposal = new SimpleIntegerProperty();
     static IntegerProperty qtdLossPause = new SimpleIntegerProperty();
+    static IntegerProperty[][] qtdLossSymbol = new IntegerProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     static BooleanProperty[][] symbolLossPaused = new BooleanProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     static BooleanProperty[][] firstBuy = new BooleanProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     static BooleanProperty[][] firstContratoGerado = new BooleanProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
-
+    static ObjectProperty<BigDecimal> vlrMetaProfit = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
     static IntegerProperty qtdStakes = new SimpleIntegerProperty(0);
     static IntegerProperty[] qtdTimeFrameStakes = new IntegerProperty[getTimeFrameObservableList().size()];
@@ -1402,8 +1406,8 @@ public class Operacoes implements Initializable {
 
         saldoInicialProperty().bind(Bindings.createObjectBinding(() -> {
             if (authorizeProperty().getValue() == null)
-                return BigDecimal.ZERO;
-            return authorizeProperty().getValue().getBalance();
+                return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+            return authorizeProperty().getValue().getBalance().setScale(2, RoundingMode.HALF_UP);
         }, authorizeProperty()));
 
         contaTokenProperty().bind(getCboTpnDetalhesContaBinary().valueProperty());
@@ -1477,6 +1481,19 @@ public class Operacoes implements Initializable {
 
         });
 
+        saldoFinalProperty().addListener((ov, o, n) -> {
+            if (n == null) return;
+
+            if (getVlrMetaProfit().compareTo(BigDecimal.ZERO) > 0)
+                setSaldoFinalPorc(getVlrStakesDiff().multiply(new BigDecimal("100."))
+                        .divide(getVlrMetaProfit(), 5, RoundingMode.HALF_UP)
+                        .setScale(2, RoundingMode.HALF_UP));
+            else
+                setSaldoFinalPorc(getVlrStakesDiff().multiply(new BigDecimal("100."))
+                        .divide(getSaldoInicial(), 5, RoundingMode.HALF_UP)
+                        .setScale(2, RoundingMode.HALF_UP));
+        });
+
         disableContratoBtnProperty().addListener((ov, o, n) -> {
 
             if (n == null || !n)
@@ -1544,49 +1561,58 @@ public class Operacoes implements Initializable {
             getUltimoOhlcStr()[s_id].addListener((ov, o, n) -> {
                 if (o == null || n == null) return;
                 getTransacoesObservableList().stream()
-                        .filter(transacoes -> transacoes.getS_id() == finalS_id
-                                && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) == 0
-                                && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
+                        .filter(transacoes -> !transacoes.isConsolidado()
+                                && transacoes.getS_id() == finalS_id
+                                && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) == 0)
                         .forEach(transacao -> {
-//                            System.out.printf("Buy_transação_001: %s\n", transacao);
                             List<HistoricoDeTicks> tmpHistory;
-                            Transacoes finalTransacao = transacao;
                             if ((tmpHistory = getHistoricoDeTicksObservableList().stream()
                                     .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
                                             == getSymbolObservableList().get(finalS_id).getId()
-                                            && historicoDeTicks.getTime() >= finalTransacao.getDataHoraCompra())
+                                            && historicoDeTicks.getTime() >= transacao.getDataHoraCompra())
                                     .collect(Collectors.toList())).size() > 1) {
-//                                System.out.printf("\t\tBuy_transação_002: %s\n", tmpHistory);
                                 transacao.setTickCompra(tmpHistory.get(0).getPrice());
                                 transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
-                                //getTransacoesDAO().merger(transacao);
+                                getTransacoesDAO().merger(transacao);
                             }
                         });
                 getTransacoesObservableList().stream()
-                        .filter(transacoes -> transacoes.getS_id() == finalS_id
-                                && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) != 0
-                                && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0
-                                && transacoes.dataHoraVendaProperty().getValue() != null)
+                        .filter(transacoes -> !transacoes.isConsolidado()
+                                && transacoes.getS_id() == finalS_id
+                                && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) != 0)
                         .forEach(transacao -> {
-//                            System.out.printf("Sell_transação_001: %s\n", transacao);
-                            HistoricoDeCandles tmpHistory;
-                            int index = getTransacoesObservableList().indexOf(transacao);
-                            Transacoes finalTransacao = transacao;
-                            if ((tmpHistory = getHistoricoDeCandlesFilteredList()[transacao.getT_id()][transacao.getS_id()].stream()
-                                    .filter(candles -> candles.getEpoch() == finalTransacao.getDataHoraExpiry())
-                                    .findFirst().orElse(null)) != null) {
-//                                System.out.printf("\t\tSell_transação_002: %s\n", tmpHistory);
-                                transacao.setTickCompra(tmpHistory.getOpen());
-                                transacao.setTickVenda(tmpHistory.getClose());
-                                getTransacoesObservableList().set(index,
-                                        getTransacoesDAO().merger(transacao));
+                            HistoricoDeTicks tmpHistory;
+                            if ((tmpHistory = getHistoricoDeTicksObservableList().stream()
+                                    .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
+                                            == getSymbolObservableList().get(finalS_id).getId()
+                                            && historicoDeTicks.getTime() == transacao.getDataHoraExpiry()
+                                    ).findFirst().orElse(null)) != null) {
+                                transacao.setTickVenda(tmpHistory.getPrice());
+                                transacao.setConsolidado(true);
+                                getTransacoesDAO().merger(transacao);
+
+//                            if ((tmpHistory = getHistoricoDeCandlesObservableList().stream()
+//                                    .filter(candles -> candles.getTimeFrame().getId()
+//                                            == getTimeFrameObservableList().get(transacao.getT_id()).getId()
+//                                            && candles.getSymbol().getId()
+//                                            == getSymbolObservableList().get(finalS_id).getId()
+//                                            && candles.getEpoch() >= (transacao.getDataHoraExpiry() - 10))
+//                                    .findFirst().orElse(new HistoricoDeCandles())) != null) {
+////                                int index = getTransacoesObservableList().indexOf(transacao);
+//                                transacao.setTickCompra(tmpHistory.getOpen());
+//                                transacao.setTickVenda(tmpHistory.getClose());
+//                                transacao.setConsolidado(true);
+////                                getTransacoesObservableList().set(index,
+//                                getTransacoesDAO().merger(transacao);
+////                                );
                             }
                         });
             });
         }
 
         getTransacoesObservableList().addListener((ListChangeListener<? super Transacoes>) c -> {
-            setQtdStakes(c.getList().size());
+            setQtdStakes((int) c.getList().stream().filter(transacoes ->
+                    !transacoes.isConsolidado()).count());
             setQtdStakesConsolidado((int) c.getList().stream().filter(transacoes ->
                     transacoes.isConsolidado()).count());
             setQtdStakesWins((int) c.getList().stream().filter(transacoes ->
@@ -1612,7 +1638,8 @@ public class Operacoes implements Initializable {
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             int finalT_id = t_id;
             getTransacoesFilteredList_tFrame()[t_id].addListener((ListChangeListener<? super Transacoes>) c -> {
-                getQtdTimeFrameStakes()[finalT_id].setValue(c.getList().size());
+                getQtdTimeFrameStakes()[finalT_id].setValue((int) c.getList().stream()
+                        .filter(transacoes -> !transacoes.isConsolidado()).count());
                 getQtdTimeFrameStakesConsolidado()[finalT_id].setValue((int) c.getList().stream()
                         .filter(transacoes -> transacoes.isConsolidado()).count());
                 getQtdTimeFrameStakesWins()[finalT_id].setValue((int) c.getList().stream().filter(transacoes ->
@@ -1711,6 +1738,10 @@ public class Operacoes implements Initializable {
         getLblDetalhesSaldoFinal().textProperty().bind(Bindings.createStringBinding(() ->
                         Service_Mascara.getValorMoeda(saldoFinalProperty().getValue()),
                 saldoFinalProperty()));
+
+        getLblTpnDetalhesProfitPorc().textProperty().bind(Bindings.createStringBinding(() ->
+                        Service_Mascara.getValorMoeda(saldoFinalPorcProperty().getValue()),
+                saldoFinalPorcProperty()));
 
         getLblNegociacaoParametros().textProperty().bind(parametrosUtilizadosRoboProperty());
 
@@ -1923,7 +1954,7 @@ public class Operacoes implements Initializable {
 
     }
 
-    public void solicitarCompraContrato(Proposal proposal, Passthrough passthrough) {
+    public void solicitarCompraContrato(Proposal proposal) {
 
         if (proposal == null) return;
         String jsonBuyContrato = Util_Json.getJson_from_Object(new BuyContract(proposal));
@@ -3810,7 +3841,7 @@ public class Operacoes implements Initializable {
     }
 
     public static void setWsClientObjectProperty(WSClient wsClientObjectProperty) {
-        WS_CLIENT_OBJECT_PROPERTY.set(wsClientObjectProperty);
+        Operacoes.WS_CLIENT_OBJECT_PROPERTY.set(wsClientObjectProperty);
     }
 
     public static Integer getTypeCandle_id() {
@@ -3826,7 +3857,7 @@ public class Operacoes implements Initializable {
     }
 
     public static void setRobo(Robo robo) {
-        ROBO.set(robo);
+        Operacoes.ROBO.set(robo);
     }
 
     public static boolean isAppAutorizado() {
@@ -3875,6 +3906,46 @@ public class Operacoes implements Initializable {
 
     public static void setSaldoFinal(BigDecimal saldoFinal) {
         Operacoes.saldoFinal.set(saldoFinal);
+    }
+
+    public static int getDtHoraInicial() {
+        return dtHoraInicial.get();
+    }
+
+    public static IntegerProperty dtHoraInicialProperty() {
+        return dtHoraInicial;
+    }
+
+    public static void setDtHoraInicial(int dtHoraInicial) {
+        Operacoes.dtHoraInicial.set(dtHoraInicial);
+    }
+
+    public static int getTempoUsoApp() {
+        return tempoUsoApp.get();
+    }
+
+    public static IntegerProperty tempoUsoAppProperty() {
+        return tempoUsoApp;
+    }
+
+    public static void setTempoUsoApp(int tempoUsoApp) {
+        Operacoes.tempoUsoApp.set(tempoUsoApp);
+    }
+
+    public static Timeline gettLineRelogio() {
+        return tLineRelogio;
+    }
+
+    public static void settLineRelogio(Timeline tLineRelogio) {
+        Operacoes.tLineRelogio = tLineRelogio;
+    }
+
+    public static Timeline gettLineUsoApp() {
+        return tLineUsoApp;
+    }
+
+    public static void settLineUsoApp(Timeline tLineUsoApp) {
+        Operacoes.tLineUsoApp = tLineUsoApp;
     }
 
     public static int getQtdCandlesAnalise() {
@@ -4123,6 +4194,70 @@ public class Operacoes implements Initializable {
 
     public static void setVlrLossAcumulado(ObjectProperty<BigDecimal>[][] vlrLossAcumulado) {
         Operacoes.vlrLossAcumulado = vlrLossAcumulado;
+    }
+
+    public static ObjectProperty<CONTRACT_TYPE>[] getTypeContract() {
+        return typeContract;
+    }
+
+    public static void setTypeContract(ObjectProperty<CONTRACT_TYPE>[] typeContract) {
+        Operacoes.typeContract = typeContract;
+    }
+
+    public static int getQtdContractsProposal() {
+        return qtdContractsProposal.get();
+    }
+
+    public static IntegerProperty qtdContractsProposalProperty() {
+        return qtdContractsProposal;
+    }
+
+    public static void setQtdContractsProposal(int qtdContractsProposal) {
+        Operacoes.qtdContractsProposal.set(qtdContractsProposal);
+    }
+
+    public static int getQtdLossPause() {
+        return qtdLossPause.get();
+    }
+
+    public static IntegerProperty qtdLossPauseProperty() {
+        return qtdLossPause;
+    }
+
+    public static void setQtdLossPause(int qtdLossPause) {
+        Operacoes.qtdLossPause.set(qtdLossPause);
+    }
+
+    public static IntegerProperty[][] getQtdLossSymbol() {
+        return qtdLossSymbol;
+    }
+
+    public static void setQtdLossSymbol(IntegerProperty[][] qtdLossSymbol) {
+        Operacoes.qtdLossSymbol = qtdLossSymbol;
+    }
+
+    public static BooleanProperty[][] getSymbolLossPaused() {
+        return symbolLossPaused;
+    }
+
+    public static void setSymbolLossPaused(BooleanProperty[][] symbolLossPaused) {
+        Operacoes.symbolLossPaused = symbolLossPaused;
+    }
+
+    public static BooleanProperty[][] getFirstBuy() {
+        return firstBuy;
+    }
+
+    public static void setFirstBuy(BooleanProperty[][] firstBuy) {
+        Operacoes.firstBuy = firstBuy;
+    }
+
+    public static BooleanProperty[][] getFirstContratoGerado() {
+        return firstContratoGerado;
+    }
+
+    public static void setFirstContratoGerado(BooleanProperty[][] firstContratoGerado) {
+        Operacoes.firstContratoGerado = firstContratoGerado;
     }
 
     public static int getQtdStakes() {
@@ -4543,6 +4678,14 @@ public class Operacoes implements Initializable {
 
     public void setBtnTpnNegociacao_Stop(JFXButton btnTpnNegociacao_Stop) {
         this.btnTpnNegociacao_Stop = btnTpnNegociacao_Stop;
+    }
+
+    public ScrollPane getScrollPaneTpn() {
+        return scrollPaneTpn;
+    }
+
+    public void setScrollPaneTpn(ScrollPane scrollPaneTpn) {
+        this.scrollPaneTpn = scrollPaneTpn;
     }
 
     public TitledPane getTpn_LastTicks() {
@@ -12185,107 +12328,35 @@ public class Operacoes implements Initializable {
         this.tbvTransacoes_T06_Op12 = tbvTransacoes_T06_Op12;
     }
 
-    public ScrollPane getScrollPaneTpn() {
-        return scrollPaneTpn;
+    public static HistoricoDeCandlesDAO getHistoricoDeCandlesDAO() {
+        return historicoDeCandlesDAO;
     }
 
-    public void setScrollPaneTpn(ScrollPane scrollPaneTpn) {
-        this.scrollPaneTpn = scrollPaneTpn;
+    public static void setHistoricoDeCandlesDAO(HistoricoDeCandlesDAO historicoDeCandlesDAO) {
+        Operacoes.historicoDeCandlesDAO = historicoDeCandlesDAO;
     }
 
-    public static int getDtHoraInicial() {
-        return dtHoraInicial.get();
+    public static BigDecimal getVlrMetaProfit() {
+        return vlrMetaProfit.get();
     }
 
-    public static IntegerProperty dtHoraInicialProperty() {
-        return dtHoraInicial;
+    public static ObjectProperty<BigDecimal> vlrMetaProfitProperty() {
+        return vlrMetaProfit;
     }
 
-    public static void setDtHoraInicial(int dtHoraInicial) {
-        Operacoes.dtHoraInicial.set(dtHoraInicial);
+    public static void setVlrMetaProfit(BigDecimal vlrMetaProfit) {
+        Operacoes.vlrMetaProfit.set(vlrMetaProfit);
     }
 
-    public static int getTempoUsoApp() {
-        return tempoUsoApp.get();
+    public static BigDecimal getSaldoFinalPorc() {
+        return saldoFinalPorc.get();
     }
 
-    public static IntegerProperty tempoUsoAppProperty() {
-        return tempoUsoApp;
+    public static ObjectProperty<BigDecimal> saldoFinalPorcProperty() {
+        return saldoFinalPorc;
     }
 
-    public static void setTempoUsoApp(int tempoUsoApp) {
-        Operacoes.tempoUsoApp.set(tempoUsoApp);
-    }
-
-    public static Timeline gettLineUsoApp() {
-        return tLineUsoApp;
-    }
-
-    public static void settLineUsoApp(Timeline tLineUsoApp) {
-        Operacoes.tLineUsoApp = tLineUsoApp;
-    }
-
-    public static Timeline gettLineRelogio() {
-        return tLineRelogio;
-    }
-
-    public static void settLineRelogio(Timeline tLineRelogio) {
-        Operacoes.tLineRelogio = tLineRelogio;
-    }
-
-    public static ObjectProperty<CONTRACT_TYPE>[] getTypeContract() {
-        return typeContract;
-    }
-
-    public static void setTypeContract(ObjectProperty<CONTRACT_TYPE>[] typeContract) {
-        Operacoes.typeContract = typeContract;
-    }
-
-    public static int getQtdContractsProposal() {
-        return qtdContractsProposal.get();
-    }
-
-    public static IntegerProperty qtdContractsProposalProperty() {
-        return qtdContractsProposal;
-    }
-
-    public static void setQtdContractsProposal(int qtdContractsProposal) {
-        Operacoes.qtdContractsProposal.set(qtdContractsProposal);
-    }
-
-    public static int getQtdLossPause() {
-        return qtdLossPause.get();
-    }
-
-    public static IntegerProperty qtdLossPauseProperty() {
-        return qtdLossPause;
-    }
-
-    public static void setQtdLossPause(int qtdLossPause) {
-        Operacoes.qtdLossPause.set(qtdLossPause);
-    }
-
-    public static BooleanProperty[][] getSymbolLossPaused() {
-        return symbolLossPaused;
-    }
-
-    public static void setSymbolLossPaused(BooleanProperty[][] symbolLossPaused) {
-        Operacoes.symbolLossPaused = symbolLossPaused;
-    }
-
-    public static BooleanProperty[][] getFirstContratoGerado() {
-        return firstContratoGerado;
-    }
-
-    public static void setFirstContratoGerado(BooleanProperty[][] firstContratoGerado) {
-        Operacoes.firstContratoGerado = firstContratoGerado;
-    }
-
-    public static BooleanProperty[][] getFirstBuy() {
-        return firstBuy;
-    }
-
-    public static void setFirstBuy(BooleanProperty[][] firstBuy) {
-        Operacoes.firstBuy = firstBuy;
+    public static void setSaldoFinalPorc(BigDecimal saldoFinalPorc) {
+        Operacoes.saldoFinalPorc.set(saldoFinalPorc);
     }
 }

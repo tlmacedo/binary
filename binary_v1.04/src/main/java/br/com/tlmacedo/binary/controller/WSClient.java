@@ -216,7 +216,8 @@ public class WSClient extends WebSocketListener {
                 HistoricoDeTicks hTicks = new HistoricoDeTicks(ohlc);
                 Operacoes.getHistoricoDeTicksObservableList().add(hTicks);
                 Operacoes.getUltimoOhlcStr()[s_id].setValue(ohlc);
-                while (Operacoes.getHistoricoDeTicksObservableList().size() > 200) {
+                while (Operacoes.getHistoricoDeTicksObservableList().size()
+                        > (100 * Operacoes.getTimeFrameObservableList().size())) {
                     Operacoes.getHistoricoDeTicksObservableList().remove(0);
                 }
             }
@@ -237,9 +238,11 @@ public class WSClient extends WebSocketListener {
 
                 Operacoes.getTimeCandleToClose()[t_id].setValue(ohlc.getGranularity() - (ohlc.getEpoch() - ohlc.getOpen_time()));
 
-                if (Operacoes.getTimeCandleToClose()[t_id].getValue().compareTo(symbol.getTickTime()) == 0)
-                    Operacoes.getHistoricoDeCandlesObservableList().add(new HistoricoDeCandles(ohlc));
-
+                if (Operacoes.getTimeCandleToClose()[t_id].getValue().compareTo(symbol.getTickTime()) == 0) {
+//                    Operacoes.getHistoricoDeCandlesObservableList().add(new HistoricoDeCandles(ohlc));
+                    Operacoes.getHistoricoDeCandlesObservableList().add(
+                            Operacoes.getHistoricoDeCandlesDAO().merger(new HistoricoDeCandles(ohlc)));
+                }
             } catch (Exception ex) {
                 if (!(ex instanceof IndexOutOfBoundsException))
                     ex.printStackTrace();
