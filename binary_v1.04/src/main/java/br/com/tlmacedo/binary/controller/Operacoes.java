@@ -1633,7 +1633,9 @@ public class Operacoes implements Initializable {
                     .setScale(2, RoundingMode.HALF_UP));
             setVlrStakesDiff(c.getList().stream()
 //                    .filter(transacoes -> transacoes.isConsolidado())
-                    .map(Transacoes::getStakeResult).reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .map(transacoes -> transacoes.getStakeVenda().add(transacoes.getStakeCompra()))
+//                    .map(Transacoes::getStakeResult)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
                     .setScale(2, RoundingMode.HALF_UP));
         });
 
@@ -1660,7 +1662,9 @@ public class Operacoes implements Initializable {
                         .setScale(2, RoundingMode.HALF_UP));
                 getVlrTimeFrameStakesDiff()[finalT_id].setValue(c.getList().stream()
 //                        .filter(transacoes -> transacoes.isConsolidado())
-                        .map(Transacoes::getStakeResult).reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .map(transacoes -> transacoes.getStakeVenda().add(transacoes.getStakeCompra()))
+//                        .map(Transacoes::getStakeResult)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
                         .setScale(2, RoundingMode.HALF_UP));
             });
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
@@ -1683,7 +1687,9 @@ public class Operacoes implements Initializable {
                             .setScale(2, RoundingMode.HALF_UP));
                     getVlrTframeSymbolStakesDiff()[finalT_id][finalS_id].setValue(c.getList().stream()
 //                            .filter(transacoes -> transacoes.isConsolidado())
-                            .map(Transacoes::getStakeResult).reduce(BigDecimal.ZERO, BigDecimal::add)
+                            .map(transacoes -> transacoes.getStakeVenda().add(transacoes.getStakeCompra()))
+//                            .map(Transacoes::getStakeResult)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add)
                             .setScale(2, RoundingMode.HALF_UP));
                 });
             }
@@ -1858,6 +1864,63 @@ public class Operacoes implements Initializable {
                             : -1);
         } else {
             getQtdCallOrPut()[t_id][s_id].setValue(0);
+        }
+
+    }
+
+    private void atualizaTicksTabela() {
+
+        for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
+            int finalS_id = s_id;
+            getTransacoesObservableList().stream()
+                    .filter(transacoes -> !transacoes.isConsolidado()
+                            && transacoes.getS_id() == finalS_id
+                            && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) == 0)
+                    .forEach(transacao -> {
+                        List<HistoricoDeTicks> tmpHistory;
+                        if ((tmpHistory = getHistoricoDeTicksObservableList().stream()
+                                .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
+                                        == getSymbolObservableList().get(finalS_id).getId()
+                                        && historicoDeTicks.getTime() >= transacao.getDataHoraCompra())
+                                .collect(Collectors.toList())).size() > 1) {
+                            transacao.setTickCompra(tmpHistory.get(0).getPrice());
+                            transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
+                            if (getContaToken().iscReal())
+                                getTransacoesDAO().merger(transacao);
+                        }
+                    });
+            getTransacoesObservableList().stream()
+                    .filter(transacoes -> !transacoes.isConsolidado()
+                            && transacoes.getS_id() == finalS_id
+                            && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) != 0)
+                    .forEach(transacao -> {
+                        HistoricoDeTicks tmpHistory;
+                        if ((tmpHistory = getHistoricoDeTicksObservableList().stream()
+                                .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
+                                        == getSymbolObservableList().get(finalS_id).getId()
+                                        && historicoDeTicks.getTime() == transacao.getDataHoraExpiry()
+                                ).findFirst().orElse(null)) != null) {
+                            transacao.setTickVenda(tmpHistory.getPrice());
+                            transacao.setConsolidado(true);
+                            if (getContaToken().iscReal())
+                                getTransacoesDAO().merger(transacao);
+
+//                            if ((tmpHistory = getHistoricoDeCandlesObservableList().stream()
+//                                    .filter(candles -> candles.getTimeFrame().getId()
+//                                            == getTimeFrameObservableList().get(transacao.getT_id()).getId()
+//                                            && candles.getSymbol().getId()
+//                                            == getSymbolObservableList().get(finalS_id).getId()
+//                                            && candles.getEpoch() >= (transacao.getDataHoraExpiry() - 10))
+//                                    .findFirst().orElse(new HistoricoDeCandles())) != null) {
+////                                int index = getTransacoesObservableList().indexOf(transacao);
+//                                transacao.setTickCompra(tmpHistory.getOpen());
+//                                transacao.setTickVenda(tmpHistory.getClose());
+//                                transacao.setConsolidado(true);
+////                                getTransacoesObservableList().set(index,
+//                                getTransacoesDAO().merger(transacao);
+////                                );
+                        }
+                    });
         }
 
     }
@@ -2253,6 +2316,11 @@ public class Operacoes implements Initializable {
         settLineUsoApp(new Timeline(new KeyFrame(Duration.seconds(1),
                 event -> setTempoUsoApp(getTempoUsoApp() + 1))));
         gettLineUsoApp().setCycleCount(Animation.INDEFINITE);
+
+        Timeline refreshTables = new Timeline(new KeyFrame(Duration.minutes(2),
+                event -> atualizaTicksTabela()));
+        refreshTables.setCycleCount(Animation.INDEFINITE);
+        refreshTables.play();
 
 
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
