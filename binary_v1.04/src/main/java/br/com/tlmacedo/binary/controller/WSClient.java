@@ -275,11 +275,9 @@ public class WSClient extends WebSocketListener {
     private void refreshTransaction(Transaction transaction) {
 
         Platform.runLater(() -> {
-            if (Operacoes.isRoboMonitorando())
-                if (transaction.getAction() != null) {
-                    Transaction transac = Operacoes.getTransactionDAO().merger(transaction);
-                    Operacoes.newTransaction(transac);
-                }
+            if (transaction.getAction() != null)
+                Operacoes.newTransaction(Operacoes.getTransactionDAO().merger(transaction));
+
         });
 
     }

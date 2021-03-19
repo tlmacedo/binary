@@ -1580,7 +1580,7 @@ public class Operacoes implements Initializable {
                 getTransacoesObservableList().stream()
                         .filter(transacoes -> transacoes.isConsolidado()
                                 && transacoes.getS_id() == finalS_id
-                                && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) != 0)
+                                && transacoes.getTickVenda().compareTo(BigDecimal.ZERO) == 0)
                         .forEach(transacao -> {
                             HistoricoDeTicks tmpHistory;
                             if ((tmpHistory = getHistoricoDeTicksObservableList().stream()
@@ -1589,7 +1589,7 @@ public class Operacoes implements Initializable {
                                             && historicoDeTicks.getTime() == transacao.getDataHoraExpiry()
                                     ).findFirst().orElse(null)) != null) {
                                 transacao.setTickVenda(tmpHistory.getPrice());
-                                transacao.setConsolidado(true);
+//                                transacao.setConsolidado(true);
                                 if (getContaToken().iscReal())
                                     getTransacoesDAO().merger(transacao);
 
@@ -1832,7 +1832,7 @@ public class Operacoes implements Initializable {
         getBtnTpnNegociacao_Pausar().setOnAction(event -> setRoboMonitorandoPausado(true));
 
         getBtnTpnNegociacao_Stop().setOnAction(event -> {
-            getWsClientObjectProperty().getMyWebSocket().send("{\"sell_expired\": 1}");
+            //getWsClientObjectProperty().getMyWebSocket().send("{\"sell_expired\": 1}");
             getCboNegociacaoRobos().getSelectionModel().select(0);
             setRoboMonitorando(false);
             setRoboMonitorandoPausado(false);

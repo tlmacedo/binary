@@ -3266,14 +3266,13 @@
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT" prefWidth="320.0">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" styleClass="informacoes">
+                                                <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="320.0"
+                                                      styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:"
-                                                               textAlignment="CENTER"
-                                                               wrapText="true"/>
-                                                        <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
-                                                              styleClass="main">
+                                                        <HBox alignment="CENTER_RIGHT" styleClass="main">
                                                             <children>
+                                                                <Label prefHeight="23.0" text="Op. Ativa:"
+                                                                       textAlignment="CENTER" wrapText="true"/>
                                                                 <Label fx:id="lblTpn_T01_QtdStakes"
                                                                        alignment="CENTER_RIGHT" prefHeight="23.0"
                                                                        text="0">
@@ -6048,16 +6047,15 @@
                                                 </HBox>
                                             </children>
                                         </HBox>
-                                        <HBox alignment="CENTER_LEFT" prefWidth="320.0">
+                                        <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="320.0">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" styleClass="informacoes">
+                                                <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="320.0"
+                                                      styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:"
-                                                               textAlignment="CENTER"
-                                                               wrapText="true"/>
-                                                        <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
-                                                              styleClass="main">
+                                                        <HBox alignment="CENTER_RIGHT" styleClass="main">
                                                             <children>
+                                                                <Label prefHeight="23.0" text="Op. Ativa:"
+                                                                       textAlignment="CENTER" wrapText="true"/>
                                                                 <Label fx:id="lblTpn_T02_QtdStakes"
                                                                        alignment="CENTER_RIGHT" prefHeight="23.0"
                                                                        text="0">
@@ -6122,7 +6120,7 @@
                                                 </HBox>
                                             </children>
                                         </HBox>
-                                        <HBox alignment="CENTER_RIGHT" prefWidth="320.0">
+                                        <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="320.0">
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                                     <children>
@@ -6174,9 +6172,6 @@
                                     <opaqueInsets>
                                         <Insets/>
                                     </opaqueInsets>
-                                    <padding>
-                                        <Insets left="5.0"/>
-                                    </padding>
                                 </HBox>
                             </graphic>
                         </TitledPane>
@@ -8832,16 +8827,15 @@
                                                 </HBox>
                                             </children>
                                         </HBox>
-                                        <HBox alignment="CENTER_LEFT" prefWidth="320.0">
+                                        <HBox alignment="CENTER_RIGHT" prefWidth="320.0">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" styleClass="informacoes">
+                                                <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="320.0"
+                                                      styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:"
-                                                               textAlignment="CENTER"
-                                                               wrapText="true"/>
-                                                        <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
-                                                              styleClass="main">
+                                                        <HBox alignment="CENTER_RIGHT" styleClass="main">
                                                             <children>
+                                                                <Label prefHeight="23.0" text="Op. Ativa:"
+                                                                       textAlignment="CENTER" wrapText="true"/>
                                                                 <Label fx:id="lblTpn_T03_QtdStakes"
                                                                        alignment="CENTER_RIGHT" prefHeight="23.0"
                                                                        text="0">
@@ -11618,14 +11612,13 @@
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT" prefWidth="320.0">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" styleClass="informacoes">
+                                                <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="320.0"
+                                                      styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:"
-                                                               textAlignment="CENTER"
-                                                               wrapText="true"/>
-                                                        <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
-                                                              styleClass="main">
+                                                        <HBox alignment="CENTER_RIGHT" styleClass="main">
                                                             <children>
+                                                                <Label prefHeight="23.0" text="Op. Ativa:"
+                                                                       textAlignment="CENTER" wrapText="true"/>
                                                                 <Label fx:id="lblTpn_T04_QtdStakes"
                                                                        alignment="CENTER_RIGHT" prefHeight="23.0"
                                                                        text="0">
@@ -14402,14 +14395,13 @@
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT" prefWidth="320.0">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" styleClass="informacoes">
+                                                <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="320.0"
+                                                      styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:"
-                                                               textAlignment="CENTER"
-                                                               wrapText="true"/>
-                                                        <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
-                                                              styleClass="main">
+                                                        <HBox alignment="CENTER_RIGHT" styleClass="main">
                                                             <children>
+                                                                <Label prefHeight="23.0" text="Op. Ativa:"
+                                                                       textAlignment="CENTER" wrapText="true"/>
                                                                 <Label fx:id="lblTpn_T05_QtdStakes"
                                                                        alignment="CENTER_RIGHT" prefHeight="23.0"
                                                                        text="0">
@@ -17186,14 +17178,13 @@
                                         </HBox>
                                         <HBox alignment="CENTER_LEFT" prefWidth="320.0">
                                             <children>
-                                                <HBox alignment="CENTER_LEFT" styleClass="informacoes">
+                                                <HBox alignment="CENTER_RIGHT" minWidth="-Infinity" prefWidth="320.0"
+                                                      styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:"
-                                                               textAlignment="CENTER"
-                                                               wrapText="true"/>
-                                                        <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
-                                                              styleClass="main">
+                                                        <HBox alignment="CENTER_RIGHT" styleClass="main">
                                                             <children>
+                                                                <Label prefHeight="23.0" text="Op. Ativa:"
+                                                                       textAlignment="CENTER" wrapText="true"/>
                                                                 <Label fx:id="lblTpn_T06_QtdStakes"
                                                                        alignment="CENTER_RIGHT" prefHeight="23.0"
                                                                        text="0">

@@ -65,12 +65,8 @@ public class Transacoes implements Serializable {
             this.contract_type = new SimpleStringProperty(contract.getDescricao());
         }
         this.longcode = new SimpleStringProperty(transaction.getLongcode());
-//        this.tickCompra = new SimpleObjectProperty<>(BigDecimal.ZERO);
-//        this.tickVenda = new SimpleObjectProperty<>(BigDecimal.ZERO);
-//        this.tickNegociacaoInicio = new SimpleObjectProperty<>(BigDecimal.ZERO);
         this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
-//        this.stakeResult = new SimpleObjectProperty<>(BigDecimal.ZERO);
 
 //        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
 
