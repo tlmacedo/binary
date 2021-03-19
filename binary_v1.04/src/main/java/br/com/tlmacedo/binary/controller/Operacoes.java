@@ -1578,7 +1578,7 @@ public class Operacoes implements Initializable {
                             }
                         });
                 getTransacoesObservableList().stream()
-                        .filter(transacoes -> !transacoes.isConsolidado()
+                        .filter(transacoes -> transacoes.isConsolidado()
                                 && transacoes.getS_id() == finalS_id
                                 && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) != 0)
                         .forEach(transacao -> {
@@ -1885,12 +1885,13 @@ public class Operacoes implements Initializable {
                                 .collect(Collectors.toList())).size() > 1) {
                             transacao.setTickCompra(tmpHistory.get(0).getPrice());
                             transacao.setTickNegociacaoInicio(tmpHistory.get(1).getPrice());
+//                            transacao.setConsolidado(false);
                             if (getContaToken().iscReal())
                                 getTransacoesDAO().merger(transacao);
                         }
                     });
             getTransacoesObservableList().stream()
-                    .filter(transacoes -> !transacoes.isConsolidado()
+                    .filter(transacoes -> transacoes.isConsolidado()
                             && transacoes.getS_id() == finalS_id
                             && transacoes.getTickNegociacaoInicio().compareTo(BigDecimal.ZERO) != 0)
                     .forEach(transacao -> {
@@ -1898,10 +1899,12 @@ public class Operacoes implements Initializable {
                         if ((tmpHistory = getHistoricoDeTicksObservableList().stream()
                                 .filter(historicoDeTicks -> historicoDeTicks.getSymbol().getId()
                                         == getSymbolObservableList().get(finalS_id).getId()
-                                        && historicoDeTicks.getTime() == transacao.getDataHoraExpiry()
-                                ).findFirst().orElse(null)) != null) {
+                                        && historicoDeTicks.getTime() == transacao.getDataHoraExpiry())
+                                .findFirst().orElse(null)) != null) {
+//                            int index = getTransacoesObservableList().indexOf(transacao);
                             transacao.setTickVenda(tmpHistory.getPrice());
                             transacao.setConsolidado(true);
+//                            getTransacoesObservableList().set(index, transacao);
                             if (getContaToken().iscReal())
                                 getTransacoesDAO().merger(transacao);
 
@@ -2316,12 +2319,6 @@ public class Operacoes implements Initializable {
         settLineUsoApp(new Timeline(new KeyFrame(Duration.seconds(1),
                 event -> setTempoUsoApp(getTempoUsoApp() + 1))));
         gettLineUsoApp().setCycleCount(Animation.INDEFINITE);
-
-        Timeline refreshTables = new Timeline(new KeyFrame(Duration.minutes(2),
-                event -> atualizaTicksTabela()));
-        refreshTables.setCycleCount(Animation.INDEFINITE);
-        refreshTables.play();
-
 
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             int finalT_id = t_id;

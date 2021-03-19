@@ -253,6 +253,14 @@ public class Abr extends Operacoes implements Robo {
             int finalT_id = t_id;
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 int finalS_id = s_id;
+                getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
+                    if (n == null) return;
+                    if (Math.abs(n.intValue()) == 1
+                            && getSymbolLossPaused()[finalT_id][finalS_id].getValue()) {
+                        getSymbolLossPaused()[finalT_id][finalS_id].setValue(false);
+                        getQtdLossSymbol()[finalT_id][finalS_id].setValue(0);
+                    }
+                });
                 getQtdLossSymbol()[t_id][s_id].addListener((ov, o, n) -> {
                     if (n == null)
                         getSymbolLossPaused()[finalT_id][finalS_id].setValue(false);

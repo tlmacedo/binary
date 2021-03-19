@@ -71,7 +71,6 @@ public class Transacoes implements Serializable {
         this.stakeCompra = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
         this.stakeVenda = new SimpleObjectProperty<>(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
 //        this.stakeResult = new SimpleObjectProperty<>(BigDecimal.ZERO);
-        this.consolidado = new SimpleBooleanProperty(false);
 
 //        Operacoes.getTransacoesObservableList().add(Operacoes.getTransacoesDAO().merger(this));
 
@@ -90,7 +89,7 @@ public class Transacoes implements Serializable {
         this.dataHoraVenda = new SimpleIntegerProperty(transaction.getTransaction_time());
         this.stakeVenda = new SimpleObjectProperty<>(transaction.getAmount().setScale(2, RoundingMode.HALF_UP));
         this.stakeResult = new SimpleObjectProperty<>(getStakeVenda().add(getStakeCompra()).setScale(2, RoundingMode.HALF_UP));
-        this.consolidado = new SimpleBooleanProperty(false);
+        this.consolidado = new SimpleBooleanProperty(true);
 
         if (Operacoes.getContaToken().iscReal())
             Operacoes.getTransacoesObservableList().set(indexTransacoes, Operacoes.getTransacoesDAO().merger(this));
