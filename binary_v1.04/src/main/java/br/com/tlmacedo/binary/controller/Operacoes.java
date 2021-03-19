@@ -1628,11 +1628,11 @@ public class Operacoes implements Initializable {
                     .map(Transacoes::getStakeCompra).reduce(BigDecimal.ZERO, BigDecimal::add)
                     .setScale(2, RoundingMode.HALF_UP));
             setVlrStakesOut(c.getList().stream()
-                    .filter(transacoes -> transacoes.isConsolidado())
+//                    .filter(transacoes -> transacoes.isConsolidado())
                     .map(Transacoes::getStakeVenda).reduce(BigDecimal.ZERO, BigDecimal::add)
                     .setScale(2, RoundingMode.HALF_UP));
             setVlrStakesDiff(c.getList().stream()
-                    .filter(transacoes -> transacoes.isConsolidado())
+//                    .filter(transacoes -> transacoes.isConsolidado())
                     .map(Transacoes::getStakeResult).reduce(BigDecimal.ZERO, BigDecimal::add)
                     .setScale(2, RoundingMode.HALF_UP));
         });
@@ -1655,11 +1655,11 @@ public class Operacoes implements Initializable {
                         .map(Transacoes::getStakeCompra).reduce(BigDecimal.ZERO, BigDecimal::add)
                         .setScale(2, RoundingMode.HALF_UP));
                 getVlrTimeFrameStakesOut()[finalT_id].setValue(c.getList().stream()
-                        .filter(transacoes -> transacoes.isConsolidado())
+//                        .filter(transacoes -> transacoes.isConsolidado())
                         .map(Transacoes::getStakeVenda).reduce(BigDecimal.ZERO, BigDecimal::add)
                         .setScale(2, RoundingMode.HALF_UP));
                 getVlrTimeFrameStakesDiff()[finalT_id].setValue(c.getList().stream()
-                        .filter(transacoes -> transacoes.isConsolidado())
+//                        .filter(transacoes -> transacoes.isConsolidado())
                         .map(Transacoes::getStakeResult).reduce(BigDecimal.ZERO, BigDecimal::add)
                         .setScale(2, RoundingMode.HALF_UP));
             });
@@ -1678,11 +1678,11 @@ public class Operacoes implements Initializable {
                             .map(Transacoes::getStakeCompra).reduce(BigDecimal.ZERO, BigDecimal::add)
                             .setScale(2, RoundingMode.HALF_UP));
                     getVlrTframeSymbolStakesOut()[finalT_id][finalS_id].setValue(c.getList().stream()
-                            .filter(transacoes -> transacoes.isConsolidado())
+//                            .filter(transacoes -> transacoes.isConsolidado())
                             .map(Transacoes::getStakeVenda).reduce(BigDecimal.ZERO, BigDecimal::add)
                             .setScale(2, RoundingMode.HALF_UP));
                     getVlrTframeSymbolStakesDiff()[finalT_id][finalS_id].setValue(c.getList().stream()
-                            .filter(transacoes -> transacoes.isConsolidado())
+//                            .filter(transacoes -> transacoes.isConsolidado())
                             .map(Transacoes::getStakeResult).reduce(BigDecimal.ZERO, BigDecimal::add)
                             .setScale(2, RoundingMode.HALF_UP));
                 });

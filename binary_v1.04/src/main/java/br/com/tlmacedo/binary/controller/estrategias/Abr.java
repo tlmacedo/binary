@@ -170,7 +170,6 @@ public class Abr extends Operacoes implements Robo {
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 int finalS_id = s_id;
                 getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
-                    if (n == null || isRoboMonitorandoPausado() || !isContratoGerado()) return;
                     int qtdCandlesAbsoluto = Math.abs(n.intValue());
                     boolean maior = qtdCandlesAbsoluto > getQtdCandlesEntrada()[finalT_id].getValue(),
                             igual = qtdCandlesAbsoluto == getQtdCandlesEntrada()[finalT_id].getValue();
@@ -179,6 +178,7 @@ public class Abr extends Operacoes implements Robo {
                     if (getFirstBuy()[finalT_id][finalS_id].getValue()
                             && qtdCandlesAbsoluto >= getQtdCandlesEntrada()[finalT_id].getValue() - 1)
                         gerarContratosPendentes(finalT_id, finalS_id);
+                    if (n == null || isRoboMonitorandoPausado() || !isContratoGerado()) return;
                     if (maior || igual) {
                         Proposal proposal;
                         int proposal_id = (maior

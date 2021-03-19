@@ -47,7 +47,8 @@
                                 </HBox>
                                 <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                     <children>
-                                        <Label prefHeight="23.0" text="Op. Ativa:" textAlignment="CENTER" wrapText="true"/>
+                                        <Label prefHeight="23.0" text="Op. Ativa:" textAlignment="CENTER"
+                                               wrapText="true"/>
                                         <HBox alignment="CENTER_RIGHT" prefWidth="40.0" styleClass="main">
                                             <children>
                                                 <Label fx:id="lblTpnDetalhesQtdStakes" alignment="CENTER_RIGHT"
@@ -3267,7 +3268,8 @@
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:" textAlignment="CENTER"
+                                                        <Label prefHeight="23.0" text="Op. Ativa:"
+                                                               textAlignment="CENTER"
                                                                wrapText="true"/>
                                                         <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
                                                               styleClass="main">
@@ -6050,7 +6052,8 @@
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:" textAlignment="CENTER"
+                                                        <Label prefHeight="23.0" text="Op. Ativa:"
+                                                               textAlignment="CENTER"
                                                                wrapText="true"/>
                                                         <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
                                                               styleClass="main">
@@ -8833,7 +8836,8 @@
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:" textAlignment="CENTER"
+                                                        <Label prefHeight="23.0" text="Op. Ativa:"
+                                                               textAlignment="CENTER"
                                                                wrapText="true"/>
                                                         <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
                                                               styleClass="main">
@@ -11616,7 +11620,8 @@
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:" textAlignment="CENTER"
+                                                        <Label prefHeight="23.0" text="Op. Ativa:"
+                                                               textAlignment="CENTER"
                                                                wrapText="true"/>
                                                         <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
                                                               styleClass="main">
@@ -14399,7 +14404,8 @@
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:" textAlignment="CENTER"
+                                                        <Label prefHeight="23.0" text="Op. Ativa:"
+                                                               textAlignment="CENTER"
                                                                wrapText="true"/>
                                                         <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
                                                               styleClass="main">
@@ -17182,7 +17188,8 @@
                                             <children>
                                                 <HBox alignment="CENTER_LEFT" styleClass="informacoes">
                                                     <children>
-                                                        <Label prefHeight="23.0" text="Op. Ativa:" textAlignment="CENTER"
+                                                        <Label prefHeight="23.0" text="Op. Ativa:"
+                                                               textAlignment="CENTER"
                                                                wrapText="true"/>
                                                         <HBox alignment="CENTER_RIGHT" prefWidth="40.0"
                                                               styleClass="main">
