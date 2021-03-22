@@ -36,8 +36,14 @@ public interface Constants {
     String STYLE_TICK_NEUTRO = "-fx-background-color: transparent;";
     String STYLE_TICK_SUBINDO = "-fx-background-color: #4BB4B3;";
     String STYLE_TICK_DESCENDO = "-fx-background-color: #EC3F3F;";
-    String STYLE_TICK_NEGOCIANDO = "-fx-background-color: #fffd03; -fx-text-fill: #000000;";
-    String STYLE_TICK_NEGOCIANDO_FALSE = ".lbl_informacao.right";
+    String STYLE_TIME_NEGOCIANDO = "-fx-text-fill: #3dd936; -fx-font-family: \"Arial\"; -fx-font-weight: bold; -fx-background-color: #86865a; -fx-background-insets: 1 1 1 -4; -fx-background-radius: 4;";
+    String STYLE_TIME_NEGOCIANDO_FALSE = "-fx-background-color: -fx-border-shadow, -fx-background;";
+    String STYLE_TICK_NEGOCIANDO_1 = "-fx-text-fill: #038043; -fx-font-family: \"Arial\"; -fx-font-weight: bold; -fx-background-color: #f3e365; -fx-background-radius: 4;";
+    String STYLE_TICK_NEGOCIANDO_2 = "-fx-text-fill: #038043; -fx-font-family: \"Arial\"; -fx-font-weight: bold; -fx-background-color: #f3e365; -fx-background-radius: 4;";
+    String STYLE_TICK_NEGOCIANDO_3 = "-fx-text-fill: #038043; -fx-font-family: \"Arial\"; -fx-font-weight: bold; -fx-background-color: #f3e365; -fx-background-radius: 4;";
+    String STYLE_TICK_NEGOCIANDO_FALSE = "-fx-background-color: -fx-border-shadow, -fx-background;";
+    String STYLE_TICK_WAIT_BUY = "-fx-font-family: \"Arial\"; -fx-font-weight: bold; -fx-background-color: #86865a; -fx-background-radius: 4;";
+    String STYLE_TICK_WAIT_BUY_FALSE = "-fx-background-color: -fx-border-shadow, -fx-background;";
     String STYLE_GRAF_BARRAS_DEFAULT = "-fx-bar-fill: #F2F3F4; -fx-border-color: #1f1e1e;";
     String STYLE_GRAF_BARRAS_DIGITO_MAIOR = "-fx-bar-fill: #4BB4B3; -fx-border-color: #1f1e1e;";
     String STYLE_GRAF_BARRAS_DIGITO_MENOR = "-fx-bar-fill: #EC3F3F; -fx-border-color: #1f1e1e;";

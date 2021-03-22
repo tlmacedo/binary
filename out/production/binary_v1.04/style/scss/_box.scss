@@ -1,6 +1,5 @@
 
 VBox, HBox {
-  //-fx-border-color: white;
 
   &.informacoes {
     -fx-border-base: #474141;
@@ -26,6 +25,57 @@ VBox, HBox {
       -fx-border-radius: 4;
       -fx-background-color: #fdfd6c;
     }
+
+    .tframe-operando {
+      //-fx-text-fill: #038043;
+      -fx-text-fill: #3dd936;
+      -fx-font-family: "Arial";
+      -fx-font-weight: bold;
+      //-fx-background-color: #f3e365;
+      -fx-background-color: #86865a;
+      -fx-background-insets: 1 1 1 -4;
+      -fx-background-radius: 4;
+    }
+
+    .tick-operando-1 {
+      //-fx-text-fill: #038043;
+      -fx-text-fill: #000;// #3dd936;
+      -fx-font-family: "Arial";
+      -fx-font-weight: bold;
+      -fx-background-color: #a4f398;
+      //-fx-background-color: #86865a;
+      -fx-background-radius: 4;
+    }
+
+    .tick-operando-2 {
+      -fx-text-fill: #038043;
+      //-fx-text-fill: #3dd936;
+      -fx-font-family: "Arial";
+      -fx-font-weight: bold;
+      -fx-background-color: #f3e365;
+      //-fx-background-color: #86865a;
+      -fx-background-radius: 4;
+    }
+
+    .tick-operando-3 {
+      -fx-text-fill: #038043;
+      //-fx-text-fill: #3dd936;
+      -fx-font-family: "Arial";
+      -fx-font-weight: bold;
+      -fx-background-color: #f3e365;
+      //-fx-background-color: #86865a;
+      -fx-background-radius: 4;
+    }
+
+    //.tick-waiting-buy {
+    //  //-fx-text-fill: #038043;
+    //  //-fx-text-fill: #3dd936;
+    //  -fx-font-family: "Arial";
+    //  -fx-font-weight: bold;
+    //  -fx-background-color: #86865a;
+    //  //-fx-background-color: #86865a;
+    //  -fx-background-radius: 4;
+    //}
 
   }
 

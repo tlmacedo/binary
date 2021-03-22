@@ -216,10 +216,8 @@ public class WSClient extends WebSocketListener {
                 HistoricoDeTicks hTicks = new HistoricoDeTicks(ohlc);
                 Operacoes.getHistoricoDeTicksObservableList().add(hTicks);
                 Operacoes.getUltimoOhlcStr()[s_id].setValue(ohlc);
-                while (Operacoes.getHistoricoDeTicksObservableList().size()
-                        > (100 * Operacoes.getTimeFrameObservableList().size())) {
+                while (Operacoes.getHistoricoDeTicksObservableList().size() > 11000)
                     Operacoes.getHistoricoDeTicksObservableList().remove(0);
-                }
             }
 
             try {

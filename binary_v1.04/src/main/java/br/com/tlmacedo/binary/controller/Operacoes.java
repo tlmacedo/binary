@@ -31,9 +31,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static br.com.tlmacedo.binary.interfaces.Constants.*;
@@ -105,6 +103,8 @@ public class Operacoes implements Initializable {
     //** Variaveis **
     static IntegerProperty qtdCandlesAnalise = new SimpleIntegerProperty();
     static ObjectProperty<Ohlc>[] ultimoOhlcStr = new ObjectProperty[getSymbolObservableList().size()];
+    static StringProperty[] strStyleNegociandoTimeFrame = new StringProperty[getTimeFrameObservableList().size()];
+    static StringProperty[][] strStyleNegociandoSymbols = new StringProperty[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
 
     static StringProperty[] timeCandleStart = new StringProperty[getTimeFrameObservableList().size()];
     static IntegerProperty[] timeCandleToClose = new IntegerProperty[getTimeFrameObservableList().size()];
@@ -121,8 +121,6 @@ public class Operacoes implements Initializable {
     static FilteredList<HistoricoDeCandles>[][] historicoDeCandlesFilteredList = new FilteredList[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
     static FilteredList<Transacoes>[] transacoesFilteredList_tFrame = new FilteredList[getTimeFrameObservableList().size()];
     static FilteredList<Transacoes>[][] transacoesFilteredList_symbol = new FilteredList[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
-//    static FilteredList<Transacoes>[] transacoesTimerFilteredList = new FilteredList[getTimeFrameObservableList().size()];
-//    static FilteredList<Transacoes>[] transacoesSymbolFilteredList = new FilteredList[getSymbolObservableList().size()];
 
     static TmodelTransacoes[][] tmodelTransacoes = new TmodelTransacoes[getTimeFrameObservableList().size()][getSymbolObservableList().size()];
 
@@ -261,6 +259,7 @@ public class Operacoes implements Initializable {
     public JFXCheckBox chkTpn_T01_TimeAtivo;
     public Label lblTpn_T01_CandleTimeStart;
     public Label lblTpn_T01_TimeEnd;
+    public HBox hboxTpn_01_QtdsStakes;
     public Label lblTpn_T01_QtdStakes;
     public Label lblTpn_T01_QtdStakesCons;
     public Label lblTpn_T01_QtdWins;
@@ -430,6 +429,7 @@ public class Operacoes implements Initializable {
     public JFXCheckBox chkTpn_T02_TimeAtivo;
     public Label lblTpn_T02_CandleTimeStart;
     public Label lblTpn_T02_TimeEnd;
+    public HBox hboxTpn_02_QtdsStakes;
     public Label lblTpn_T02_QtdStakes;
     public Label lblTpn_T02_QtdStakesCons;
     public Label lblTpn_T02_QtdWins;
@@ -599,6 +599,7 @@ public class Operacoes implements Initializable {
     public JFXCheckBox chkTpn_T03_TimeAtivo;
     public Label lblTpn_T03_CandleTimeStart;
     public Label lblTpn_T03_TimeEnd;
+    public HBox hboxTpn_03_QtdsStakes;
     public Label lblTpn_T03_QtdStakes;
     public Label lblTpn_T03_QtdStakesCons;
     public Label lblTpn_T03_QtdWins;
@@ -768,6 +769,7 @@ public class Operacoes implements Initializable {
     public JFXCheckBox chkTpn_T04_TimeAtivo;
     public Label lblTpn_T04_CandleTimeStart;
     public Label lblTpn_T04_TimeEnd;
+    public HBox hboxTpn_04_QtdsStakes;
     public Label lblTpn_T04_QtdStakes;
     public Label lblTpn_T04_QtdStakesCons;
     public Label lblTpn_T04_QtdWins;
@@ -937,6 +939,7 @@ public class Operacoes implements Initializable {
     public JFXCheckBox chkTpn_T05_TimeAtivo;
     public Label lblTpn_T05_CandleTimeStart;
     public Label lblTpn_T05_TimeEnd;
+    public HBox hboxTpn_05_QtdsStakes;
     public Label lblTpn_T05_QtdStakes;
     public Label lblTpn_T05_QtdStakesCons;
     public Label lblTpn_T05_QtdWins;
@@ -1106,6 +1109,7 @@ public class Operacoes implements Initializable {
     public JFXCheckBox chkTpn_T06_TimeAtivo;
     public Label lblTpn_T06_CandleTimeStart;
     public Label lblTpn_T06_TimeEnd;
+    public HBox hboxTpn_06_QtdsStakes;
     public Label lblTpn_T06_QtdStakes;
     public Label lblTpn_T06_QtdStakesCons;
     public Label lblTpn_T06_QtdWins;
@@ -1284,6 +1288,7 @@ public class Operacoes implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         try {
+
             for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
                 getTimeAtivo()[t_id] = new SimpleBooleanProperty(false);
             }
@@ -1346,6 +1351,7 @@ public class Operacoes implements Initializable {
         for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
             int finalT_id = t_id;
 
+            getStrStyleNegociandoTimeFrame()[t_id] = new SimpleStringProperty("");
             getTimeCandleStart()[t_id] = new SimpleStringProperty("");
             getTimeCandleToClose()[t_id] = new SimpleIntegerProperty(0);
             getQtdTimeFrameStakes()[t_id] = new SimpleIntegerProperty(0);
@@ -1367,6 +1373,7 @@ public class Operacoes implements Initializable {
                 getQtdCallOrPut()[t_id][s_id] = new SimpleIntegerProperty(0);
                 getQtdCall()[t_id][s_id] = new SimpleIntegerProperty(0);
                 getQtdPut()[t_id][s_id] = new SimpleIntegerProperty(0);
+                getStrStyleNegociandoSymbols()[t_id][s_id] = new SimpleStringProperty("");
 
                 getQtdTframeSymbolStakes()[t_id][s_id] = new SimpleIntegerProperty(0);
                 getQtdTframeSymbolStakesWins()[t_id][s_id] = new SimpleIntegerProperty(0);
@@ -1450,7 +1457,7 @@ public class Operacoes implements Initializable {
         });
 
         tempoUsoAppProperty().addListener((ov, o, n) -> {
-            getLblTpnNegociacaoTempoUso().setText(Service_DataTime.getStrHoraMinutoSegundo(n.intValue()));
+            getLblTpnNegociacaoTempoUso().setText(Service_DataTime.getStrHoraMinutoSegundoExtenso(n.intValue()));
         });
 
         authorizeProperty().addListener((ov, o, n) -> {
@@ -1554,6 +1561,11 @@ public class Operacoes implements Initializable {
                             }
                         });
             }
+            getQtdTimeFrameStakes()[t_id].addListener((ov, o, n) -> {
+                if (n == null || n.intValue() == 0)
+                    getStrStyleNegociandoTimeFrame()[finalT_id].setValue(STYLE_TIME_NEGOCIANDO_FALSE);
+                else getStrStyleNegociandoTimeFrame()[finalT_id].setValue(STYLE_TIME_NEGOCIANDO);
+            });
         }
 
         for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
@@ -2158,9 +2170,9 @@ public class Operacoes implements Initializable {
     public Image getImagemCandle(int t_id, int s_id) {
 
         if (getQtdCallOrPut()[t_id][s_id].getValue().compareTo(1) >= 0)
-            return new Image("image/ico/ic_seta_call_sobe_black_18dp.png");
+            return new Image("image/ico/ic_seta_call_sobe_green_18dp.png");
         else if (getQtdCallOrPut()[t_id][s_id].getValue().compareTo(-1) <= 0)
-            return new Image("image/ico/ic_seta_put_desce_black_18dp.png");
+            return new Image("image/ico/ic_seta_put_desce_red_18dp.png");
         else
             return null;
 
@@ -2172,6 +2184,13 @@ public class Operacoes implements Initializable {
             switch (ACTION.valueOf(transaction.getAction().toUpperCase())) {
                 case BUY -> {
                     new Transacoes().isBUY(transaction);
+                    int t_id = transaction.getT_id(), s_id = transaction.getS_id();
+                    getStrStyleNegociandoSymbols()[t_id][s_id]
+                            .setValue(
+                                    transaction.getAmount().compareTo(getVlrStkPadrao()[t_id].getValue()) <= 0
+                                            ? STYLE_TICK_NEGOCIANDO_1
+                                            : (getQtdLossSymbol()[t_id][s_id].getValue() <= 1
+                                            ? STYLE_TICK_NEGOCIANDO_2 : STYLE_TICK_NEGOCIANDO_3));
                     Operacoes.setSaldoFinal(transaction.getBalance());
                 }
                 case SELL -> {
@@ -2179,7 +2198,18 @@ public class Operacoes implements Initializable {
                         getTransacoesObservableList().stream()
                                 .filter(transacoes -> transacoes.getContract_id() == transaction.getContract_id())
                                 .findFirst().get().isSELL(transaction);
+                        getStrStyleNegociandoSymbols()[transaction.getT_id()][transaction.getS_id()]
+                                .setValue(STYLE_TIME_NEGOCIANDO_FALSE);
                         Operacoes.setSaldoFinal(transaction.getBalance());
+
+                        if (getVlrStakesDiff().compareTo(BigDecimal.TEN) >= 0) {
+                            //getCboNegociacaoRobos().getSelectionModel().select(0);
+                            setRoboMonitorando(false);
+                            setRoboMonitorandoPausado(false);
+                            setContratoGerado(false);
+                            setRobo(null);
+
+                        }
                     } catch (Exception ex) {
                         if (!(ex instanceof NoSuchElementException))
                             ex.printStackTrace();
@@ -2325,8 +2355,11 @@ public class Operacoes implements Initializable {
             if (t_id == 0) {
                 getTpn_T01().setText(getTimeFrameObservableList().get(t_id).toString());
                 getLblTpn_T01_CandleTimeStart().textProperty().bind(getTimeCandleStart()[finalT_id]);
-                getLblTpn_T01_TimeEnd().textProperty().bind(getTimeCandleToClose()[t_id].asString());
+                getLblTpn_T01_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                Service_DataTime.getStrHoraMinutoSegundoPontos(getTimeCandleToClose()[finalT_id].getValue()),
+                        getTimeCandleToClose()[t_id]));
 
+                getHboxTpn_01_QtdsStakes().styleProperty().bind(getStrStyleNegociandoTimeFrame()[t_id]);
                 getLblTpn_T01_QtdStakes().textProperty().bind(getQtdTimeFrameStakes()[t_id].asString());
                 getLblTpn_T01_QtdStakesCons().textProperty().bind(getQtdTimeFrameStakesConsolidado()[t_id].asString());
                 getLblTpn_T01_QtdWins().textProperty().bind(getQtdTimeFrameStakesWins()[t_id].asString());
@@ -2338,6 +2371,7 @@ public class Operacoes implements Initializable {
                     int finalS_id = s_id;
                     if (s_id == 0) {
                         getLblSymbol_T01_Op01().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op01().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op01().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2355,6 +2389,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op01().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 1) {
                         getLblSymbol_T01_Op02().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op02().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op02().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2372,6 +2407,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op02().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 2) {
                         getLblSymbol_T01_Op03().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op03().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op03().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2389,6 +2425,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op03().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 3) {
                         getLblSymbol_T01_Op04().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op04().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op04().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2406,6 +2443,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op04().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 4) {
                         getLblSymbol_T01_Op05().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op05().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op05().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2423,6 +2461,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op05().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 5) {
                         getLblSymbol_T01_Op06().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op06().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op06().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2440,6 +2479,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op06().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 6) {
                         getLblSymbol_T01_Op07().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op07().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op07().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2457,6 +2497,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op07().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 7) {
                         getLblSymbol_T01_Op08().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op08().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op08().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2474,6 +2515,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op08().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 8) {
                         getLblSymbol_T01_Op09().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op09().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op09().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2491,6 +2533,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op09().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 9) {
                         getLblSymbol_T01_Op10().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op10().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op10().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2508,6 +2551,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op10().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 10) {
                         getLblSymbol_T01_Op11().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op11().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op11().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2525,6 +2569,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T01_Op11().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 11) {
                         getLblSymbol_T01_Op12().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T01_Op12().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T01_Op12().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2545,8 +2590,11 @@ public class Operacoes implements Initializable {
             } else if (t_id == 1) {
                 getTpn_T02().setText(getTimeFrameObservableList().get(t_id).toString());
                 getLblTpn_T02_CandleTimeStart().textProperty().bind(getTimeCandleStart()[finalT_id]);
-                getLblTpn_T02_TimeEnd().textProperty().bind(getTimeCandleToClose()[t_id].asString());
+                getLblTpn_T02_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                Service_DataTime.getStrHoraMinutoSegundoPontos(getTimeCandleToClose()[finalT_id].getValue()),
+                        getTimeCandleToClose()[t_id]));
 
+                getHboxTpn_02_QtdsStakes().styleProperty().bind(getStrStyleNegociandoTimeFrame()[t_id]);
                 getLblTpn_T02_QtdStakes().textProperty().bind(getQtdTimeFrameStakes()[t_id].asString());
                 getLblTpn_T02_QtdStakesCons().textProperty().bind(getQtdTimeFrameStakesConsolidado()[t_id].asString());
                 getLblTpn_T02_QtdWins().textProperty().bind(getQtdTimeFrameStakesWins()[t_id].asString());
@@ -2558,6 +2606,7 @@ public class Operacoes implements Initializable {
                     int finalS_id = s_id;
                     if (s_id == 0) {
                         getLblSymbol_T02_Op01().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op01().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op01().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2575,6 +2624,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op01().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 1) {
                         getLblSymbol_T02_Op02().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op02().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op02().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2592,6 +2642,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op02().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 2) {
                         getLblSymbol_T02_Op03().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op03().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op03().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2609,6 +2660,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op03().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 3) {
                         getLblSymbol_T02_Op04().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op04().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op04().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2626,6 +2678,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op04().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 4) {
                         getLblSymbol_T02_Op05().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op05().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op05().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2643,6 +2696,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op05().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 5) {
                         getLblSymbol_T02_Op06().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op06().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op06().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2660,6 +2714,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op06().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 6) {
                         getLblSymbol_T02_Op07().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op07().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op07().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2677,6 +2732,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op07().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 7) {
                         getLblSymbol_T02_Op08().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op08().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op08().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2694,6 +2750,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op08().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 8) {
                         getLblSymbol_T02_Op09().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op09().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op09().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2711,6 +2768,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op09().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 9) {
                         getLblSymbol_T02_Op10().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op10().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op10().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2728,6 +2786,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op10().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 10) {
                         getLblSymbol_T02_Op11().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op11().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op11().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2745,6 +2804,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T02_Op11().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 11) {
                         getLblSymbol_T02_Op12().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T02_Op12().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T02_Op12().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2765,8 +2825,11 @@ public class Operacoes implements Initializable {
             } else if (t_id == 2) {
                 getTpn_T03().setText(getTimeFrameObservableList().get(t_id).toString());
                 getLblTpn_T03_CandleTimeStart().textProperty().bind(getTimeCandleStart()[finalT_id]);
-                getLblTpn_T03_TimeEnd().textProperty().bind(getTimeCandleToClose()[t_id].asString());
+                getLblTpn_T03_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                Service_DataTime.getStrHoraMinutoSegundoPontos(getTimeCandleToClose()[finalT_id].getValue()),
+                        getTimeCandleToClose()[t_id]));
 
+                getHboxTpn_03_QtdsStakes().styleProperty().bind(getStrStyleNegociandoTimeFrame()[t_id]);
                 getLblTpn_T03_QtdStakes().textProperty().bind(getQtdTimeFrameStakes()[t_id].asString());
                 getLblTpn_T03_QtdStakesCons().textProperty().bind(getQtdTimeFrameStakesConsolidado()[t_id].asString());
                 getLblTpn_T03_QtdWins().textProperty().bind(getQtdTimeFrameStakesWins()[t_id].asString());
@@ -2778,6 +2841,7 @@ public class Operacoes implements Initializable {
                     int finalS_id = s_id;
                     if (s_id == 0) {
                         getLblSymbol_T03_Op01().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op01().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op01().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2795,6 +2859,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op01().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 1) {
                         getLblSymbol_T03_Op02().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op02().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op02().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2812,6 +2877,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op02().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 2) {
                         getLblSymbol_T03_Op03().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op03().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op03().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2829,6 +2895,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op03().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 3) {
                         getLblSymbol_T03_Op04().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op04().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op04().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2846,6 +2913,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op04().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 4) {
                         getLblSymbol_T03_Op05().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op05().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op05().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2863,6 +2931,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op05().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 5) {
                         getLblSymbol_T03_Op06().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op06().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op06().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2880,6 +2949,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op06().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 6) {
                         getLblSymbol_T03_Op07().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op07().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op07().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2897,6 +2967,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op07().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 7) {
                         getLblSymbol_T03_Op08().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op08().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op08().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2914,6 +2985,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op08().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 8) {
                         getLblSymbol_T03_Op09().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op09().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op09().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2931,6 +3003,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op09().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 9) {
                         getLblSymbol_T03_Op10().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op10().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op10().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2948,6 +3021,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op10().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 10) {
                         getLblSymbol_T03_Op11().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op11().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op11().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2965,6 +3039,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T03_Op11().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 11) {
                         getLblSymbol_T03_Op12().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T03_Op12().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T03_Op12().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -2985,8 +3060,11 @@ public class Operacoes implements Initializable {
             } else if (t_id == 3) {
                 getTpn_T04().setText(getTimeFrameObservableList().get(t_id).toString());
                 getLblTpn_T04_CandleTimeStart().textProperty().bind(getTimeCandleStart()[finalT_id]);
-                getLblTpn_T04_TimeEnd().textProperty().bind(getTimeCandleToClose()[t_id].asString());
+                getLblTpn_T04_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                Service_DataTime.getStrHoraMinutoSegundoPontos(getTimeCandleToClose()[finalT_id].getValue()),
+                        getTimeCandleToClose()[t_id]));
 
+                getHboxTpn_04_QtdsStakes().styleProperty().bind(getStrStyleNegociandoTimeFrame()[t_id]);
                 getLblTpn_T04_QtdStakes().textProperty().bind(getQtdTimeFrameStakes()[t_id].asString());
                 getLblTpn_T04_QtdStakesCons().textProperty().bind(getQtdTimeFrameStakesConsolidado()[t_id].asString());
                 getLblTpn_T04_QtdWins().textProperty().bind(getQtdTimeFrameStakesWins()[t_id].asString());
@@ -2998,6 +3076,7 @@ public class Operacoes implements Initializable {
                     int finalS_id = s_id;
                     if (s_id == 0) {
                         getLblSymbol_T04_Op01().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op01().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op01().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3015,6 +3094,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op01().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 1) {
                         getLblSymbol_T04_Op02().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op02().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op02().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3032,6 +3112,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op02().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 2) {
                         getLblSymbol_T04_Op03().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op03().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op03().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3049,6 +3130,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op03().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 3) {
                         getLblSymbol_T04_Op04().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op04().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op04().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3066,6 +3148,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op04().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 4) {
                         getLblSymbol_T04_Op05().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op05().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op05().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3083,6 +3166,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op05().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 5) {
                         getLblSymbol_T04_Op06().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op06().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op06().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3100,6 +3184,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op06().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 6) {
                         getLblSymbol_T04_Op07().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op07().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op07().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3117,6 +3202,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op07().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 7) {
                         getLblSymbol_T04_Op08().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op08().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op08().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3134,6 +3220,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op08().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 8) {
                         getLblSymbol_T04_Op09().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op09().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op09().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3151,6 +3238,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op09().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 9) {
                         getLblSymbol_T04_Op10().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op10().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op10().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3168,6 +3256,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op10().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 10) {
                         getLblSymbol_T04_Op11().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op11().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op11().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3185,6 +3274,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T04_Op11().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 11) {
                         getLblSymbol_T04_Op12().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T04_Op12().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T04_Op12().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3205,8 +3295,11 @@ public class Operacoes implements Initializable {
             } else if (t_id == 4) {
                 getTpn_T05().setText(getTimeFrameObservableList().get(t_id).toString());
                 getLblTpn_T05_CandleTimeStart().textProperty().bind(getTimeCandleStart()[finalT_id]);
-                getLblTpn_T05_TimeEnd().textProperty().bind(getTimeCandleToClose()[t_id].asString());
+                getLblTpn_T05_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                Service_DataTime.getStrHoraMinutoSegundoPontos(getTimeCandleToClose()[finalT_id].getValue()),
+                        getTimeCandleToClose()[t_id]));
 
+                getHboxTpn_05_QtdsStakes().styleProperty().bind(getStrStyleNegociandoTimeFrame()[t_id]);
                 getLblTpn_T05_QtdStakes().textProperty().bind(getQtdTimeFrameStakes()[t_id].asString());
                 getLblTpn_T05_QtdStakesCons().textProperty().bind(getQtdTimeFrameStakesConsolidado()[t_id].asString());
                 getLblTpn_T05_QtdWins().textProperty().bind(getQtdTimeFrameStakesWins()[t_id].asString());
@@ -3218,6 +3311,7 @@ public class Operacoes implements Initializable {
                     int finalS_id = s_id;
                     if (s_id == 0) {
                         getLblSymbol_T05_Op01().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op01().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op01().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3235,6 +3329,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op01().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 1) {
                         getLblSymbol_T05_Op02().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op02().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op02().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3252,6 +3347,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op02().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 2) {
                         getLblSymbol_T05_Op03().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op03().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op03().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3269,6 +3365,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op03().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 3) {
                         getLblSymbol_T05_Op04().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op04().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op04().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3286,6 +3383,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op04().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 4) {
                         getLblSymbol_T05_Op05().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op05().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op05().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3303,6 +3401,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op05().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 5) {
                         getLblSymbol_T05_Op06().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op06().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op06().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3320,6 +3419,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op06().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 6) {
                         getLblSymbol_T05_Op07().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op07().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op07().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3337,6 +3437,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op07().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 7) {
                         getLblSymbol_T05_Op08().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op08().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op08().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3354,6 +3455,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op08().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 8) {
                         getLblSymbol_T05_Op09().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op09().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op09().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3371,6 +3473,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op09().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 9) {
                         getLblSymbol_T05_Op10().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op10().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op10().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3388,6 +3491,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op10().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 10) {
                         getLblSymbol_T05_Op11().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op11().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op11().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3405,6 +3509,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T05_Op11().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 11) {
                         getLblSymbol_T05_Op12().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T05_Op12().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T05_Op12().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3425,8 +3530,11 @@ public class Operacoes implements Initializable {
             } else if (t_id == 5) {
                 getTpn_T06().setText(getTimeFrameObservableList().get(t_id).toString());
                 getLblTpn_T06_CandleTimeStart().textProperty().bind(getTimeCandleStart()[finalT_id]);
-                getLblTpn_T06_TimeEnd().textProperty().bind(getTimeCandleToClose()[t_id].asString());
+                getLblTpn_T06_TimeEnd().textProperty().bind(Bindings.createStringBinding(() ->
+                                Service_DataTime.getStrHoraMinutoSegundoPontos(getTimeCandleToClose()[finalT_id].getValue()),
+                        getTimeCandleToClose()[t_id]));
 
+                getHboxTpn_06_QtdsStakes().styleProperty().bind(getStrStyleNegociandoTimeFrame()[t_id]);
                 getLblTpn_T06_QtdStakes().textProperty().bind(getQtdTimeFrameStakes()[t_id].asString());
                 getLblTpn_T06_QtdStakesCons().textProperty().bind(getQtdTimeFrameStakesConsolidado()[t_id].asString());
                 getLblTpn_T06_QtdWins().textProperty().bind(getQtdTimeFrameStakesWins()[t_id].asString());
@@ -3438,6 +3546,7 @@ public class Operacoes implements Initializable {
                     int finalS_id = s_id;
                     if (s_id == 0) {
                         getLblSymbol_T06_Op01().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op01().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op01().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3455,6 +3564,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op01().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 1) {
                         getLblSymbol_T06_Op02().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op02().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op02().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3472,6 +3582,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op02().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 2) {
                         getLblSymbol_T06_Op03().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op03().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op03().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3489,6 +3600,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op03().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 3) {
                         getLblSymbol_T06_Op04().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op04().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op04().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3506,6 +3618,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op04().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 4) {
                         getLblSymbol_T06_Op05().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op05().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op05().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3523,6 +3636,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op05().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 5) {
                         getLblSymbol_T06_Op06().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op06().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op06().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3540,6 +3654,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op06().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 6) {
                         getLblSymbol_T06_Op07().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op07().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op07().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3557,6 +3672,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op07().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 7) {
                         getLblSymbol_T06_Op08().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op08().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op08().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3574,6 +3690,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op08().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 8) {
                         getLblSymbol_T06_Op09().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op09().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op09().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3591,6 +3708,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op09().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 9) {
                         getLblSymbol_T06_Op10().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op10().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op10().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3608,6 +3726,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op10().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 10) {
                         getLblSymbol_T06_Op11().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op11().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op11().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -3625,6 +3744,7 @@ public class Operacoes implements Initializable {
                         getLblVlrDiff_T06_Op11().textProperty().bind(getVlrTframeSymbolStakesDiff()[t_id][s_id].asString());
                     } else if (s_id == 11) {
                         getLblSymbol_T06_Op12().setText(getSymbolObservableList().get(s_id).toString());
+                        getLblSymbol_T06_Op12().styleProperty().bind(getStrStyleNegociandoSymbols()[t_id][s_id]);
                         getLblQtdCallOrPut_T06_Op12().textProperty().bind(Bindings.createStringBinding(() ->
                                         String.valueOf(Math.abs(getQtdCallOrPut()[finalT_id][finalS_id].getValue())),
                                 getQtdCallOrPut()[finalT_id][finalS_id]));
@@ -12426,5 +12546,69 @@ public class Operacoes implements Initializable {
 
     public static void setSaldoFinalPorc(BigDecimal saldoFinalPorc) {
         Operacoes.saldoFinalPorc.set(saldoFinalPorc);
+    }
+
+    public static StringProperty[] getStrStyleNegociandoTimeFrame() {
+        return strStyleNegociandoTimeFrame;
+    }
+
+    public static void setStrStyleNegociandoTimeFrame(StringProperty[] strStyleNegociandoTimeFrame) {
+        Operacoes.strStyleNegociandoTimeFrame = strStyleNegociandoTimeFrame;
+    }
+
+    public static StringProperty[][] getStrStyleNegociandoSymbols() {
+        return strStyleNegociandoSymbols;
+    }
+
+    public static void setStrStyleNegociandoSymbols(StringProperty[][] strStyleNegociandoSymbols) {
+        Operacoes.strStyleNegociandoSymbols = strStyleNegociandoSymbols;
+    }
+
+    public HBox getHboxTpn_01_QtdsStakes() {
+        return hboxTpn_01_QtdsStakes;
+    }
+
+    public void setHboxTpn_01_QtdsStakes(HBox hboxTpn_01_QtdsStakes) {
+        this.hboxTpn_01_QtdsStakes = hboxTpn_01_QtdsStakes;
+    }
+
+    public HBox getHboxTpn_02_QtdsStakes() {
+        return hboxTpn_02_QtdsStakes;
+    }
+
+    public void setHboxTpn_02_QtdsStakes(HBox hboxTpn_02_QtdsStakes) {
+        this.hboxTpn_02_QtdsStakes = hboxTpn_02_QtdsStakes;
+    }
+
+    public HBox getHboxTpn_03_QtdsStakes() {
+        return hboxTpn_03_QtdsStakes;
+    }
+
+    public void setHboxTpn_03_QtdsStakes(HBox hboxTpn_03_QtdsStakes) {
+        this.hboxTpn_03_QtdsStakes = hboxTpn_03_QtdsStakes;
+    }
+
+    public HBox getHboxTpn_04_QtdsStakes() {
+        return hboxTpn_04_QtdsStakes;
+    }
+
+    public void setHboxTpn_04_QtdsStakes(HBox hboxTpn_04_QtdsStakes) {
+        this.hboxTpn_04_QtdsStakes = hboxTpn_04_QtdsStakes;
+    }
+
+    public HBox getHboxTpn_05_QtdsStakes() {
+        return hboxTpn_05_QtdsStakes;
+    }
+
+    public void setHboxTpn_05_QtdsStakes(HBox hboxTpn_05_QtdsStakes) {
+        this.hboxTpn_05_QtdsStakes = hboxTpn_05_QtdsStakes;
+    }
+
+    public HBox getHboxTpn_06_QtdsStakes() {
+        return hboxTpn_06_QtdsStakes;
+    }
+
+    public void setHboxTpn_06_QtdsStakes(HBox hboxTpn_06_QtdsStakes) {
+        this.hboxTpn_06_QtdsStakes = hboxTpn_06_QtdsStakes;
     }
 }

@@ -29,16 +29,13 @@
 .split-pane:horizontal > * > .split-pane-divider {
   -fx-border-color: transparent -fx-base transparent -fx-base;
   -fx-background-color: transparent, derive(-fx-base, 20%);
-  -fx-background-insets: 0, 0 1 0 1;
-}
+  -fx-background-insets: 0, 0 1 0 1; }
 
 .my-gridpane {
-  -fx-background-color: radial-gradient(radius 100%, derive(-fx-base, 20%), derive(-fx-base, -20%));
-}
+  -fx-background-color: radial-gradient(radius 100%, derive(-fx-base, 20%), derive(-fx-base, -20%)); }
 
 .separator-label {
-  -fx-text-fill: #ff6600;
-}
+  -fx-text-fill: #ff6600; }
 
 .button {
   -fx-font-size: 10px;
@@ -47,14 +44,12 @@
   -fx-alignment: center;
   -jfx-button-type: RAISED;
   -fx-pref-width: 63px;
-  -fx-pref-height: 22px;
-}
+  -fx-pref-height: 22px; }
 
 .combo-box {
   -fx-font-family: "Segoe UI Semibold";
   -fx-font-size: 10px;
-  -fx-font-style: normal;
-}
+  -fx-font-style: normal; }
 
 Label {
   -fx-font-size: 10px;
@@ -338,6 +333,31 @@ VBox.informacoes, HBox.informacoes {
     -fx-background-radius: 4;
     -fx-border-radius: 4;
     -fx-background-color: #fdfd6c; }
+  VBox.informacoes .tframe-operando, HBox.informacoes .tframe-operando {
+    -fx-text-fill: #3dd936;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+    -fx-background-color: #86865a;
+    -fx-background-insets: 1 1 1 -4;
+    -fx-background-radius: 4; }
+  VBox.informacoes .tick-operando-1, HBox.informacoes .tick-operando-1 {
+    -fx-text-fill: #000;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+    -fx-background-color: #a9f89d;
+    -fx-background-radius: 4; }
+  VBox.informacoes .tick-operando-2, HBox.informacoes .tick-operando-2 {
+    -fx-text-fill: #038043;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+    -fx-background-color: #f3e365;
+    -fx-background-radius: 4; }
+  VBox.informacoes .tick-operando-3, HBox.informacoes .tick-operando-3 {
+    -fx-text-fill: #038043;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+    -fx-background-color: #f3e365;
+    -fx-background-radius: 4; }
 
 .jfx-tool-bar, .tool-bar {
   -fx-background-color: transparent;

@@ -30,7 +30,7 @@ public class Abr extends Operacoes implements Robo {
 
         try {
             setQtdContractsProposal(3);
-            setQtdLossPause(2);
+            setQtdLossPause(7);
             setTypeContract(new ObjectProperty[]{new SimpleObjectProperty<>(CONTRACT_TYPE.CALL), new SimpleObjectProperty(CONTRACT_TYPE.PUT)});
             setProposal(new Proposal[getTimeFrameObservableList().size()][getSymbolObservableList().size()][getQtdContractsProposal()]);
 
@@ -66,8 +66,7 @@ public class Abr extends Operacoes implements Robo {
         if (!variaveisIniciais()) return false;
 
         try {
-            Service_Alert alert = new Service_Alert("configuração",
-                    "Todos frames terão a mesma configuração?", "");
+            System.out.printf("QtdLossPause: %s\n", getQtdLossPause());
 
             String msgParamRobo = "Robô: %s\n";
             String msgParamTime = "TimeFrame: %s\n";
@@ -77,36 +76,40 @@ public class Abr extends Operacoes implements Robo {
             BigDecimal martingale[] = new BigDecimal[getTimeFrameObservableList().size()];
             Integer qtd[] = new Integer[getTimeFrameObservableList().size()];
 
+            Service_Alert alert = new Service_Alert("configuração",
+                    "Todos frames terão a mesma configuração?", "");
             boolean retIsEqualsConfig = alert.alertYesNo().get().equals(ButtonType.YES);
-            try {
-                for (int t_id = 0; t_id < (retIsEqualsConfig ? 1 : getTimeFrameObservableList().size()); t_id++) {
-                    if (!getTimeAtivo()[t_id].get()) continue;
-                    qtd[t_id] = 0;
 
+            alert = new Service_Alert();
+            alert.setTitulo("qtd martingale.");
+            alert.setCabecalho("Martingales consecutivos");
+            alert.setContentText("Quantos martingales seguidos são permitidos?");
+            setQtdLossPause(Integer.parseInt(alert.alertTextField("#,##0.*1", "3", "").get()));
+            System.out.printf("QtdLossPause: %s\n", getQtdLossPause());
+
+            for (int t_id = 0; t_id < (retIsEqualsConfig ? 1 : getTimeFrameObservableList().size()); t_id++) {
+                if (!getTimeAtivo()[t_id].get()) continue;
+                qtd[t_id] = 0;
+
+                alert = new Service_Alert();
+                alert.setTitulo("vlr stake.");
+                alert.setCabecalho(String.format("Stake %s", getAuthorize().getCurrency()));
+                alert.setContentText(String.format("Qual o valor da stake padrão para operações%s?",
+                        !retIsEqualsConfig ? String.format(" [%s]", getTimeFrameObservableList().get(t_id)) : ""));
+                vlr[t_id] = new BigDecimal(alert.alertTextField("#,##0.00*35", "0.35", "").get());
+
+
+                while (qtd[t_id] < 2) {
                     alert = new Service_Alert();
-                    alert.setTitulo("vlr stake.");
-                    alert.setCabecalho(String.format("Stake %s", getAuthorize().getCurrency()));
-                    alert.setContentText(String.format("Qual o valor da stake padrão para operações%s?",
+                    alert.setCabecalho(String.format("Espera quantas candles seguidas em pull ou call%s?",
                             !retIsEqualsConfig ? String.format(" [%s]", getTimeFrameObservableList().get(t_id)) : ""));
-                    vlr[t_id] = new BigDecimal(alert.alertTextField("#,##0.00*35", "0.35", "").get());
-
-
-                    while (qtd[t_id] < 2) {
-                        alert = new Service_Alert();
-                        alert.setCabecalho(String.format("Espera quantas candles seguidas em pull ou call%s?",
-                                !retIsEqualsConfig ? String.format(" [%s]", getTimeFrameObservableList().get(t_id)) : ""));
-                        qtd[t_id] = Integer.valueOf(alert.alertTextField("#,##0.*2", "10", "").get()
-                                .replaceAll("\\D", ""));
-                    }
-
-                    alert = new Service_Alert();
-                    alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado?",
-                            !retIsEqualsConfig ? String.format(" [%s]", getTimeFrameObservableList().get(t_id)) : ""));
-                    martingale[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
+                    qtd[t_id] = Integer.parseInt(alert.alertTextField("#,##0.*2", "10", "").get());
                 }
-            } catch (Exception ex) {
-                if (ex instanceof NoSuchElementException)
-                    return false;
+
+                alert = new Service_Alert();
+                alert.setCabecalho(String.format("Qual a porcentagem do martingale em cima do loss acumulado?",
+                        !retIsEqualsConfig ? String.format(" [%s]", getTimeFrameObservableList().get(t_id)) : ""));
+                martingale[t_id] = new BigDecimal(alert.alertTextField("#,##0.00", "100.00", "").get());
             }
             for (int t_id = 0; t_id < getTimeFrameObservableList().size(); t_id++) {
                 if (!getTimeAtivo()[t_id].getValue()) continue;
@@ -131,6 +134,8 @@ public class Abr extends Operacoes implements Robo {
             setParametrosUtilizadosRobo(stbParametros.toString());
 
         } catch (Exception ex) {
+            if (ex instanceof NoSuchElementException)
+                return false;
             ex.printStackTrace();
             return false;
         }
@@ -170,19 +175,22 @@ public class Abr extends Operacoes implements Robo {
             for (int s_id = 0; s_id < getSymbolObservableList().size(); s_id++) {
                 int finalS_id = s_id;
                 getQtdCallOrPut()[t_id][s_id].addListener((ov, o, n) -> {
+                    if (n == null || isRoboMonitorandoPausado() || !isContratoGerado()) return;
                     int qtdCandlesAbsoluto = Math.abs(n.intValue());
                     boolean maior = qtdCandlesAbsoluto > getQtdCandlesEntrada()[finalT_id].getValue(),
                             igual = qtdCandlesAbsoluto == getQtdCandlesEntrada()[finalT_id].getValue();
-                    if (Math.abs(n.intValue()) == 1
-                            && getSymbolLossPaused()[finalT_id][finalS_id].getValue()) {
+                    if (Math.abs(n.intValue()) == 1 && getSymbolLossPaused()[finalT_id][finalS_id].getValue()) {
                         getSymbolLossPaused()[finalT_id][finalS_id].setValue(false);
                         getQtdLossSymbol()[finalT_id][finalS_id].setValue(0);
                     }
                     if (getSymbolLossPaused()[finalT_id][finalS_id].getValue()) return;
-                    if (getFirstBuy()[finalT_id][finalS_id].getValue()
-                            && qtdCandlesAbsoluto >= getQtdCandlesEntrada()[finalT_id].getValue() - 1)
-                        gerarContratosPendentes(finalT_id, finalS_id);
-                    if (n == null || isRoboMonitorandoPausado() || !isContratoGerado()) return;
+                    if (!getFirstBuy()[finalT_id][finalS_id].getValue()
+                            && getQtdLossSymbol()[finalT_id][finalS_id].getValue() + (maior ? 1 : 0)
+                            >= getQtdLossPause()) return;
+                    if (qtdCandlesAbsoluto >= getQtdCandlesEntrada()[finalT_id].getValue() - 1) {
+                        if (getFirstBuy()[finalT_id][finalS_id].getValue())
+                            gerarContratosPendentes(finalT_id, finalS_id);
+                    }
                     if (maior || igual) {
                         Proposal proposal;
                         int proposal_id = (maior

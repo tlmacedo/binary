@@ -34,7 +34,7 @@ public class Service_DataTime {
         return localDateTime.format(dtf);
     }
 
-    public static String getStrHoraMinutoSegundo(Integer intDateTime) {
+    public static String getStrHoraMinutoSegundoExtenso(Integer intDateTime) {
 
         if (intDateTime == null || intDateTime == 0) return "0 s";
         Duration tempo = Duration.ofSeconds(intDateTime);
@@ -57,6 +57,28 @@ public class Service_DataTime {
             stbPeriodo.append(String.format("%d s",
                     tempo.toSecondsPart()));
         }
+        if (tempo.isZero() || stbPeriodo.toString().equals(""))
+            stbPeriodo.append("0 s");
+        return stbPeriodo.toString();
+
+    }
+
+    public static String getStrHoraMinutoSegundoPontos(Integer intDateTime) {
+
+        if (intDateTime == null || intDateTime == 0) return "0 s";
+        Duration tempo = Duration.ofSeconds(intDateTime);
+        StringBuilder stbPeriodo = new StringBuilder("");
+        if (tempo.toHoursPart() >= 1) {
+            stbPeriodo.append(String.format("%02d:",
+                    tempo.toHoursPart()));
+        }
+        if (tempo.toMinutesPart() >= 1) {
+            stbPeriodo.append(String.format("%02d:",
+                    tempo.toMinutesPart()));
+        }
+        stbPeriodo.append(String.format("%0" + (tempo.toMinutesPart() == 0 ? 1 : 2) + "d%s",
+                tempo.toSecondsPart(), tempo.toMinutesPart() == 0 ? " s" : ""));
+
         if (tempo.isZero() || stbPeriodo.toString().equals(""))
             stbPeriodo.append("0 s");
         return stbPeriodo.toString();
